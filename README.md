@@ -2,7 +2,18 @@
 
 在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
 
-[下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md)
+[AI 一键下载安装](distribution/install.md) · [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md)
+
+## 让 AI 帮你下载安装
+
+把下面这句话复制给能操作你电脑的 AI（例如本机 Codex）：
+
+> 请读取 https://raw.githubusercontent.com/ZhuGeTian/inlay-games/main/distribution/install.md ，帮我把 Inlay Games 下载并安装到我正在使用的 Android Studio 或 IntelliJ IDEA。先识别目标 IDE，校验安装包，再安装；若需要关闭或重启 IDE，先让我保存工作。
+
+[查看完整 AI 安装说明](distribution/install.md) · [纯文本说明（供 AI 读取）](https://raw.githubusercontent.com/ZhuGeTian/inlay-games/main/distribution/install.md) · [国内域名备用入口](https://zhugetian.com/gomoku/install.md)
+
+AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无法直接安装。说明中包含下载地址、SHA-256校验、兼容判断、安装与升级步骤。
+
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
 ## 支持的游戏
