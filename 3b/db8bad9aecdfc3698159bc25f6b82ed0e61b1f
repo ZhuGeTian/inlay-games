@@ -1,0 +1,19 @@
+README.md
+  s_882bdfd446838a::t_2506b8934e6ba0 5-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3bdb8bad9aecdfc3698159bc25f6b82ed0e61b1f",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
