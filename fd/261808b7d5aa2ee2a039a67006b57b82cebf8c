@@ -1,0 +1,171 @@
+.gitignore
+  s_28ede11b99a22d::t_8b90c919b00ba2 1-18
+CONTRIBUTING.md
+  s_28ede11b99a22d::t_82284c96ae8e2a 1-9
+LICENSE
+  s_28ede11b99a22d::t_90a25dae7c15bb 1-21
+README.md
+  s_28ede11b99a22d::t_ba2217518ede4f 1-119
+THIRD_PARTY_NOTICES.md
+  s_28ede11b99a22d::t_69a4b04fd49a4a 1-15
+build.gradle.kts
+  s_28ede11b99a22d::t_c05961be225ece 1-28
+core/build.gradle.kts
+  s_28ede11b99a22d::t_d1b9ba3e105ce3 1-10
+core/src/main/kotlin/dev/gomoku/core/BoardGeometry.kt
+  s_28ede11b99a22d::t_03c5bdf781aaa7 1-18
+core/src/main/kotlin/dev/gomoku/core/DdzBot.kt
+  s_28ede11b99a22d::t_ce6f5a67a08acd 1-98
+core/src/main/kotlin/dev/gomoku/core/DdzGame.kt
+  s_28ede11b99a22d::t_ad2dd8782acbff 1-114
+core/src/main/kotlin/dev/gomoku/core/DdzProtocol.kt
+  s_28ede11b99a22d::t_fff1f07199f445 1-54
+core/src/main/kotlin/dev/gomoku/core/DdzRules.kt
+  s_28ede11b99a22d::t_c29ff673dbca2b 1-73
+core/src/main/kotlin/dev/gomoku/core/Game.kt
+  s_28ede11b99a22d::t_152fc18e334495 1-64
+core/src/main/kotlin/dev/gomoku/core/Protocol.kt
+  s_28ede11b99a22d::t_bf76949114aef2 1-45
+core/src/main/kotlin/dev/gomoku/core/TexasGame.kt
+  s_28ede11b99a22d::t_82c13dc35ef111 1-213
+core/src/main/kotlin/dev/gomoku/core/TexasProtocol.kt
+  s_28ede11b99a22d::t_1d22366a3be759 1-63
+core/src/main/kotlin/dev/gomoku/core/TexasRules.kt
+  s_28ede11b99a22d::t_e5abf8b35b1e87 1-52
+core/src/test/kotlin/dev/gomoku/core/DdzBotTest.kt
+  s_28ede11b99a22d::t_b5d0f1c4875fe7 1-142
+core/src/test/kotlin/dev/gomoku/core/DdzGameTest.kt
+  s_28ede11b99a22d::t_5e48fabe44937f 1-247
+core/src/test/kotlin/dev/gomoku/core/GameTest.kt
+  s_28ede11b99a22d::t_61961967a45646 1-97
+core/src/test/kotlin/dev/gomoku/core/TexasGameTest.kt
+  s_28ede11b99a22d::t_a4b42784d89675 1-248
+core/src/test/kotlin/dev/gomoku/core/TexasRulesTest.kt
+  s_28ede11b99a22d::t_2b0bd7df79a49e 1-38
+demo/Board.kt
+  s_28ede11b99a22d::t_27c9dc14f0f6e2 1-3
+deploy/README.md
+  s_28ede11b99a22d::t_6936533dd422ce 1-65
+distribution/inlay-gomoku-0.3.1.zip.sha256
+  s_28ede11b99a22d::t_fbfa1983ed5c6e 1
+distribution/install.md
+  s_28ede11b99a22d::t_45b2933d108315 1-155
+distribution/updatePlugins.xml
+  s_28ede11b99a22d::t_35d97deb9aedf6 1-7
+docs/array-guide.md
+  s_882bdfd446838a::t_ad654e038c773c 1-236
+docs/compatibility-targets.json
+  s_28ede11b99a22d::t_40b810ca782241 1-226
+docs/doudizhu.md
+  s_28ede11b99a22d::t_62e6d6d4f5317d 1-75
+docs/glossary.md
+  s_28ede11b99a22d::t_3ad053cfe08462 1-108
+docs/gomoku.md
+  s_28ede11b99a22d::t_934a2ea9b8d6e3 1-23
+docs/installation.md
+  s_28ede11b99a22d::t_36f29f6b1d0291 1-36
+docs/texas.md
+  s_28ede11b99a22d::t_89db20baa4b3fb 1-81
+docs/verification.md
+  s_28ede11b99a22d::t_27f91723fb7664 1-30
+gradle.properties
+  s_28ede11b99a22d::t_a9bd23fb7e33b7 1-6
+gradle/wrapper/gradle-wrapper.properties
+  s_28ede11b99a22d::t_5f28fb265b3e45 1-7
+gradlew
+  s_28ede11b99a22d::t_145eb1cdab6266 1-251
+gradlew.bat
+  s_28ede11b99a22d::t_4aeba95abc3bc5 1-94
+licenses/Apache-2.0.txt
+  s_28ede11b99a22d::t_84ee834eba5f67 1-202
+plugin/build.gradle.kts
+  s_28ede11b99a22d::t_33d46657f67bf0 1-59
+plugin/src/main/kotlin/dev/gomoku/plugin/Actions.kt
+  s_28ede11b99a22d::t_b2058f1d494aba 1-125
+plugin/src/main/kotlin/dev/gomoku/plugin/BoardView.kt
+  s_28ede11b99a22d::t_c0417b541056b1 1-159
+plugin/src/main/kotlin/dev/gomoku/plugin/DdzActions.kt
+  s_28ede11b99a22d::t_9ed98d14774c6d 1-23
+plugin/src/main/kotlin/dev/gomoku/plugin/DdzValidation.kt
+  s_28ede11b99a22d::t_629dc2d121d73b 1-29
+plugin/src/main/kotlin/dev/gomoku/plugin/DdzView.kt
+  s_28ede11b99a22d::t_b9b71249aa5079 1-189
+plugin/src/main/kotlin/dev/gomoku/plugin/GameView.kt
+  s_28ede11b99a22d::t_d1188e08b811f9 1-8
+plugin/src/main/kotlin/dev/gomoku/plugin/GomokuSession.kt
+  s_28ede11b99a22d::t_e7ff4c2a3573c3 1-409
+plugin/src/main/kotlin/dev/gomoku/plugin/TexasActions.kt
+  s_28ede11b99a22d::t_73929565186f82 1-38
+plugin/src/main/kotlin/dev/gomoku/plugin/TexasValidation.kt
+  s_28ede11b99a22d::t_c96884b140902f 1-34
+plugin/src/main/kotlin/dev/gomoku/plugin/TexasView.kt
+  s_28ede11b99a22d::t_30f883e0d03e96 1-159
+plugin/src/main/resources/META-INF/plugin.xml
+  s_28ede11b99a22d::t_e7b7a3351cf5c7 1-58
+plugin/src/test/kotlin/dev/gomoku/plugin/BoardControlsTest.kt
+  s_28ede11b99a22d::t_e77efff84767f9 1-110
+plugin/src/test/kotlin/dev/gomoku/plugin/DdzControlsTest.kt
+  s_28ede11b99a22d::t_2e5adb0c8216c3 1-174
+plugin/src/test/kotlin/dev/gomoku/plugin/TexasControlsTest.kt
+  s_28ede11b99a22d::t_dc3731adddcb45 1-137
+scripts/ddz-bots-smoke.mjs
+  s_882bdfd446838a::t_2b9216ab46a36a 1-231
+scripts/ddz-smoke.mjs
+  s_882bdfd446838a::t_59083b7aa732da 1-265
+scripts/download-ide.py
+  s_28ede11b99a22d::t_8370e200939b2f 1-27
+scripts/smoke.mjs
+  s_28ede11b99a22d::t_a58e2cb1937abe 1-101
+scripts/texas-smoke.mjs
+  s_882bdfd446838a::t_84410ee2ce8226 1-246
+server/build.gradle.kts
+  s_28ede11b99a22d::t_c6a0b2ae14fec9 1-13
+server/src/main/kotlin/dev/gomoku/server/DdzRooms.kt
+  s_28ede11b99a22d::t_f88027632a24f4 1-232
+server/src/main/kotlin/dev/gomoku/server/Main.kt
+  s_28ede11b99a22d::t_d0bc988b774e90 1-119
+server/src/main/kotlin/dev/gomoku/server/Rooms.kt
+  s_28ede11b99a22d::t_b9b4e0fad74798 1-158
+server/src/main/kotlin/dev/gomoku/server/TexasRooms.kt
+  s_28ede11b99a22d::t_f6c90caf1e9635 1-184
+server/src/main/resources/logback.xml
+  s_28ede11b99a22d::t_fb7bd94259e0da 1-7
+server/src/test/kotlin/dev/gomoku/server/DdzBotRoomsTest.kt
+  s_28ede11b99a22d::t_5985d4fac621dc 1-177
+server/src/test/kotlin/dev/gomoku/server/DdzRoomsTest.kt
+  s_28ede11b99a22d::t_76b9206988f12a 1-185
+server/src/test/kotlin/dev/gomoku/server/RoomsTest.kt
+  s_28ede11b99a22d::t_2d74da6f78d5cb 1-101
+server/src/test/kotlin/dev/gomoku/server/TexasRoomsTest.kt
+  s_28ede11b99a22d::t_4b624929d50de4 1-171
+server/src/test/kotlin/dev/gomoku/server/TexasTransportTest.kt
+  s_28ede11b99a22d::t_f2d731b2f70823 1-99
+server/src/test/kotlin/dev/gomoku/server/TransportTest.kt
+  s_28ede11b99a22d::t_2f0a585ad9ba1a 1-95
+settings.gradle.kts
+  s_28ede11b99a22d::t_c5a25d0dc52d73 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fd261808b7d5aa2ee2a039a67006b57b82cebf8c",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
