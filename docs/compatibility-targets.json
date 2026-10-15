@@ -1,0 +1,226 @@
+{
+  "asOf": "2026-10-14",
+  "source": "https://jb.gg/android-studio-releases-list.json",
+  "targets": [
+    {
+      "name": "Android Studio Otter | 2025.2.1",
+      "version": "2025.2.1.7",
+      "build": "AI-252.25557.131.2521.14344949",
+      "platformBuild": "252.25557.131",
+      "channel": "Release",
+      "date": "October 30, 2025",
+      "linuxUrl": "https://edgedl.me.gvt1.com/edgedl/android/studio/ide-zips/2025.2.1.7/android-studio-2025.2.1.7-linux.tar.gz",
+      "linuxSha256": "16af1fa02d746e4c182d8852ff3859bba5c182768efeacfa18a8b81d65e78cb1"
+    },
+    {
+      "name": "Android Studio Otter | 2025.2.1 Patch 1",
+      "version": "2025.2.1.8",
+      "build": "AI-252.25557.131.2521.14432022",
+      "platformBuild": "252.25557.131",
+      "channel": "Patch",
+      "date": "November 17, 2025",
+      "linuxUrl": "https://edgedl.me.gvt1.com/edgedl/android/studio/ide-zips/2025.2.1.8/android-studio-2025.2.1.8-linux.tar.gz",
+      "linuxSha256": "7aa6a2e46eb4387def1f4ea22b8b4a2b68021efa85065347c41187439fd25096"
+    },
+    {
+      "name": "Android Studio Otter 2 Feature Drop | 2025.2.2",
+      "version": "2025.2.2.7",
+      "build": "AI-252.27397.103.2522.14514259",
+      "platformBuild": "252.27397.103",
+      "channel": "Release",
+      "date": "December 4, 2025",
+      "linuxUrl": "https://edgedl.me.gvt1.com/edgedl/android/studio/ide-zips/2025.2.2.7/android-studio-2025.2.2.7-linux.tar.gz",
+      "linuxSha256": "a6f9d40d87856f13a7c3674ff4178a16eb219d31e6a43ac1c269cd583c7ca5b4"
+    },
+    {
+      "name": "Android Studio Otter 2 Feature Drop | 2025.2.2 Patch 1",
+      "version": "2025.2.2.8",
+      "build": "AI-252.27397.103.2522.14617522",
+      "platformBuild": "252.27397.103",
+      "channel": "Patch",
+      "date": "December 23, 2025",
+      "linuxUrl": "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2025.2.2.8/android-studio-2025.2.2.8-linux.tar.gz",
+      "linuxSha256": "c6cf40050f5ff3f82dc5ca226647ffc44b664ce8faadbe13cbec3bd3ff82e12b"
+    },
+    {
+      "name": "Android Studio Otter 3 Feature Drop | 2025.2.3",
+      "version": "2025.2.3.9",
+      "build": "AI-252.28238.7.2523.14688667",
+      "platformBuild": "252.28238.7",
+      "channel": "Release",
+      "date": "January 15, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.2.3.9/android-studio-2025.2.3.9-linux.tar.gz",
+      "linuxSha256": "986ea6cacb36da723f2c8550cccd7d8cd3e8b8b7bb2446d3a8bf39bbaf91abc1"
+    },
+    {
+      "name": "Android Studio Panda 1 | 2025.3.1",
+      "version": "2025.3.1.7",
+      "build": "AI-253.29346.138.2531.14850935",
+      "platformBuild": "253.29346.138",
+      "channel": "Release",
+      "date": "February 10, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.1.7/android-studio-panda1-linux.tar.gz",
+      "linuxSha256": "d7eb0b463b0a4d6a309c48f3d8744a51149955f0112281eebb81210339c88a96"
+    },
+    {
+      "name": "Android Studio Panda 1 | 2025.3.1 Patch 1",
+      "version": "2025.3.1.8",
+      "build": "AI-253.29346.138.2531.14876573",
+      "platformBuild": "253.29346.138",
+      "channel": "Patch",
+      "date": "February 13, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.1.8/android-studio-panda1-patch1-linux.tar.gz",
+      "linuxSha256": "678b8495f6368938927a8c8cc1a82484dd47e3640b77ec8b9983dc95722cda42"
+    },
+    {
+      "name": "Android Studio Panda 2 | 2025.3.2",
+      "version": "2025.3.2.6",
+      "build": "AI-253.30387.90.2532.14935130",
+      "platformBuild": "253.30387.90",
+      "channel": "Release",
+      "date": "March 3, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.2.6/android-studio-panda2-linux.tar.gz",
+      "linuxSha256": "32942d8cd7688192cf3cd07bf282fb120035b9bd9b56e6f13c5540e6d39807e9"
+    },
+    {
+      "name": "Android Studio Panda 3 | 2025.3.3",
+      "version": "2025.3.3.6",
+      "build": "AI-253.31033.145.2533.15113396",
+      "platformBuild": "253.31033.145",
+      "channel": "Release",
+      "date": "April 2, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.3.6/android-studio-panda3-linux.tar.gz",
+      "linuxSha256": "341ac0fc17dbc987d0530e0cfb327125480533d6733a889f2137636becd486a5"
+    },
+    {
+      "name": "Android Studio Panda 3 | 2025.3.3 Patch 1",
+      "version": "2025.3.3.7",
+      "build": "AI-253.31033.145.2533.15176040",
+      "platformBuild": "253.31033.145",
+      "channel": "Patch",
+      "date": "April 13, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.3.7/android-studio-panda3-patch1-linux.tar.gz",
+      "linuxSha256": "153009f6b64fc0b80803fb8f2a5e1df61681c4b2f83b667e1fcb18e91a9a78e0"
+    },
+    {
+      "name": "Android Studio Panda 4 | 2025.3.4",
+      "version": "2025.3.4.6",
+      "build": "AI-253.32098.37.2534.15232325",
+      "platformBuild": "253.32098.37",
+      "channel": "Release",
+      "date": "April 21, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.4.6/android-studio-panda4-linux.tar.gz",
+      "linuxSha256": "32a7ff09acaa38b48d61c8882bee7e213022a8ba0d1f16c0073380facb509fd3"
+    },
+    {
+      "name": "Android Studio Panda 4 | 2025.3.4 Patch 1",
+      "version": "2025.3.4.7",
+      "build": "AI-253.32098.37.2534.15336583",
+      "platformBuild": "253.32098.37",
+      "channel": "Patch",
+      "date": "May 5, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2025.3.4.7/android-studio-panda4-patch1-linux.tar.gz",
+      "linuxSha256": "aae8f332f124afd23ca495dc770915a456da7480c8f859e01535ad42fcb4ca06"
+    },
+    {
+      "name": "Android Studio Quail 1 | 2026.1.1",
+      "version": "2026.1.1.8",
+      "build": "AI-261.23567.138.2611.15503007",
+      "platformBuild": "261.23567.138",
+      "channel": "Release",
+      "date": "June 2, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.1.8/android-studio-quail1-linux.tar.gz",
+      "linuxSha256": "0c1fa4ba3cfabd07e48a90e00a5fa2ea2a82cd5870833dada5b0290c817d83d3"
+    },
+    {
+      "name": "Android Studio Quail 1 | 2026.1.1 Patch 1",
+      "version": "2026.1.1.9",
+      "build": "AI-261.23567.138.2611.15613797",
+      "platformBuild": "261.23567.138",
+      "channel": "Patch",
+      "date": "June 11, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.1.9/android-studio-quail1-patch1-linux.tar.gz",
+      "linuxSha256": "2e29b43783b7ffd62f62389831fc3f260df1b8f673e5125caf588e75112e8eb5"
+    },
+    {
+      "name": "Android Studio Quail 1 | 2026.1.1 Patch 2",
+      "version": "2026.1.1.10",
+      "build": "AI-261.23567.138.2611.15646644",
+      "platformBuild": "261.23567.138",
+      "channel": "Patch",
+      "date": "June 16, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.1.10/android-studio-quail1-patch2-linux.tar.gz",
+      "linuxSha256": "fbd3f116d12caed724ea8da0d2cdae7e791170f79f2aa11273ea0f2d22a224dc"
+    },
+    {
+      "name": "Android Studio Quail 2 | 2026.1.2",
+      "version": "2026.1.2.10",
+      "build": "AI-261.25134.95.2612.15822958",
+      "platformBuild": "261.25134.95",
+      "channel": "Release",
+      "date": "July 14, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.2.10/android-studio-quail2-linux.tar.gz",
+      "linuxSha256": "64445a54092e7056c6eb7f1a89ad116d0feec2ef5f965b8e594d62abdb58590f"
+    },
+    {
+      "name": "Android Studio Quail 2 | 2026.1.2 Patch 1",
+      "version": "2026.1.2.11",
+      "build": "AI-261.25134.95.2612.15914620",
+      "platformBuild": "261.25134.95",
+      "channel": "Patch",
+      "date": "July 23, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.2.11/android-studio-quail2-patch1-linux.tar.gz",
+      "linuxSha256": "1cc9cd54f400dbb0d07884f0f7c0cab524db5ce0a5ef70b23aed6fdd3cd445b9"
+    },
+    {
+      "name": "Android Studio Quail 3 | 2026.1.3",
+      "version": "2026.1.3.7",
+      "build": "AI-261.26222.65.2613.15948027",
+      "platformBuild": "261.26222.65",
+      "channel": "Release",
+      "date": "July 30, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.3.7/android-studio-quail3-linux.tar.gz",
+      "linuxSha256": "36832122557ab73ca68dfd9bd989ddac40103ac003ca10e04c949a1f61578a67"
+    },
+    {
+      "name": "Android Studio Quail 3 | 2026.1.3 Patch 1",
+      "version": "2026.1.3.8",
+      "build": "AI-261.26222.65.2613.16025427",
+      "platformBuild": "261.26222.65",
+      "channel": "Patch",
+      "date": "August 10, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.3.8/android-studio-quail3-patch1-linux.tar.gz",
+      "linuxSha256": "5bd5ee5d6e747b13f82fba3241380bd358cc2f4a847815c8e860757df13dc35f"
+    },
+    {
+      "name": "Android Studio Quail 4 | 2026.1.4",
+      "version": "2026.1.4.7",
+      "build": "AI-261.26222.65.2614.16204760",
+      "platformBuild": "261.26222.65",
+      "channel": "Release",
+      "date": "September 1, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.4.7/android-studio-quail4-linux.tar.gz",
+      "linuxSha256": "4be240083df5ada290975d87d60fc212a3d38d4f258a1250989885a9dbc79980"
+    },
+    {
+      "name": "Android Studio Quail 4 | 2026.1.4 Patch 1",
+      "version": "2026.1.4.8",
+      "build": "AI-261.26222.65.2614.16379836",
+      "platformBuild": "261.26222.65",
+      "channel": "Patch",
+      "date": "September 18, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.1.4.8/android-studio-quail4-patch1-linux.tar.gz",
+      "linuxSha256": "25c97ca6c6b505f2a20bff962dfd28718327f61e25b09a9bc915f1dae7b1e534"
+    },
+    {
+      "name": "Android Studio Rabbit 1 | 2026.2.1",
+      "version": "2026.2.1.8",
+      "build": "AI-262.9437.185.2621.16467767",
+      "platformBuild": "262.9437.185",
+      "channel": "Release",
+      "date": "October 1, 2026",
+      "linuxUrl": "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.2.1.8/android-studio-rabbit1-linux.tar.gz",
+      "linuxSha256": "f8775c67cf899d9133712a2d7ee3ef7231e07fb16dbe0544c47e5f5babd5931b"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<idea-plugin>
+    <id>dev.gomoku.inlay</id>
+    <name>Inlay Games</name>
+    <vendor>Inlay Gomoku</vendor>
+    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复。]]></description>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Gomoku" displayType="NONE"/>
+    </extensions>
+    <actions>
+        <group id="Gomoku.Menu" text="联机小游戏" popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <group id="Gomoku.RoomMenu" text="五子棋" popup="true">
+            <action id="Gomoku.Create" class="dev.gomoku.plugin.CreateRoomAction" text="创建房间…" description="创建一个双人五子棋房间"/>
+            <action id="Gomoku.Join" class="dev.gomoku.plugin.JoinRoomAction" text="加入房间…" description="输入房间码加入朋友的对局"/>
+            </group>
+            <group id="Ddz.Menu" text="斗地主" popup="true">
+                <action id="Ddz.Create" class="dev.gomoku.plugin.CreateDdzRoomAction" text="创建房间…" description="创建三人斗地主好友房"/>
+                <action id="Ddz.Join" class="dev.gomoku.plugin.JoinDdzRoomAction" text="加入房间…"/>
+                <separator/>
+                <action id="Ddz.Start" class="dev.gomoku.plugin.DdzStartAction" text="开始（机器人补位）" description="房主可在一人或两人时开始，机器人补齐空位"/>
+                <action id="Ddz.Bid0" class="dev.gomoku.plugin.DdzBid0Action" text="不叫（0 分）"/>
+                <action id="Ddz.Bid1" class="dev.gomoku.plugin.DdzBid1Action" text="叫 1 分"/>
+                <action id="Ddz.Bid2" class="dev.gomoku.plugin.DdzBid2Action" text="叫 2 分"/>
+                <action id="Ddz.Bid3" class="dev.gomoku.plugin.DdzBid3Action" text="叫 3 分"/>
+                <separator/>
+                <action id="Ddz.Play" class="dev.gomoku.plugin.DdzPlayAction" text="打出选中牌"/>
+                <action id="Ddz.Pass" class="dev.gomoku.plugin.DdzPassAction" text="不出"/>
+                <action id="Ddz.Ready" class="dev.gomoku.plugin.DdzReadyAction" text="准备下一局"/>
+            </group>
+            <group id="Texas.Menu" text="德州" popup="true">
+                <action id="Texas.Create" class="dev.gomoku.plugin.CreateTexasRoomAction" text="创建房间…" description="三人好友房，每人 1000 虚拟积分，盲注 5/10"/>
+                <action id="Texas.Join" class="dev.gomoku.plugin.JoinTexasRoomAction" text="加入房间…"/>
+                <separator/>
+                <action id="Texas.Fold" class="dev.gomoku.plugin.TexasFoldAction" text="弃牌"/>
+                <action id="Texas.Check" class="dev.gomoku.plugin.TexasCheckAction" text="过牌"/>
+                <action id="Texas.Call" class="dev.gomoku.plugin.TexasCallAction" text="跟注"/>
+                <action id="Texas.Raise" class="dev.gomoku.plugin.TexasRaiseAction" text="加注到…"/>
+                <action id="Texas.AllIn" class="dev.gomoku.plugin.TexasAllInAction" text="全下"/>
+                <action id="Texas.Ready" class="dev.gomoku.plugin.TexasReadyAction" text="准备下一手／重置积分"/>
+            </group>
+            <action id="Gomoku.Show" class="dev.gomoku.plugin.ShowBoardAction" text="在此显示数组" description="在当前光标行下显示当前对局"/>
+            <action id="Gomoku.Toggle" class="dev.gomoku.plugin.ToggleBoardAction" text="显示／隐藏数组" description="快速切换显示，保留当前对局">
+                <keyboard-shortcut keymap="$default" first-keystroke="control G"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control G" replace-all="true"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control G" replace-all="true"/>
+            </action>
+            <action id="Gomoku.FontSize" class="dev.gomoku.plugin.FontSizeAction" text="调节字号…" description="设置数组字号，范围 8–32"/>
+            <action id="Gomoku.Copy" class="dev.gomoku.plugin.CopyRoomCodeAction" text="复制房间码"/>
+            <separator/>
+            <action id="Gomoku.Reconnect" class="dev.gomoku.plugin.ReconnectAction" text="重新连接"/>
+            <action id="Gomoku.Resign" class="dev.gomoku.plugin.ResignAction" text="认输…"/>
+            <action id="Gomoku.Leave" class="dev.gomoku.plugin.LeaveRoomAction" text="退出房间…"/>
+        </group>
+    </actions>
+</idea-plugin>
+
