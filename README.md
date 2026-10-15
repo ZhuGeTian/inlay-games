@@ -3,6 +3,7 @@
 在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
 
 [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md)
+<img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
 ## 支持的游戏
 
