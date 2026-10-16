@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-10-16-texas-bots.md
+  s_28ede11b99a22d::t_5435a9de0655f3 28-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6fd2b358d0dd082fd5e275b85289b859e5e8578f",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
