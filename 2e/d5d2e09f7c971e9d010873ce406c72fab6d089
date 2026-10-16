@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-10-16-texas-bots.md
+  s_882bdfd446838a::t_62b677bce75c1e 1-29
+docs/superpowers/specs/2026-10-16-texas-bots-design.md
+  s_882bdfd446838a::t_2e084d6b33d76c 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2ed5d2e09f7c971e9d010873ce406c72fab6d089",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
