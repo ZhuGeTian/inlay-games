@@ -2,7 +2,7 @@ package dev.gomoku.core
 
 import kotlinx.serialization.Serializable
 
-const val TEXAS_PROTOCOL_VERSION = 1
+const val TEXAS_PROTOCOL_VERSION = 2
 
 @Serializable
 data class TexasClientMessage(
@@ -44,6 +44,7 @@ data class TexasState(
     val winners: List<Int> = emptyList(),
     val ready: List<Boolean> = listOf(false, false, false),
     val online: List<Boolean> = listOf(false, false, false),
+    val bots: List<Boolean> = listOf(false, false, false),
     val round: Int = 0,
     val revision: Int = 0,
     val matchOver: Boolean = false,

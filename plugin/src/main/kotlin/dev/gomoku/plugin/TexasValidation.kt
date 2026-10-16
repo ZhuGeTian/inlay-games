@@ -25,7 +25,7 @@ internal fun validTexasState(s: TexasState): Boolean {
         s.revealed.size == 3 && s.revealed.all { it.size in setOf(0, 2) && cards(it) } && cards(exposed + s.board) &&
         amounts(s.stacks) && amounts(s.bets) && amounts(s.contributions) && amounts(s.payouts) && amounts(s.returned) &&
         s.roundDelta.size == 3 && s.roundDelta.all { it in -3000..3000 } &&
-        listOf(s.folded, s.allIn, s.inHand, s.ready, s.online).all { it.size == 3 } &&
+        listOf(s.folded, s.allIn, s.inHand, s.ready, s.online, s.bots).all { it.size == 3 } &&
         listOf(s.dealer, s.smallBlindSeat, s.bigBlindSeat, s.turn).all { it in 0..3 } &&
         s.winners.distinct().size == s.winners.size && s.winners.all { it in 1..3 } &&
         listOf(s.currentBet, s.minRaiseTo, s.maxRaiseTo, s.toCall, s.pot).all { it in 0..6000 } &&

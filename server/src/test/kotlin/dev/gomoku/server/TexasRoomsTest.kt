@@ -35,6 +35,7 @@ class TexasRoomsTest {
         send(rooms, c, "join", code)
         val players = listOf(a, b, c)
         assertEquals("playing", a.state().status)
+        assertEquals(listOf(false, false, false), a.state().bots)
         assertEquals("preflop", a.state().street)
         assertEquals(6, players.flatMap { it.state().hand }.toSet().size)
         players.forEach { client ->

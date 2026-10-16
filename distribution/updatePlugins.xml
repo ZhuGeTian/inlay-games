@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugins>
-    <plugin id="dev.gomoku.inlay" version="0.3.1" url="https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.3.1.zip">
+    <plugin id="dev.gomoku.inlay" version="0.4.0" url="https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip">
         <idea-version since-build="232.10072.27" until-build="262.*"/>
         <name>Inlay Games</name>
     </plugin>

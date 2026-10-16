@@ -2,7 +2,7 @@
     <id>dev.gomoku.inlay</id>
     <name>Inlay Games</name>
     <vendor>Inlay Gomoku</vendor>
-    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复。]]></description>
+    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、支持胜率模拟机器人的四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复。]]></description>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Gomoku" displayType="NONE"/>
@@ -30,9 +30,10 @@
                 <action id="Ddz.Ready" class="dev.gomoku.plugin.DdzReadyAction" text="准备下一局"/>
             </group>
             <group id="Texas.Menu" text="德州" popup="true">
-                <action id="Texas.Create" class="dev.gomoku.plugin.CreateTexasRoomAction" text="创建房间…" description="三人好友房，每人 1000 虚拟积分，盲注 5/10"/>
+                <action id="Texas.Create" class="dev.gomoku.plugin.CreateTexasRoomAction" text="创建房间…" description="一至三人好友房，支持机器人补位，每人 1000 虚拟积分，盲注 5/10"/>
                 <action id="Texas.Join" class="dev.gomoku.plugin.JoinTexasRoomAction" text="加入房间…"/>
                 <separator/>
+                <action id="Texas.Start" class="dev.gomoku.plugin.TexasStartAction" text="开始（机器人补位）" description="房主可在一人或两人时开始，胜率模拟机器人补齐空位"/>
                 <action id="Texas.Fold" class="dev.gomoku.plugin.TexasFoldAction" text="弃牌"/>
                 <action id="Texas.Check" class="dev.gomoku.plugin.TexasCheckAction" text="过牌"/>
                 <action id="Texas.Call" class="dev.gomoku.plugin.TexasCallAction" text="跟注"/>

@@ -9,12 +9,13 @@ internal fun gameEndpoint(server: String, ddz: Boolean) = gameEndpoint(server, i
 
 internal fun gameEndpoint(server: String, kind: GameKind): String {
     val uri = URI(server)
-    val base = uri.path.orEmpty().replace(Regex("/(ddz(/v2)?|texas)/ws$"), "/ws")
+    val base = uri.path.orEmpty().replace(Regex("/(ddz|texas)(/v2)?/ws$"), "/ws")
     val target = if (kind == GameKind.GOMOKU) base else {
         val prefix = if (base.endsWith("/ws")) base.removeSuffix("/ws") else base.trimEnd('/')
-        prefix + (if (kind == GameKind.DDZ) "/ddz/v2/ws" else "/texas/ws")
+        prefix + (if (kind == GameKind.DDZ) "/ddz/v2/ws" else "/texas/v2/ws")
     }
-    return URI(uri.scheme, uri.authority, target, uri.query, null).toString()
+    return URI(uri.scheme, uri.authority, target, null, null).toString() +
+        (uri.rawQuery?.let { "?$it" } ?: "")
 }
 
 internal fun validDdzState(s: DdzState): Boolean {

@@ -4,6 +4,8 @@ import dev.gomoku.core.*
 import java.security.SecureRandom
 import java.util.Base64
 import java.util.Collections
+import org.slf4j.LoggerFactory
+import java.util.concurrent.CancellationException
 
 class TexasPeer(val id: String, val ip: String, val emit: (TexasServerMessage) -> Unit, val close: () -> Unit = {}) {
     internal var room: String? = null
@@ -15,14 +17,23 @@ class TexasRooms(
     private val shuffledDeck: () -> List<Int> = {
         (0..51).toMutableList().also { Collections.shuffle(it, SecureRandom()) }
     },
+    private val botDecision: (TexasState, Int) -> TexasClientMessage = TexasBot::decide,
 ) {
-    private data class Player(val token: String, var peer: TexasPeer?)
+    private data class Player(val token: String?, var peer: TexasPeer?, val bot: Boolean = false)
     private class Room(val code: String, val creatorIp: String, var touched: Long, deck: () -> List<Int>) {
         val players = mutableListOf<Player>()
         val game = TexasGame(deck)
         val requests = linkedMapOf<String, TexasClientMessage>()
-        fun state(seat: Int) = game.snapshot(seat).copy(online = List(3) { players.getOrNull(it)?.peer != null })
+        var nextBotAt = touched + 700
+        var generation = 0L
+        var thinking: BotJob? = null
+        fun humansOnline() = players.all { it.bot || it.peer != null }
+        fun state(seat: Int) = game.snapshot(seat).copy(
+            online = List(3) { players.getOrNull(it)?.let { player -> player.bot || player.peer != null } ?: false },
+            bots = List(3) { players.getOrNull(it)?.bot == true })
     }
+    private data class BotJob(val room: Room, val seat: Int, val state: TexasState, val generation: Long)
+    private val log = LoggerFactory.getLogger(TexasRooms::class.java)
     private val random = SecureRandom()
     private val rooms = mutableMapOf<String, Room>()
     private val ttl = 30 * 60 * 1000L
@@ -61,11 +72,11 @@ class TexasRooms(
                     requireFree(peer)
                     val room = find(command.roomCode)
                     if (room.players.size == 3) throw GameError("房间已满")
-                    if (room.players.any { it.peer == null }) throw GameError("有玩家暂时离线，请稍后加入")
+                    if (!room.humansOnline()) throw GameError("有玩家暂时离线，请稍后加入")
                     val player = Player(newToken(), peer)
                     room.players.add(player)
                     if (room.players.size == 3) room.game.start()
-                    room.touched = now()
+                    humanActivity(room)
                     peer.room = room.code
                     peer.seat = room.players.size
                     remember(room, peer.seat, command)
@@ -75,7 +86,7 @@ class TexasRooms(
                 "resume" -> {
                     requireFree(peer)
                     val room = find(command.roomCode)
-                    val index = room.players.indexOfFirst { it.token == command.token }
+                    val index = room.players.indexOfFirst { !it.bot && command.token.isNotEmpty() && it.token == command.token }
                     if (index < 0) throw GameError("无法恢复身份，请重新创建或加入房间")
                     val previous = room.requests["${index + 1}:${command.requestId}"]
                     if (previous != null && previous != command) throw GameError("重复的请求编号")
@@ -84,18 +95,30 @@ class TexasRooms(
                     player.peer = peer
                     peer.room = room.code
                     peer.seat = index + 1
-                    room.touched = now()
+                    humanActivity(room)
                     remember(room, peer.seat, command)
                     welcome(peer, room, player, command.requestId)
                     broadcast(room, command.requestId)
                 }
+                "start" -> {
+                    val room = boundRoom(peer)
+                    if (peer.seat != 1) throw GameError("只有房主可以补机器人开始")
+                    val state = room.game.snapshot(peer.seat)
+                    if (state.status != "waiting") throw GameError("对局已经开始")
+                    if (command.revision != state.revision) throw GameError("牌局已更新，请按最新状态操作")
+                    if (!room.humansOnline()) throw GameError("等待已加入的玩家上线")
+                    room.game.start()
+                    while (room.players.size < 3) room.players.add(Player(null, null, bot = true))
+                    remember(room, peer.seat, command)
+                    humanActivity(room)
+                    broadcast(room, command.requestId)
+                }
                 "fold", "check", "call", "raise", "allin", "ready" -> {
                     val room = boundRoom(peer)
-                    if (room.players.size != 3 || room.players.any { it.peer == null }) throw GameError("等待三位玩家全部在线")
-                    if (command.type == "ready") room.game.ready(peer.seat, command.revision)
-                    else room.game.act(peer.seat, command.type, command.raiseTo, command.revision)
+                    if (room.players.size != 3 || !room.humansOnline()) throw GameError("等待三位玩家全部在线")
+                    apply(room, peer.seat, command)
                     remember(room, peer.seat, command)
-                    room.touched = now()
+                    humanActivity(room)
                     broadcast(room, command.requestId)
                 }
                 "leave" -> {
@@ -127,8 +150,61 @@ class TexasRooms(
         peer.seat = 0
         if (player?.peer !== peer) return
         player.peer = null
-        room.touched = now()
+        humanActivity(room)
         broadcast(room, "")
+    }
+
+    fun tick() {
+        val candidates = synchronized(this) { rooms.values.toList() }
+        for (candidate in candidates) {
+            val job = synchronized(this) {
+                if (rooms[candidate.code] !== candidate || candidate.thinking != null || now() - candidate.touched >= ttl ||
+                    now() < candidate.nextBotAt || !candidate.humansOnline()) return@synchronized null
+                val state = candidate.game.snapshot(1)
+                val seat = when (state.status) {
+                    "playing" -> state.turn.takeIf { candidate.players.getOrNull(it - 1)?.bot == true }
+                    "finished" -> (1..3).firstOrNull { candidate.players.getOrNull(it - 1)?.bot == true && !state.ready[it - 1] }
+                    else -> null
+                } ?: return@synchronized null
+                BotJob(candidate, seat, candidate.state(seat), candidate.generation).also { candidate.thinking = it }
+            } ?: continue
+            try {
+                // Only the bot's private view leaves the lock; slow simulation never blocks human commands.
+                val command = if (job.state.status == "finished") TexasClientMessage("ready", revision = job.state.revision)
+                    else botDecision(job.state, job.seat)
+                synchronized(this) {
+                    val room = job.room
+                    if (rooms[room.code] === room && room.thinking === job && room.generation == job.generation &&
+                        now() - room.touched < ttl && room.humansOnline() && room.game.snapshot(job.seat).revision == job.state.revision) {
+                        apply(room, job.seat, command)
+                        room.generation++
+                        broadcast(room, "")
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                log.warn("Texas bot decision failed; retrying after delay", e)
+            } finally {
+                synchronized(this) {
+                    if (job.room.thinking === job) {
+                        job.room.thinking = null
+                        job.room.nextBotAt = now() + 700
+                    }
+                }
+            }
+        }
+    }
+
+    private fun humanActivity(room: Room) {
+        room.touched = now()
+        room.nextBotAt = room.touched + 700
+        room.generation++
+    }
+
+    private fun apply(room: Room, seat: Int, command: TexasClientMessage) {
+        if (command.type == "ready") room.game.ready(seat, command.revision)
+        else room.game.act(seat, command.type, command.raiseTo, command.revision)
     }
 
     @Synchronized fun sweep() {
@@ -168,7 +244,7 @@ class TexasRooms(
     }
 
     private fun welcome(peer: TexasPeer, room: Room, player: Player, requestId: String) {
-        peer.emit(TexasServerMessage("welcome", roomCode = room.code, seat = peer.seat, token = player.token,
+        peer.emit(TexasServerMessage("welcome", roomCode = room.code, seat = peer.seat, token = player.token!!,
             state = room.state(peer.seat), requestId = requestId))
     }
 

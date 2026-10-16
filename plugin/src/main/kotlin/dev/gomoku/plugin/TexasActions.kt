@@ -30,6 +30,7 @@ open class TexasCommandAction(private val command: String) : DumbAwareAction() {
         texasAction(project, project.getService(GomokuSession::class.java), command)
     }
 }
+class TexasStartAction : TexasCommandAction("start")
 class TexasFoldAction : TexasCommandAction("fold")
 class TexasCheckAction : TexasCommandAction("check")
 class TexasCallAction : TexasCommandAction("call")

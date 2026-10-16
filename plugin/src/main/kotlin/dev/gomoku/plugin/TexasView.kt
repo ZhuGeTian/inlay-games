@@ -43,6 +43,7 @@ class TexasView(private val editor: Editor, private val session: GomokuSession) 
         line("val stacks = longArrayOf(${s.stacks.joinToString(",")})")
         line("val bets = longArrayOf(${s.bets.joinToString(",")})")
         line("val live = intArrayOf(${s.online.joinToString(",") { if (it) "1" else "0" }})")
+        if (s.bots.any { it }) line("val auto = intArrayOf(${s.bots.joinToString(",") { if (it) "1" else "0" }})")
         line("val flags = intArrayOf(${(0..2).joinToString(",") { if (!s.inHand[it]) "0" else if (s.folded[it]) "-1" else if (s.allIn[it]) "2" else "1" }})")
         line("val cursor = ${s.dealer}; val round = ${s.round}")
         line("val pool = ${s.pot}; val cost = ${s.toCall}")
@@ -54,6 +55,7 @@ class TexasView(private val editor: Editor, private val session: GomokuSession) 
         }
         if (s.lastAction.isNotEmpty()) s.lastAction.chunked(48).forEach { line("// $it") }
         val controls = when (s.status) {
+            "waiting" -> listOf(Token("init()", command = "start"))
             "playing" -> listOf(Token("drop()", command = "fold"), Token("check()", command = "check"),
                 Token("sync(${s.toCall})", command = "call"), Token("set(...)", command = "raise"),
                 Token("flush(${s.stacks.getOrElse(session.seat - 1) { 0 }})", command = "allin"))

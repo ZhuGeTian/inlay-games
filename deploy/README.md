@@ -42,7 +42,7 @@ location /gomoku/ {
 | --- | --- | --- |
 | 五子棋 | `/gomoku/ws` | `/gomoku/health` |
 | 斗地主协议2 | `/gomoku/ddz/v2/ws` | `/gomoku/ddz/v2/health` |
-| 德州 | `/gomoku/texas/ws` | `/gomoku/texas/health` |
+| 德州协议2 | `/gomoku/texas/v2/ws` | `/gomoku/texas/v2/health` |
 
 本版本还将`/gomoku/ddz/ws`和`/gomoku/ddz/health`映射到同一套协议2处理器，**不代表兼容旧协议1斗地主客户端**。
 
@@ -53,10 +53,12 @@ location /gomoku/ {
 ```bash
 curl --fail http://127.0.0.1:8091/gomoku/health
 curl --fail http://127.0.0.1:8091/gomoku/ddz/v2/health
-curl --fail http://127.0.0.1:8091/gomoku/texas/health
+curl --fail http://127.0.0.1:8091/gomoku/texas/v2/health
 ```
 
-前者和德州返回protocol=1，斗地主返回protocol=2。返回健康结果只证明HTTP进程可访问；实际联机可运行README列出的WebSocket冒烟脚本。
+五子棋返回protocol=1，斗地主和德州返回protocol=2。返回健康结果只证明HTTP进程可访问；实际联机可运行README列出的WebSocket冒烟脚本。
+
+旧别名`/gomoku/texas/ws`、`/gomoku/texas/health`在这个新进程内也指向协议2；它们不兼容协议1客户端。已有公共服务若需保留旧房间，应新建独立进程，只将v2路径代理到新进程，不重启旧服务。
 
 ## 容量与数据边界
 

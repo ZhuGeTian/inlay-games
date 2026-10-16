@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const endpoint = process.argv[2] || 'ws://127.0.0.1:8091/gomoku/texas/ws';
+const endpoint = process.argv[2] || 'ws://127.0.0.1:8091/gomoku/texas/v2/ws';
 const clients = [];
 
 class Client {
@@ -76,7 +76,7 @@ class Client {
     // Stay below the production per-socket request limit, even on localhost.
     await delay(Math.max(0, 80 - (Date.now() - this.lastSent)));
     const after = this.messages.length;
-    const command = { type, protocol: 1, requestId: randomUUID(), ...values };
+    const command = { type, protocol: 2, requestId: randomUUID(), ...values };
     this.socket.send(JSON.stringify(command));
     this.lastSent = Date.now();
     return { command, reply: await this.wait(message => message.requestId === command.requestId, after) };
@@ -124,10 +124,16 @@ async function broadcast(players, requestId) {
 }
 try {
   const health = new URL(endpoint.replace(/^ws/, 'http'));
-  health.pathname = '/gomoku/texas/health';
+  health.pathname = '/gomoku/texas/v2/health';
   const response = await fetch(health, { signal: AbortSignal.timeout(10000) });
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { status: 'ok', protocol: 1 });
+  assert.deepEqual(await response.json(), { status: 'ok', protocol: 2 });
+  const incompatible = await Client.open();
+  const rejected = (await incompatible.request('create', { protocol: 99 })).reply;
+  assert.equal(rejected.type, 'error');
+  assert.equal(rejected.state, null);
+  assert.equal(rejected.token, '');
+  await incompatible.close();
   const players = [await Client.open()];
   const created = (await players[0].request('create')).reply;
   assert.equal(created.type, 'welcome');

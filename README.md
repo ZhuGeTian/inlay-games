@@ -22,21 +22,21 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 | --- | --- | --- | --- |
 | 五子棋 | 2名真人 | 15×15、黑先、无禁手、五连或更多获胜 | [五子棋规则](docs/gomoku.md) |
 | 斗地主 | 1～3名真人 | 房主手动开始并用机器人补位；叫分、完整牌型、虚拟积分、下一局 | [斗地主规则](docs/doudizhu.md) |
-| 德州 | 3名真人开局 | 无限注、固定5/10盲注、1000初始虚拟积分、边池、平分、淘汰后双人 | [德州规则](docs/texas.md) |
+| 德州 | 1～3名真人 | 胜率模拟机器人补位、无限注、5/10盲注、边池、平分、淘汰后双人 | [德州规则](docs/texas.md) |
 
 这些游戏仅使用房间内虚拟积分，没有充值、提现或现金交易。
 
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.3.1.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.4.0.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
 3. 打开文本代码文件，右键 **联机小游戏 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
-5. 斗地主一人／两人时，房主点 **开始（机器人补位）** 或 `init()`；三人到齐自动开始。
+5. 斗地主或德州一人／两人时，房主点 **开始（机器人补位）** 或 `init()`；三人到齐自动开始。
 
 默认联机地址 `wss://zhugetian.com/gomoku/ws` 为项目提供的公共服务，也可填写自己的服务器地址。公共服务不提供可用性保证；它接收房间、游戏动作与连接IP，不接收项目源码。自建见 [服务端部署](deploy/README.md)。
 
-0.3.1 斗地主使用协议2，同房真人需要0.3.1或更新版本。旧版斗地主房间位于独立服务，房间码不能跨新旧服务使用。五子棋和德州仍使用各自协议1。
+0.3.1 斗地主使用协议2，同房真人需要0.3.1或更新版本。旧版斗地主房间位于独立服务，房间码不能跨新旧服务使用。0.4.0德州也使用独立协议2，同房真人需0.4.0或更新版本；旧德州房间保持旧服务，不能跨版本加入。五子棋仍为协议1。
 
 ## 怎么读懂界面
 
@@ -83,7 +83,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.3.1.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.4.0.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`
@@ -94,7 +94,8 @@ Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`
 node scripts/smoke.mjs ws://127.0.0.1:8091/gomoku/ws
 node scripts/ddz-smoke.mjs ws://127.0.0.1:8091/gomoku/ddz/v2/ws
 node scripts/ddz-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/ddz/v2/ws
-node scripts/texas-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/ws
+node scripts/texas-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
+node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```
 
 兼容声明为IntelliJ Build **232.10072.27～262.***，以About里的Build为准。插件/核心字节码Java17、KotlinAPI1.8，服务端Java21。声明范围不等于每个IDE版本均实测。更多证据与边界见 [验证记录](docs/verification.md)。
@@ -102,7 +103,7 @@ node scripts/texas-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.3.1.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.4.0.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。
@@ -111,7 +112,7 @@ node scripts/texas-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/ws
 
 | 目录 | 职责 |
 | --- | --- |
-| `core` | 五子棋/斗地主/德州规则、私有视图、协议、斗地主机器人 |
+| `core` | 五子棋/斗地主/德州规则、私有视图、协议、斗地主与德州机器人 |
 | `server` | 权威房间、身份恢复、轮次/版本校验、机器人调度、WebSocket传输 |
 | `plugin` | Inlay渲染、菜单、键盘鼠标、WebSocket会话 |
 | `scripts` | 真实网络冒烟、IDE下载辅助 |
@@ -122,7 +123,7 @@ node scripts/texas-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/ws
 
 房间存于内存，服务重启会丢失；30分钟无活动会过期。恢复令牌只在插件内存里，重启IDE、关闭项目或主动退出后不能恢复原身份。真人掉线暂停操作，机器人不接管离线真人。斗地主/德州主动退出会关闭整个房间。
 
-斗地主机器人是基础公开信息策略，无难度分级，开局后不能换成真人。德州没有机器人、重买或行动倒计时。当前无账号、观战、悔棋、排行榜、持久化棋谱。
+斗地主机器人是基础公开信息策略，无难度分级，开局后不能换成真人。德州机器人每次用192次随机模拟估算权益，只看自己的底牌和公共信息；使用均匀对手范围，不是GTO或高手保证。没有重买或行动倒计时。当前无账号、观战、悔棋、排行榜、持久化棋谱。
 
 ## 许可证与贡献
 

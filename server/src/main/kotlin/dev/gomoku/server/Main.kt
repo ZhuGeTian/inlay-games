@@ -38,12 +38,15 @@ fun Application.gomoku() {
     }
     launch { while (isActive) { delay(30_000); rooms.sweep(); ddzRooms.sweep(); texasRooms.sweep() } }
     launch { while (isActive) { delay(250); ddzRooms.tick() } }
+    launch(Dispatchers.Default) { while (isActive) { delay(250); texasRooms.tick() } }
     routing {
         get("/gomoku/health") { call.respondText("""{"status":"ok","protocol":1}""", io.ktor.http.ContentType.Application.Json) }
         for (path in listOf("/gomoku/ddz/health", "/gomoku/ddz/v2/health")) {
             get(path) { call.respondText("""{"status":"ok","protocol":$DDZ_PROTOCOL_VERSION}""", io.ktor.http.ContentType.Application.Json) }
         }
-        get("/gomoku/texas/health") { call.respondText("""{"status":"ok","protocol":1}""", io.ktor.http.ContentType.Application.Json) }
+        for (path in listOf("/gomoku/texas/health", "/gomoku/texas/v2/health")) {
+            get(path) { call.respondText("""{"status":"ok","protocol":$TEXAS_PROTOCOL_VERSION}""", io.ktor.http.ContentType.Application.Json) }
+        }
         webSocket("/gomoku/ws") {
             transport(connections, perIp,
                 createPeer = { id, ip, emit, close -> Peer(id, ip, { emit(wireJson.encodeToString(it)) }, close) },
@@ -60,12 +63,14 @@ fun Application.gomoku() {
                     malformed = wireJson.encodeToString(DdzServerMessage("error", error = "消息格式不正确")))
             }
         }
-        webSocket("/gomoku/texas/ws") {
-            transport(connections, perIp,
-                createPeer = { id, ip, emit, close -> TexasPeer(id, ip, { emit(wireJson.encodeToString(it)) }, close) },
-                handle = { peer, text -> texasRooms.handle(peer, wireJson.decodeFromString<TexasClientMessage>(text)) },
-                disconnect = texasRooms::disconnect,
-                malformed = wireJson.encodeToString(TexasServerMessage("error", error = "消息格式不正确")))
+        for (path in listOf("/gomoku/texas/ws", "/gomoku/texas/v2/ws")) {
+            webSocket(path) {
+                transport(connections, perIp,
+                    createPeer = { id, ip, emit, close -> TexasPeer(id, ip, { emit(wireJson.encodeToString(it)) }, close) },
+                    handle = { peer, text -> texasRooms.handle(peer, wireJson.decodeFromString<TexasClientMessage>(text)) },
+                    disconnect = texasRooms::disconnect,
+                    malformed = wireJson.encodeToString(TexasServerMessage("error", error = "消息格式不正确")))
+            }
         }
     }
 }

@@ -153,8 +153,12 @@ class GomokuSession(private val project: Project) : Disposable {
             cards = if (type == "play") selectedCards.toList() else emptyList()))
     }
 
-    fun canTexasCommand(type: String): Boolean = isTexas && connected && pending == null &&
-        seat in 1..3 && texasState.online.all { it } && type in texasState.legalActions
+    fun canTexasCommand(type: String): Boolean {
+        if (!isTexas || !connected || pending != null || seat !in 1..3) return false
+        if (type == "start") return seat == 1 && texasState.status == "waiting" &&
+            texasState.online[0] && texasState.online.count { it } in 1..2
+        return texasState.online.all { it } && type in texasState.legalActions
+    }
 
     fun texasCommand(type: String, raiseTo: Long = 0, revision: Int = texasState.revision) {
         if (revision != texasState.revision) { notice("局面已更新，请重新选择操作"); return }

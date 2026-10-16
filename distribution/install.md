@@ -16,11 +16,11 @@
 | --- | --- |
 | 插件名称 | Inlay Games |
 | 插件 ID | `dev.gomoku.inlay` |
-| 版本 | `0.3.1` |
-| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.3.1.zip |
-| 文件大小 | `889560` 字节 |
-| SHA-256 | `27238b5e0fc57699429b5966e7d68e00c9909519122571850921a5f8607c6bdd` |
-| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.3.1.zip.sha256 |
+| 版本 | `0.4.0` |
+| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip |
+| 文件大小 | `900435` 字节 |
+| SHA-256 | `ca7d0055a4ab2f2c3b1f8f4588d226fc2c35a6c45e0ab050a2d34187a9d3dfea` |
+| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip.sha256 |
 | 插件仓库 | https://zhugetian.com/gomoku/updatePlugins.xml |
 | IntelliJ 平台 Build 范围 | `232.10072.27` 至 `262.*` |
 | ZIP 内顶层目录 | `inlay-gomoku/` |
@@ -42,25 +42,25 @@
 macOS / Linux 下载示例（使用系统已有工具即可）：
 
 ```sh
-curl --fail --location --output inlay-gomoku-0.3.1.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.3.1.zip'
+curl --fail --location --output inlay-gomoku-0.4.0.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip'
 ```
 
-macOS 可用 `shasum -a 256 inlay-gomoku-0.3.1.zip`；Linux 可用 `sha256sum inlay-gomoku-0.3.1.zip`。
+macOS 可用 `shasum -a 256 inlay-gomoku-0.4.0.zip`；Linux 可用 `sha256sum inlay-gomoku-0.4.0.zip`。
 
 Windows PowerShell 示例：
 
 ```powershell
-Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.3.1.zip' -OutFile 'inlay-gomoku-0.3.1.zip'
-Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.3.1.zip'
+Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip' -OutFile 'inlay-gomoku-0.4.0.zip'
+Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.4.0.zip'
 ```
 
-再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.3.1.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
+再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.4.0.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
 
 ## 3. 安装到目标 IDE
 
 选择一个适合当前环境的方式即可。不要同时尝试多个方式，不要改项目源码或替换其他插件。
 
-安装前检查已有插件版本。若已安装并启用了 0.3.1 或更高版本，报告现状，不重复安装或降级。
+安装前检查已有插件版本。若已安装并启用了 0.4.0 或更高版本，报告现状，不重复安装或降级。
 
 ### IDE 已打开且 AI 能操作界面
 
@@ -84,7 +84,7 @@ Windows PowerShell：
 
 macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studio` 或 IDEA 的 `Contents/MacOS/idea`；Windows / Linux 使用目标 IDE 的 `bin` 目录中的启动程序。以已识别的实际路径为准。
 
-命令提示“已安装”不代表已经升级到 0.3.1，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
+命令提示“已安装”不代表已经升级到 0.4.0，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
 
 这个方法采用 JetBrains 的 [命令行安装机制](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html) 和 [自定义插件仓库格式](https://plugins.jetbrains.com/docs/intellij/custom-plugin-repository.html)。无需修改全局 Java 环境。
 
@@ -109,7 +109,7 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 1. 在插件目录旁的临时目录完整解压，保持 `inlay-gomoku/lib/*.jar` 结构，不要只复制主 JAR。
 2. 在用户插件目录查找 ID 为 `dev.gomoku.inlay` 的旧插件；以 JAR 内 `plugin.xml` 为依据，不只依赖文件夹名字。存在版本更高的插件时不降级。
 3. 把这个插件的旧目录移到**插件扫描目录之外**备份，再把暂存的 `inlay-gomoku` 目录移入用户插件目录；失败时恢复备份。不要合并新旧 `lib`，不要删除整个用户插件目录。
-4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.3.1.jar`。用户启动 IDE 后启用 Inlay Games；若原来手动禁用了它，保留该设置并提示用户。
+4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.4.0.jar`。用户启动 IDE 后启用 Inlay Games；若原来手动禁用了它，保留该设置并提示用户。
 
 ## 4. 如实反馈安装结果
 
@@ -119,37 +119,34 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 
 ## 使用方式
 
-0.3.1 为斗地主增加机器人，支持一人／两人开始；J/Q/K/A 显示字母，小王 Xiao、大王 Da。五子棋和德州保留，原插件 ID 不变。新版斗地主同房真人均需 0.3.1，旧版房间在旧服务继续运行，房间码不能跨版本使用。
+0.4.0为德州增加胜率模拟机器人，支持一人／两人开始；斗地主机器人和五子棋保留。插件ID不变，可覆盖升级。新版德州同房真人均需0.4.0，使用独立协议2入口；旧德州房间留在旧服务，不跨版本加入。斗地主仍使用协议2，与0.3.1兼容。
 
-### 德州（保留）
+### 德州胜率模拟机器人
 
-右键 **联机小游戏 → 德州 → 创建房间**，复制房间码给另外两人；他们从 **德州 → 加入房间** 进入，三人到齐开局。默认服务器地址不变。
+房主创建房间后点击“德州 → 开始（机器人补位）”或`init()`，一人补两机器人、两人补一机器人；三名真人到齐自动开局。`auto`按1、2、3号座位显示：1为机器人、0为真人。开局后不能把机器人换成真人，换人需重建房间。
 
-- 每人 1000 虚拟积分，盲注 5/10，无限注。底牌与公共牌显示为代码数组：2–10 保留数字，J/Q/K/A 用字母；**蓝=黑桃、红=红桃、绿=梅花、橙=方块**，不显示花色图标。
-- `local` 是本人底牌，`shared` 是公共牌。顶部 `cache: 本人座位/轮到谁`；`phase` 为 0 等待、1 翻牌前、2 翻牌、3 转牌、4 河牌。`stacks` 是剩余积分，`bets` 是本轮投入，`pool` 底池，`cost` 需补的跟注额，`cursor` 庄家。
-- `drop()` 弃牌；`check()` 过牌；`sync(n)` 跟注 n；`set(...)` 加注到本轮累计额；`flush(n)` 把剩余 n 全下。灰色操作不可用，右键德州菜单有对应中文操作。Enter 优先过牌，否则跟注，不会自动全下。
-- `flags`：1 本手尚可行动、2 全下、-1 弃牌、0 本手旁观；`live` 是在线情况。结算显示 `change` 净变化，`ref1..3` 是可公开底牌。
-- 支持短全下、边池、超额退回、平分与零头分配；只发送本人底牌，摊牌公开未弃牌者，弃牌获胜不亮牌。
-- 三人 `next()` 准备后继续下一手。零筹码者旁观，剩两人时按单挑盲注和行动顺序；只剩一人有筹码后，全员准备重置为每人 1000。
-- 点击其他区域不会收起；Ctrl+G 手动显隐，公共“调节字号”仍为 8–32。掉线暂停操作，重连可继续；主动退出关闭整房，30 分钟无操作过期。重启 IDE 或关闭项目会丢失当前身份。无机器人、观战、计时器或重买。
+机器人只看自己的两张底牌与公共信息，每次随机模拟192种未知牌局，平局按份额计入权益，跟注只计算本人有资格赢的底池；再结合跟注成本选择合法行动。不会读取真实对手手牌或未来牌堆，不调用外部AI服务。它采用均匀对手范围和简化下注策略，不保证高手水平。每次动作至少间隔约0.7秒加计算时间，高负载会更慢。
 
-### 斗地主（0.3.1 机器人补位）和五子棋
+每人1000虚拟积分，固定5/10盲注、无限注、边池、退款与平分。J/Q/K/A用字母；蓝=黑桃、红=红桃、绿=梅花、橙=方块。`local`为本人底牌，`shared`公共牌，`stacks`剩余积分，`bets`本街已下注，`pool`底池，`cost`需补跟注额，`cursor`庄家。
 
-房主创建房间后，可直接点击 **斗地主 → 开始（机器人补位）** 或数组 `init()`，一人补两名机器人；等第二位朋友加入后再点开始，则补一名机器人。三名真人到齐仍自动开始。开局后机器人占位，不能中途替换成真人；要换人请重建房间。
+`drop()`弃牌，`check()`过牌，`sync(n)`额外跟注n，`set(...)`填写本街累计加注到多少，`flush(n)`全下剩余n。机器人自动准备，真人`next()`准备，全员准备才发下一手。零筹码者旁观；只剩一人有筹码后全员准备重置每人1000。
 
-机器人约每 0.7 秒行动一次，自动叫分、出牌、不出和准备，只读取自己的手牌与公开信息。`auto` 数组里 1 是机器人、0 是真人；`live` 中机器人视为在线。真人离线暂停，重连继续，不自动接管真人；结算后真人 `next()` 准备，机器人自动准备。采用基础策略，没有难度档；30 分钟无真人操作会过期。
+### 斗地主与五子棋
 
-打开代码文件，编辑器右键 **联机小游戏 → 斗地主 → 创建房间**。房主通过 **联机小游戏 → 复制房间码** 获取邀请，另外两人选择 **斗地主 → 加入房间**。默认服务器地址已经填写，插件会自动选择斗地主接口。三人到齐后发牌。
+斗地主房主点击`init()`同样可一人／两人补机器人，三真人自动开始。牌面3–10、J、Q、K、A、2、小王Xiao、大王Da。`cache`为手牌，`owner`地主，`sizes`余牌数，`bids`叫分，`seed`底牌，`delta`当前牌，`auto`机器人标记。`bid(n)`叫分、`commit()`出牌、`skip()`不出、`clear()`清除选择、`next()`准备下一局。
 
-- `cache` 是本人手牌，3–10 按点数显示，J/Q/K/A 直接显示，2 保留数字，小王 Xiao、大王 Da。`seed` 是亮出的三张底牌，`delta` 是需要压过的牌，`source` 是其出牌座位。
-- 顶部 `cache: 本人座位/当前轮次`；`phase` 为 0 等人、1 叫分、2 出牌、3 结算。`owner` 是地主座位，`sizes` 是三家余牌数，`live` 中 1 在线、0 离线。
-- 叫分时点击 `bid(0/1/2/3)`；0 不叫，非零叫分必须高于当前叫分。3 分立即成为地主，全不叫则重新发牌。
-- 点击手牌标签多选，选中变橙色；方向键移动下划线、空格选择／取消、Enter 或 `commit()` 出牌。`skip()` 不出，`clear()` 清除选择。右键 **斗地主** 子菜单也有中文操作。
-- `score` 是房内累计虚拟积分，`change` 是本局变化，`factor` 是倍数。结算后点 `next()` 或菜单“准备下一局”，三人都准备后发牌。
-- 牌型支持单、对、三、三带一／对、顺子、连对、飞机及带翅膀、四带两张／两对、炸弹和王炸；炸弹、王炸、春天／反春翻倍。单翅膀允许对子，但不允许三张／四张同点、主体同点或同时携带双王；四带两张允许对子但不能带双王；对翅膀要求不同点数的对子。没有癞子或额外抢地主加倍。
-- 每人的手牌单独下发；断线暂停操作，重连恢复原座位。主动“退出房间”会关闭整个斗地主房间并清除房内积分；“认输”判所在阵营失败，农民认输会影响队友。
-- 五子棋入口是 **联机小游戏 → 五子棋 → 创建房间／加入房间**；橙色 1 为黑方，黄色 2 为白方。
-- 公共操作：**调节字号…** 设置 8–32；**Ctrl+G** 或“显示／隐藏数组”手动显隐，macOS 也是 Control+G。点击外部、开对话框或切窗不自动收起；点击代码区恢复正常编辑。数组获得键盘操作时 Esc 也可收起。
-- 隐藏保留连接和状态。重启 IDE、关闭项目会丢失当前重连身份。一至三名真人均可玩，空位由机器人补齐。
+五子棋两人开局，15×15，0为空、橙色1黑方、黄色2白方，黑先，无禁手，连续五子或以上获胜。
 
-发布日期：2026-10-14。85 项自动化检查、构建与最低 IC-232.10072.27 二进制兼容检查通过；本地和公网均完成一人／两人机器人自然对局、自动准备、下一局及双人掉线恢复。本轮未启动原生 IDE 界面或全版本矩阵。当前插件仓库由此服务器托管，不是 JetBrains Marketplace。
+### 通用操作与完整说明
+
+Ctrl+G手动显隐（Mac也用Control）；点击外部不收起，点击代码区释放游戏键盘操作；游戏获得键盘操作时Esc可收起。字号可调8–32，隐藏仍保持联机，显示不写入源码。
+
+真人掉线暂停操作，机器人不接管真人；同一项目保留身份时重连。斗地主／德州主动退出关闭整房；30分钟无真人操作过期，机器人不续期。服务重启、IDE重启或关闭项目后不能恢复原身份。只有房间虚拟积分，没有充值或提现。
+
+- 源码及安装入口：https://github.com/ZhuGeTian/inlay-games
+- 游戏详细规则：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/texas.md
+- 所有数组含义：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/array-guide.md
+- 每个英文词的含义：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/glossary.md
+- 版本验证记录：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/verification.md
+
+发布日期：2026-10-16。未进行全版本IDE矩阵或高并发压力测试。此插件通过本网站和GitHub分发，不是JetBrains Marketplace条目。
