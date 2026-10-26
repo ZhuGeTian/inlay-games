@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-10-26-novel-integration.md
+  s_882bdfd446838a::t_b433d82a340070 11-14
+docs/verification.md
+  s_882bdfd446838a::t_09083d085d73bf 14-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "504ba0b66fe8dcc16fac88a6fbb1bbc7f41227cf",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
