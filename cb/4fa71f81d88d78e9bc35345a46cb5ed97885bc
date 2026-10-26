@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-10-26-novel-caret-follow.md
+  s_28ede11b99a22d::t_03d286e98b3178 10,15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cb4fa71f81d88d78e9bc35345a46cb5ed97885bc",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
