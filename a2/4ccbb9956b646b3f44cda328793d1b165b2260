@@ -1,0 +1,55 @@
+README.md
+  s_882bdfd446838a::t_e954e2744a95b2 1-3,13,31,33,35,39,41,94,114
+build.gradle.kts
+  s_882bdfd446838a::t_2030b93fe156b4 9
+distribution/inlay-gomoku-0.5.1.zip.sha256
+  s_882bdfd446838a::t_5395bd110508f7 1
+distribution/install.md
+  s_882bdfd446838a::t_3fe8e828878b6a 1,7,17,19-23,45,48,53-54,57,63,87,112,122,124-126
+distribution/updatePlugins.xml
+  s_882bdfd446838a::t_ef37d1d13e4cc3 3,5
+docs/array-guide.md
+  s_882bdfd446838a::t_24da28cdb923eb 3,104,223-224
+docs/doudizhu.md
+  s_882bdfd446838a::t_13f22a65bf3939 5,18,20,29
+docs/installation.md
+  s_882bdfd446838a::t_2075c5c04e7ba7 5,7,10,13,19-20,28,38
+docs/novel.md
+  s_882bdfd446838a::t_99be7e84432160 1,7-8,16-17
+docs/superpowers/plans/2026-10-26-novel-caret-follow.md
+  s_882bdfd446838a::t_20b5046c1bb661 1-14
+docs/texas.md
+  s_882bdfd446838a::t_a927e416be2b76 3
+docs/verification.md
+  s_882bdfd446838a::t_ff59a8dc5090dd 3-12
+plugin/build.gradle.kts
+  s_882bdfd446838a::t_f02415c8c42565 35
+plugin/src/main/java/dev/gomoku/novel/NovelReader.java
+  s_882bdfd446838a::t_7da77316f72aeb 34,44,65,77,173-188,327-333,339-340,357-358
+plugin/src/main/java/dev/gomoku/novel/ReaderActions.java
+  s_882bdfd446838a::t_8dc4b0eb05f1ac 175-180
+plugin/src/main/kotlin/dev/gomoku/plugin/Actions.kt
+  s_882bdfd446838a::t_5288e0ed3a1dbb 120
+plugin/src/main/kotlin/dev/gomoku/plugin/GomokuSession.kt
+  s_882bdfd446838a::t_e0c207e468e567 404
+plugin/src/main/resources/META-INF/plugin.xml
+  s_882bdfd446838a::t_e1ded3725aac3c 3,5,13,51
+plugin/src/test/java/dev/gomoku/novel/NovelIntegrationTest.java
+  s_882bdfd446838a::t_4d56f29ea8a35f 5-6,136-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a24ccbb9956b646b3f44cda328793d1b165b2260",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
