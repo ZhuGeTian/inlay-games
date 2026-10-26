@@ -16,11 +16,11 @@
 | --- | --- |
 | 插件名称 | Inlay Games |
 | 插件 ID | `dev.gomoku.inlay` |
-| 版本 | `0.4.0` |
-| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip |
-| 文件大小 | `900435` 字节 |
-| SHA-256 | `ca7d0055a4ab2f2c3b1f8f4588d226fc2c35a6c45e0ab050a2d34187a9d3dfea` |
-| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip.sha256 |
+| 版本 | `0.5.0` |
+| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.0.zip |
+| 文件大小 | `966395` 字节 |
+| SHA-256 | `4b8e43a4cb97850dff8eea3c046bb560cfaf06a9f1cf67a45bd203f0f58880ac` |
+| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.0.zip.sha256 |
 | 插件仓库 | https://zhugetian.com/gomoku/updatePlugins.xml |
 | IntelliJ 平台 Build 范围 | `232.10072.27` 至 `262.*` |
 | ZIP 内顶层目录 | `inlay-gomoku/` |
@@ -42,25 +42,25 @@
 macOS / Linux 下载示例（使用系统已有工具即可）：
 
 ```sh
-curl --fail --location --output inlay-gomoku-0.4.0.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip'
+curl --fail --location --output inlay-gomoku-0.5.0.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.0.zip'
 ```
 
-macOS 可用 `shasum -a 256 inlay-gomoku-0.4.0.zip`；Linux 可用 `sha256sum inlay-gomoku-0.4.0.zip`。
+macOS 可用 `shasum -a 256 inlay-gomoku-0.5.0.zip`；Linux 可用 `sha256sum inlay-gomoku-0.5.0.zip`。
 
 Windows PowerShell 示例：
 
 ```powershell
-Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.4.0.zip' -OutFile 'inlay-gomoku-0.4.0.zip'
-Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.4.0.zip'
+Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.0.zip' -OutFile 'inlay-gomoku-0.5.0.zip'
+Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.5.0.zip'
 ```
 
-再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.4.0.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
+再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.5.0.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
 
 ## 3. 安装到目标 IDE
 
 选择一个适合当前环境的方式即可。不要同时尝试多个方式，不要改项目源码或替换其他插件。
 
-安装前检查已有插件版本。若已安装并启用了 0.4.0 或更高版本，报告现状，不重复安装或降级。
+安装前检查已有插件版本。若已安装并启用了 0.5.0 或更高版本，报告现状，不重复安装或降级。
 
 ### IDE 已打开且 AI 能操作界面
 
@@ -84,7 +84,7 @@ Windows PowerShell：
 
 macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studio` 或 IDEA 的 `Contents/MacOS/idea`；Windows / Linux 使用目标 IDE 的 `bin` 目录中的启动程序。以已识别的实际路径为准。
 
-命令提示“已安装”不代表已经升级到 0.4.0，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
+命令提示“已安装”不代表已经升级到 0.5.0，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
 
 这个方法采用 JetBrains 的 [命令行安装机制](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html) 和 [自定义插件仓库格式](https://plugins.jetbrains.com/docs/intellij/custom-plugin-repository.html)。无需修改全局 Java 环境。
 
@@ -109,7 +109,7 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 1. 在插件目录旁的临时目录完整解压，保持 `inlay-gomoku/lib/*.jar` 结构，不要只复制主 JAR。
 2. 在用户插件目录查找 ID 为 `dev.gomoku.inlay` 的旧插件；以 JAR 内 `plugin.xml` 为依据，不只依赖文件夹名字。存在版本更高的插件时不降级。
 3. 把这个插件的旧目录移到**插件扫描目录之外**备份，再把暂存的 `inlay-gomoku` 目录移入用户插件目录；失败时恢复备份。不要合并新旧 `lib`，不要删除整个用户插件目录。
-4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.4.0.jar`。用户启动 IDE 后启用 Inlay Games；若原来手动禁用了它，保留该设置并提示用户。
+4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.5.0.jar`。用户启动 IDE 后启用 Inlay Games；若原来手动禁用了它，保留该设置并提示用户。
 
 ## 4. 如实反馈安装结果
 
@@ -118,6 +118,15 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 如果 AI 没有本机访问权限，提供已下载文件的位置和“从磁盘安装”入口，不要宣称已替用户安装。
 
 ## 使用方式
+
+0.5.0集成missNovel小说阅读：本地TXT导入、本地书架、章节选择、手动／自动翻页、正文行数、间隔和各书阅读进度，并保留主动搜索下载。游戏功能与协议保持0.4.0行为。
+
+右键“联机小游戏 → 小说 → 导入 TXT 小说”开始；小说以注释样式显示，不修改源文件。默认1行正文、8秒自动翻页，可设1～10行、1～3600秒，字号跟随编辑器。只有IDE前台且编辑器聚焦、全文可见时才累计自动翻页时间。
+
+Ctrl+G控制最近使用的小说或游戏。打开小说隐藏游戏数组但保持房间连接；重新显示游戏隐藏小说。小说和进度保存在IDE配置目录的inlay-games-novel/books/、options/inlay-games-novel.xml，不上传游戏服务器；只有主动搜索／下载时访问第三方书源。
+
+合集采用独立数据目录，不自动迁移或修改原Novel Inlay书架和进度。旧TXT可重新导入；同时安装原插件时可禁用原插件，避免重复显示。上游派生源码保留Apache2.0许可，出处和许可证随包附带。完整阅读说明：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/novel.md
+
 
 0.4.0为德州增加胜率模拟机器人，支持一人／两人开始；斗地主机器人和五子棋保留。插件ID不变，可覆盖升级。新版德州同房真人均需0.4.0，使用独立协议2入口；旧德州房间留在旧服务，不跨版本加入。斗地主仍使用协议2，与0.3.1兼容。
 
@@ -139,7 +148,7 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 
 ### 通用操作与完整说明
 
-Ctrl+G手动显隐（Mac也用Control）；点击外部不收起，点击代码区释放游戏键盘操作；游戏获得键盘操作时Esc可收起。字号可调8–32，隐藏仍保持联机，显示不写入源码。
+Ctrl+G手动显隐最近使用的小说或游戏（Mac也用Control）；点击外部不收起，点击代码区释放游戏键盘操作；游戏获得键盘操作时Esc可收起。游戏字号可调8–32，小说字号跟随编辑器；隐藏仍保持联机，显示不写入源码。
 
 真人掉线暂停操作，机器人不接管真人；同一项目保留身份时重连。斗地主／德州主动退出关闭整房；30分钟无真人操作过期，机器人不续期。服务重启、IDE重启或关闭项目后不能恢复原身份。只有房间虚拟积分，没有充值或提现。
 
@@ -149,4 +158,4 @@ Ctrl+G手动显隐（Mac也用Control）；点击外部不收起，点击代码�
 - 每个英文词的含义：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/glossary.md
 - 版本验证记录：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/verification.md
 
-发布日期：2026-10-16。未进行全版本IDE矩阵或高并发压力测试。此插件通过本网站和GitHub分发，不是JetBrains Marketplace条目。
+发布日期：2026-10-26。未进行全版本IDE矩阵或高并发压力测试。此插件通过本网站和GitHub分发，不是JetBrains Marketplace条目。

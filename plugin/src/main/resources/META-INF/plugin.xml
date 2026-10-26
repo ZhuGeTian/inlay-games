@@ -2,10 +2,12 @@
     <id>dev.gomoku.inlay</id>
     <name>Inlay Games</name>
     <vendor>Inlay Gomoku</vendor>
-    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、支持胜率模拟机器人的四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复。]]></description>
+    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、支持胜率模拟机器人的四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复；集成小说书架、TXT导入、章节导航及本地阅读进度。]]></description>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Gomoku" displayType="NONE"/>
+        <applicationService serviceImplementation="dev.gomoku.novel.NovelReader"/>
+        <postStartupActivity implementation="dev.gomoku.novel.ReaderStartup"/>
     </extensions>
     <actions>
         <group id="Gomoku.Menu" text="联机小游戏" popup="true">
@@ -41,8 +43,20 @@
                 <action id="Texas.AllIn" class="dev.gomoku.plugin.TexasAllInAction" text="全下"/>
                 <action id="Texas.Ready" class="dev.gomoku.plugin.TexasReadyAction" text="准备下一手／重置积分"/>
             </group>
+            <group id="InlayGames.Novel.Menu" text="小说" popup="true">
+                <action id="InlayGames.Novel.Bookshelf" class="dev.gomoku.novel.ReaderActions$Bookshelf" text="我的书架…"/>
+                <action id="InlayGames.Novel.Import" class="dev.gomoku.novel.ReaderActions$Import" text="导入 TXT 小说…"/>
+                <action id="InlayGames.Novel.Search" class="dev.gomoku.novel.ReaderActions$Search" text="搜索并下载小说…"/>
+                <action id="InlayGames.Novel.Visibility" class="dev.gomoku.novel.ReaderActions$Visibility" text="关闭小说显示"/>
+                <action id="InlayGames.Novel.DisplayLines" class="dev.gomoku.novel.ReaderActions$DisplayLines" text="设置显示行数…"/>
+                <action id="InlayGames.Novel.Chapters" class="dev.gomoku.novel.ReaderActions$Chapters" text="选择章节…"/>
+                <action id="InlayGames.Novel.Toggle" class="dev.gomoku.novel.ReaderActions$Toggle" text="切换自动 / 手动翻段"/>
+                <action id="InlayGames.Novel.Interval" class="dev.gomoku.novel.ReaderActions$Interval" text="设置翻段间隔…"/>
+                <action id="InlayGames.Novel.Previous" class="dev.gomoku.novel.ReaderActions$Previous" text="上一页"/>
+                <action id="InlayGames.Novel.Next" class="dev.gomoku.novel.ReaderActions$Next" text="下一页"/>
+            </group>
             <action id="Gomoku.Show" class="dev.gomoku.plugin.ShowBoardAction" text="在此显示数组" description="在当前光标行下显示当前对局"/>
-            <action id="Gomoku.Toggle" class="dev.gomoku.plugin.ToggleBoardAction" text="显示／隐藏数组" description="快速切换显示，保留当前对局">
+            <action id="Gomoku.Toggle" class="dev.gomoku.plugin.ToggleBoardAction" text="显示／隐藏内容" description="切换最近使用的小说或游戏显示，保留阅读进度和当前对局">
                 <keyboard-shortcut keymap="$default" first-keystroke="control G"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="control G" replace-all="true"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control G" replace-all="true"/>

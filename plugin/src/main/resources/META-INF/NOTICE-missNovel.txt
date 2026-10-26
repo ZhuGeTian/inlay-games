@@ -1,0 +1,7 @@
+This distribution includes adapted source from datouggg/missNovel (Novel Inlay 0.8.2).
+Upstream: https://github.com/datouggg/missNovel
+Commit: f94dcef71b9f98e05993507e3453fba562aab642
+License: Apache License 2.0 (included in META-INF/licenses/missNovel-Apache-2.0.txt).
+Modified for Inlay Games: namespace, independent local storage, Java 17 / IDE 232 compatibility,
+menu integration and coordinated game/reader visibility. Original examples/tests remain Apache-2.0.
+No third-party novel text is distributed with this plugin.

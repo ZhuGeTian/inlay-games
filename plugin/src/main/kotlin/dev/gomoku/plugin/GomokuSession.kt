@@ -16,6 +16,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.concurrency.AppExecutorUtil
 import dev.gomoku.core.*
+import dev.gomoku.novel.NovelReader
 import kotlinx.serialization.encodeToString
 import java.net.URI
 import java.net.http.HttpClient
@@ -96,8 +97,11 @@ class GomokuSession(private val project: Project) : Disposable {
         else connect(ClientMessage(type, roomCode = code.orEmpty(), requestId = id()))
     }
 
+    fun hideBoard() { board?.let { Disposer.dispose(it) } }
+
     fun showBoard(editor: Editor) {
-        board?.let { Disposer.dispose(it) }
+        NovelReader.getInstance().deactivate()
+        hideBoard()
         val view: GameView = when (game) { GameKind.TEXAS -> TexasView(editor, this); GameKind.DDZ -> DdzView(editor, this); GameKind.GOMOKU -> BoardView(editor, this) }
         board = view
         Disposer.register(this, view)

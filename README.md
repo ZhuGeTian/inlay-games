@@ -1,8 +1,8 @@
 # Inlay Games
 
-在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
+在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州，也可以在光标旁阅读TXT小说。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
 
-[AI 一键下载安装](distribution/install.md) · [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md)
+[AI 一键下载安装](distribution/install.md) · [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md) · [小说阅读说明](docs/novel.md)
 
 ## 让 AI 帮你下载安装
 
@@ -26,9 +26,15 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 这些游戏仅使用房间内虚拟积分，没有充值、提现或现金交易。
 
+## 小说阅读（0.5.0）
+
+已集成[datouggg/missNovel](https://github.com/datouggg/missNovel)的阅读功能：本地TXT导入、书架切换、章节跳转、手动／自动翻页、每本书独立进度，以及主动搜索下载。右键 **联机小游戏 → 小说 → 导入 TXT 小说**，正文以注释样式显示在光标上方，不写进源码。
+
+Ctrl+G控制最近使用的小说或游戏；切换只隐藏显示，不退出游戏房间。小说字号跟随编辑器，正文显示1～10行，自动间隔1～3600秒。缓存与进度只在IDE本地，原独立Novel Inlay的数据不会被修改或自动迁移。完整操作、网络边界和数据位置见[小说说明](docs/novel.md)。
+
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.4.0.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.0.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
 3. 打开文本代码文件，右键 **联机小游戏 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
@@ -71,7 +77,7 @@ val auto = intArrayOf(0, 0, 1)
 | 德州Enter | 优先过牌，否则尝试跟注，不自动加注或全下 |
 | 五子棋方向键／Enter | 移动落点／落子 |
 
-隐藏后仍保持连接，机器人和其他玩家可以继续行动。每个项目同时一个房间。
+隐藏后仍保持连接，机器人和其他玩家可以继续行动。每个项目同时一个房间；小说阅读器在整个IDE中只显示一处。
 
 ## 构建与验证
 
@@ -83,7 +89,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.4.0.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.5.0.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`
@@ -103,7 +109,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.4.0.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.0.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。
@@ -114,7 +120,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 | --- | --- |
 | `core` | 五子棋/斗地主/德州规则、私有视图、协议、斗地主与德州机器人 |
 | `server` | 权威房间、身份恢复、轮次/版本校验、机器人调度、WebSocket传输 |
-| `plugin` | Inlay渲染、菜单、键盘鼠标、WebSocket会话 |
+| `plugin` | 游戏与小说Inlay、菜单、键盘鼠标、WebSocket会话、本地书架 |
 | `scripts` | 真实网络冒烟、IDE下载辅助 |
 | `docs` | 规则、字段、术语、安装、验证 |
 | `deploy` | 通用自建示例；不含公共服务器的私有运维配置 |
@@ -127,6 +133,6 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 
 ## 许可证与贡献
 
-项目原创代码采用 [MIT License](LICENSE)。第三方依赖及Gradle Wrapper保留各自许可证，见 [第三方说明](THIRD_PARTY_NOTICES.md)。
+项目原创代码采用 [MIT License](LICENSE)。集成的missNovel派生源码保留Apache License2.0许可与署名。第三方依赖及Gradle Wrapper保留各自许可证，见 [第三方说明](THIRD_PARTY_NOTICES.md)。
 
 欢迎提Issue或PR。说明所用IDE的Build、插件版本、游戏种类和复现步骤；不要上传令牌、凭据、私人源码或含敏感信息的IDE日志。详见 [贡献说明](CONTRIBUTING.md)。

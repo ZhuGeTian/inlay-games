@@ -1,5 +1,6 @@
 package dev.gomoku.plugin
 
+import dev.gomoku.novel.NovelReader
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
@@ -76,11 +77,15 @@ class ToggleBoardAction : DumbAwareAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
     override fun update(e: AnActionEvent) {
         val session = e.project?.getServiceIfCreated(GomokuSession::class.java)
-        e.presentation.isEnabled = editor(e) != null && session != null && (session.hasSession || session.isBoardVisible)
+        val reader = NovelReader.getInstance()
+        e.presentation.isEnabled = e.getData(CommonDataKeys.EDITOR) != null &&
+            ((reader.isSelected && reader.hasBook()) || (session != null && (session.hasSession || session.isBoardVisible)))
     }
     override fun actionPerformed(e: AnActionEvent) {
-        val session = e.project?.getService(GomokuSession::class.java) ?: return
-        editor(e)?.let(session::toggleBoard)
+        val target = e.getData(CommonDataKeys.EDITOR) ?: return
+        val reader = NovelReader.getInstance()
+        if (reader.isSelected && reader.hasBook()) reader.toggleVisibility(target)
+        else e.project?.getService(GomokuSession::class.java)?.toggleBoard(target)
     }
 }
 class FontSizeAction : DumbAwareAction() {

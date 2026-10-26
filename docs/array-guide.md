@@ -1,6 +1,6 @@
 # 小游戏数组与字段含义说明
 
-适用版本：Inlay Games 0.4.0。更新日期：2026-10-16。
+适用版本：Inlay Games 0.5.0。游戏数组含义保持不变；小说操作另见[阅读说明](novel.md)。
 
 需要查英文原义时，见 [逐词对照表](glossary.md)；玩法见 [五子棋](gomoku.md)、[斗地主](doudizhu.md)、[德州](texas.md)。
 

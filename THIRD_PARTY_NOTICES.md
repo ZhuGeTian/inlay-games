@@ -13,3 +13,11 @@
 | JUnit | 自动化测试 | https://junit.org/ |
 
 Gradle Wrapper的Apache 2.0许可全文见 [licenses/Apache-2.0.txt](licenses/Apache-2.0.txt)；wrapper启动脚本保留上游版权声明。发行插件和服务端依赖JAR保留原有包内许可文件，传递依赖也遵循各自许可。完整依赖树可通过Gradle的dependencies任务查看。
+
+## missNovel / Novel Inlay
+
+小说阅读模块改编自 [datouggg/missNovel](https://github.com/datouggg/missNovel)，上游版本Novel Inlay0.8.2，固定提交`f94dcef71b9f98e05993507e3453fba562aab642`，采用Apache License2.0。
+
+`plugin/src/main/java/dev/gomoku/novel/`中的上游派生文件，以及`plugin/src/test/java/dev/gomoku/novel/`中的NovelBookTest、NovelShelfTest、QishuxiaSourceTest保留Apache2.0许可；不改为项目根目录的MIT许可。修改包括命名空间与独立本地存储、Java17/IDE232适配、合集菜单和显隐协同。文件头标注来源和修改说明。
+
+发行JAR附带`META-INF/licenses/missNovel-Apache-2.0.txt`许可证全文和`META-INF/NOTICE-missNovel.txt`来源说明。未随包分发第三方小说正文。在线书源属于第三方服务，不由本项目运营。
