@@ -32,7 +32,7 @@ dependencies {
 }
 intellijPlatform {
     pluginConfiguration {
-        name = "Inlay Games"
+        name = "Moyu Collection"
         ideaVersion {
             sinceBuild = "232.10072.27"
             untilBuild = "262.*"

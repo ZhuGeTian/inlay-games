@@ -1,4 +1,6 @@
-# Inlay Games
+# 摸鱼合集
+
+IDE插件列表名称为 **Moyu Collection**（插件规范限制使用英文名称），右键与Tools菜单显示“摸鱼合集”。
 
 在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州，也可以在光标旁阅读TXT小说。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
 
@@ -8,7 +10,7 @@
 
 把下面这句话复制给能操作你电脑的 AI（例如本机 Codex）：
 
-> 请读取 https://raw.githubusercontent.com/ZhuGeTian/inlay-games/main/distribution/install.md ，帮我把 Inlay Games 下载并安装到我正在使用的 Android Studio 或 IntelliJ IDEA。先识别目标 IDE，校验安装包，再安装；若需要关闭或重启 IDE，先让我保存工作。
+> 请读取 https://raw.githubusercontent.com/ZhuGeTian/inlay-games/main/distribution/install.md ，帮我把 摸鱼合集 下载并安装到我正在使用的 Android Studio 或 IntelliJ IDEA。先识别目标 IDE，校验安装包，再安装；若需要关闭或重启 IDE，先让我保存工作。
 
 [查看完整 AI 安装说明](distribution/install.md) · [纯文本说明（供 AI 读取）](https://raw.githubusercontent.com/ZhuGeTian/inlay-games/main/distribution/install.md) · [国内域名备用入口](https://zhugetian.com/gomoku/install.md)
 
@@ -26,17 +28,17 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 这些游戏仅使用房间内虚拟积分，没有充值、提现或现金交易。
 
-## 小说阅读（0.5.0）
+## 小说阅读（0.5.1）
 
-已集成[datouggg/missNovel](https://github.com/datouggg/missNovel)的阅读功能：本地TXT导入、书架切换、章节跳转、手动／自动翻页、每本书独立进度，以及主动搜索下载。右键 **联机小游戏 → 小说 → 导入 TXT 小说**，正文以注释样式显示在光标上方，不写进源码。
+已集成[datouggg/missNovel](https://github.com/datouggg/missNovel)的阅读功能：本地TXT导入、书架切换、章节跳转、手动／自动翻页、每本书独立进度，以及主动搜索下载。右键 **摸鱼合集 → 小说 → 导入 TXT 小说**，正文以注释样式显示在光标上方，不写进源码。
 
-Ctrl+G控制最近使用的小说或游戏；切换只隐藏显示，不退出游戏房间。小说字号跟随编辑器，正文显示1～10行，自动间隔1～3600秒。缓存与进度只在IDE本地，原独立Novel Inlay的数据不会被修改或自动迁移。完整操作、网络边界和数据位置见[小说说明](docs/novel.md)。
+小说菜单可取消勾选“跟随光标”，把正文固定在当前代码位置。Ctrl+G控制最近使用的小说或游戏；切换只隐藏显示，不退出游戏房间。小说字号跟随编辑器，正文显示1～10行，自动间隔1～3600秒。缓存与进度只在IDE本地，原独立Novel Inlay的数据不会被修改或自动迁移。完整操作、网络边界和数据位置见[小说说明](docs/novel.md)。
 
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.0.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.1.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
-3. 打开文本代码文件，右键 **联机小游戏 → 对应游戏 → 创建房间**。
+3. 打开文本代码文件，右键 **摸鱼合集 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
 5. 斗地主或德州一人／两人时，房主点 **开始（机器人补位）** 或 `init()`；三人到齐自动开始。
 
@@ -89,7 +91,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.5.0.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.5.1.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`
@@ -109,7 +111,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.0.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.1.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。

@@ -401,7 +401,7 @@ class GomokuSession(private val project: Project) : Disposable {
     private fun ui(action: () -> Unit) { ApplicationManager.getApplication().invokeLater { if (!disposed && !project.isDisposed) action() } }
     private fun id() = UUID.randomUUID().toString()
     fun notice(text: String) {
-        Notifications.Bus.notify(Notification("Gomoku", "联机小游戏", text, NotificationType.WARNING), project)
+        Notifications.Bus.notify(Notification("Gomoku", "摸鱼合集", text, NotificationType.WARNING), project)
     }
     override fun dispose() {
         disposed = true

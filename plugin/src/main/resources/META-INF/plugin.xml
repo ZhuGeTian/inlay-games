@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>dev.gomoku.inlay</id>
-    <name>Inlay Games</name>
+    <name>Moyu Collection</name>
     <vendor>Inlay Gomoku</vendor>
-    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组联机小游戏：五子棋、支持机器人补位的斗地主、支持胜率模拟机器人的四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复；集成小说书架、TXT导入、章节导航及本地阅读进度。]]></description>
+    <description><![CDATA[Play Gomoku, Doudizhu and Texas Holdem with friends in an editor block inlay. 代码数组摸鱼合集：五子棋、支持机器人补位的斗地主、支持胜率模拟机器人的四色德州，支持私有手牌、房间邀请、手动显隐和断线恢复；集成小说书架、TXT导入、章节导航及本地阅读进度。]]></description>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Gomoku" displayType="NONE"/>
@@ -10,7 +10,7 @@
         <postStartupActivity implementation="dev.gomoku.novel.ReaderStartup"/>
     </extensions>
     <actions>
-        <group id="Gomoku.Menu" text="联机小游戏" popup="true">
+        <group id="Gomoku.Menu" text="摸鱼合集" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <group id="Gomoku.RoomMenu" text="五子棋" popup="true">
@@ -48,6 +48,7 @@
                 <action id="InlayGames.Novel.Import" class="dev.gomoku.novel.ReaderActions$Import" text="导入 TXT 小说…"/>
                 <action id="InlayGames.Novel.Search" class="dev.gomoku.novel.ReaderActions$Search" text="搜索并下载小说…"/>
                 <action id="InlayGames.Novel.Visibility" class="dev.gomoku.novel.ReaderActions$Visibility" text="关闭小说显示"/>
+                <action id="InlayGames.Novel.FollowCaret" class="dev.gomoku.novel.ReaderActions$FollowCaret" text="跟随光标" description="关闭后固定在当前代码位置；切换文件时重新定位"/>
                 <action id="InlayGames.Novel.DisplayLines" class="dev.gomoku.novel.ReaderActions$DisplayLines" text="设置显示行数…"/>
                 <action id="InlayGames.Novel.Chapters" class="dev.gomoku.novel.ReaderActions$Chapters" text="选择章节…"/>
                 <action id="InlayGames.Novel.Toggle" class="dev.gomoku.novel.ReaderActions$Toggle" text="切换自动 / 手动翻段"/>

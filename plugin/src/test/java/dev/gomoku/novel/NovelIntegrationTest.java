@@ -2,6 +2,8 @@ package dev.gomoku.novel;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.testFramework.EditorTestUtil;
@@ -129,6 +131,66 @@ public final class NovelIntegrationTest extends BasePlatformTestCase {
         toggle();
         assertTrue(reader.isEnabled());
         assertEquals(1, blocks().size());
+    }
+
+    public void testFixedPositionSurvivesCaretPagingLayoutHideAndDocumentEdits() throws Exception {
+        Editor editor = myFixture.getEditor();
+        editor.getCaretModel().moveToOffset(4);
+        reader.toggleVisibility(editor);
+        reader.setFollowCaret(false);
+        editor.getCaretModel().moveToOffset(10);
+        refresh(editor);
+        assertEquals(4, blocks().get(0).getOffset());
+        reader.turn(1);
+        reader.setDisplayLines(3);
+        assertEquals(4, blocks().get(0).getOffset());
+        toggle();
+        editor.getCaretModel().moveToOffset(0);
+        toggle();
+        assertEquals(4, blocks().get(0).getOffset());
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> editor.getDocument().insertString(0, "//x\n"));
+        refresh(editor);
+        assertEquals(8, blocks().get(0).getOffset());
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> editor.getDocument().deleteString(0, editor.getDocument().getTextLength()));
+        refresh(editor);
+        assertEquals(0, blocks().get(0).getOffset());
+    }
+
+    public void testFollowCaretMenuDefaultPersistenceAndNewDocumentAnchor() throws Exception {
+        Editor editor = myFixture.getEditor();
+        reader.toggleVisibility(editor);
+        editor.getCaretModel().moveToOffset(6);
+        refresh(editor);
+        assertEquals(6, blocks().get(0).getOffset());
+        ToggleAction action = (ToggleAction) ActionManager.getInstance().getAction("InlayGames.Novel.FollowCaret");
+        AnActionEvent event = AnActionEvent.createFromAnAction(action, null, "test", DataContext.EMPTY_CONTEXT);
+        assertTrue(action.isSelected(event));
+        action.setSelected(event, false);
+        assertFalse(action.isSelected(event));
+        NovelReader.ReaderState restored = XmlSerializer.deserialize(XmlSerializer.serialize(reader.getState()), NovelReader.ReaderState.class);
+        assertFalse(restored.followCaret);
+        Editor other = EditorFactory.getInstance().createEditor(EditorFactory.getInstance().createDocument("another file"), getProject());
+        try {
+            EditorTestUtil.setEditorVisibleSize(other, 120, 50);
+            other.getCaretModel().moveToOffset(6);
+            refresh(other);
+            assertEquals(6, other.getInlayModel().getBlockElementsInRange(0, 12).get(0).getOffset());
+            other.getCaretModel().moveToOffset(7);
+            refresh(other);
+            assertEquals(6, other.getInlayModel().getBlockElementsInRange(0, 12).get(0).getOffset());
+            action.setSelected(event, true);
+            assertEquals(7, other.getInlayModel().getBlockElementsInRange(0, 12).get(0).getOffset());
+            assertTrue(field(NovelReader.class, "fixedPosition").get(reader) == null);
+        } finally {
+            reader.setEnabled(false);
+            EditorFactory.getInstance().releaseEditor(other);
+        }
+    }
+
+    private void refresh(Editor editor) throws Exception {
+        var method = NovelReader.class.getDeclaredMethod("render", Editor.class);
+        method.setAccessible(true);
+        method.invoke(reader, editor);
     }
 
     public void testSharedShortcutDisabledOutsideEditorAndReaderMenuRegistered() {

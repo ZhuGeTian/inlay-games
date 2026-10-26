@@ -117,7 +117,7 @@ class ResignAction : DumbAwareAction() {
         val project = e.project ?: return
         val session = project.getService(GomokuSession::class.java)
         val message = if (session.isDdz) "认输会判你所在阵营失败并结算本局，确定吗？" else "确定认输并结束这局棋吗？"
-        if (Messages.showYesNoDialog(project, message, "联机小游戏", Messages.getQuestionIcon()) == Messages.YES) session.resign()
+        if (Messages.showYesNoDialog(project, message, "摸鱼合集", Messages.getQuestionIcon()) == Messages.YES) session.resign()
     }
 }
 class LeaveRoomAction : DumbAwareAction() {
