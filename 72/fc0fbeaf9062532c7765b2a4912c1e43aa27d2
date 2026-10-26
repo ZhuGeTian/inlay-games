@@ -1,0 +1,81 @@
+README.md
+  s_28ede11b99a22d::t_38140b0ceaa60b 3,5,29-34,37,80,92,112,123,136
+THIRD_PARTY_NOTICES.md
+  s_28ede11b99a22d::t_68b5ac392fd8da 16-23
+build.gradle.kts
+  s_28ede11b99a22d::t_2206cd1d7b6a8e 9
+distribution/inlay-gomoku-0.5.0.zip.sha256
+  s_28ede11b99a22d::t_19b500024f8005 1
+distribution/install.md
+  s_28ede11b99a22d::t_d09248b103010a 19-23,45,48,53-54,57,63,87,112,122-130,151,161
+distribution/updatePlugins.xml
+  s_28ede11b99a22d::t_71df4c138b0c76 3
+docs/array-guide.md
+  s_28ede11b99a22d::t_1239ebe5835a45 3
+docs/glossary.md
+  s_28ede11b99a22d::t_79ef87af117633 3,109-110
+docs/installation.md
+  s_28ede11b99a22d::t_5c92e9a0dd5cc0 5,7,10,13,19,22,26-29,38
+docs/novel.md
+  s_28ede11b99a22d::t_a0a0921c94c98b 1-52
+docs/superpowers/plans/2026-10-26-novel-integration.md
+  s_28ede11b99a22d::t_43d2de8618eb1d 1-12
+docs/superpowers/specs/2026-10-26-novel-integration.md
+  s_28ede11b99a22d::t_f9eec0427fbe6e 1-9
+docs/verification.md
+  s_28ede11b99a22d::t_efa7fe244e0e18 3-15
+plugin/src/main/java/dev/gomoku/novel/NovelBook.java
+  s_28ede11b99a22d::t_5d5a136c472d71 1-120
+plugin/src/main/java/dev/gomoku/novel/NovelReader.java
+  s_28ede11b99a22d::t_50201319051917 1-332
+plugin/src/main/java/dev/gomoku/novel/NovelRenderer.java
+  s_28ede11b99a22d::t_e2ec9ff88e472a 1-67
+plugin/src/main/java/dev/gomoku/novel/NovelShelf.java
+  s_28ede11b99a22d::t_8735fcadd77fa7 1-57
+plugin/src/main/java/dev/gomoku/novel/QishuxiaSource.java
+  s_28ede11b99a22d::t_36625b9139870c 1-245
+plugin/src/main/java/dev/gomoku/novel/ReaderActions.java
+  s_28ede11b99a22d::t_43d87fbbc03232 1-245
+plugin/src/main/java/dev/gomoku/novel/ReaderStartup.java
+  s_28ede11b99a22d::t_46d3631d5bd2a4 1-22
+plugin/src/main/java/dev/gomoku/novel/ReadingClock.java
+  s_28ede11b99a22d::t_3983d2894d6842 1-24
+plugin/src/main/java/dev/gomoku/novel/ReadingWindow.java
+  s_28ede11b99a22d::t_c594284b9128ad 1-55
+plugin/src/main/kotlin/dev/gomoku/plugin/Actions.kt
+  s_28ede11b99a22d::t_252837398e49d9 3,80-82,85-88
+plugin/src/main/kotlin/dev/gomoku/plugin/GomokuSession.kt
+  s_28ede11b99a22d::t_d46a66f3fcd737 19,100-101,103-104
+plugin/src/main/resources/META-INF/NOTICE-missNovel.txt
+  s_28ede11b99a22d::t_53a6e652f3d02f 1-7
+plugin/src/main/resources/META-INF/licenses/missNovel-Apache-2.0.txt
+  s_28ede11b99a22d::t_bd047c559212cd 1-202
+plugin/src/main/resources/META-INF/plugin.xml
+  s_28ede11b99a22d::t_ffa46414012d62 5,9-10,46-57,59
+plugin/src/test/java/dev/gomoku/novel/NovelBookTest.java
+  s_28ede11b99a22d::t_1e4dcd871f999b 1-122
+plugin/src/test/java/dev/gomoku/novel/NovelIntegrationTest.java
+  s_28ede11b99a22d::t_066e27ee740bda 1-163
+plugin/src/test/java/dev/gomoku/novel/NovelShelfTest.java
+  s_28ede11b99a22d::t_124bd7b7a579f8 1-44
+plugin/src/test/java/dev/gomoku/novel/QishuxiaSourceTest.java
+  s_28ede11b99a22d::t_97610efe2d3bf9 1-159
+plugin/src/test/java/dev/gomoku/novel/UpstreamReaderTest.java
+  s_28ede11b99a22d::t_9076891307ad35 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "72fc0fbeaf9062532c7765b2a4912c1e43aa27d2",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
