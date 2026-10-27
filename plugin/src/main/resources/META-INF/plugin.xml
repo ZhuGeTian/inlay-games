@@ -6,6 +6,8 @@
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Gomoku" displayType="NONE"/>
+        <notificationGroup id="Moyu Updates" displayType="BALLOON"/>
+        <postStartupActivity implementation="dev.gomoku.plugin.UpdateRepositoryStartup"/>
         <applicationService serviceImplementation="dev.gomoku.novel.NovelReader"/>
         <postStartupActivity implementation="dev.gomoku.novel.ReaderStartup"/>
     </extensions>
