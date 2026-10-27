@@ -1,0 +1,37 @@
+README.md
+  s_882bdfd446838a::t_a599062f154128 21-26,45,100,120
+distribution/inlay-gomoku-0.5.3.zip.sha256
+  s_882bdfd446838a::t_1770bffee68db9 1
+distribution/install.md
+  s_882bdfd446838a::t_f741a5d91f0591 19-23,45,48,53-54,57,63,87,112,120-125
+distribution/updatePlugins.xml
+  s_882bdfd446838a::t_90d3d1a93bee4b 3
+docs/installation.md
+  s_882bdfd446838a::t_e78e29c7ebd488 5,7,10,13,19,44
+docs/verification.md
+  s_28ede11b99a22d::t_c29e176db1565f 3-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3897876194d526434a4a18402a10a184896b6af9",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
