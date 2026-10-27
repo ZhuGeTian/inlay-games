@@ -16,11 +16,11 @@
 | --- | --- |
 | 插件名称 | Moyu Collection（摸鱼合集） |
 | 插件 ID | `dev.gomoku.inlay` |
-| 版本 | `0.5.1` |
-| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.1.zip |
-| 文件大小 | `967618` 字节 |
-| SHA-256 | `3c4bf653d588c2bb8af7e1914a650476d3071450c14aa9faa60296e20c1c7cf2` |
-| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.1.zip.sha256 |
+| 版本 | `0.5.3` |
+| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip |
+| 文件大小 | `968936` 字节 |
+| SHA-256 | `ea141918998ef556207471020f8929fef0a0a8f40aad699731ae6e06e90adace` |
+| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip.sha256 |
 | 插件仓库 | https://zhugetian.com/gomoku/updatePlugins.xml |
 | IntelliJ 平台 Build 范围 | `232.10072.27` 至 `262.*` |
 | ZIP 内顶层目录 | `inlay-gomoku/` |
@@ -42,25 +42,25 @@
 macOS / Linux 下载示例（使用系统已有工具即可）：
 
 ```sh
-curl --fail --location --output inlay-gomoku-0.5.1.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.1.zip'
+curl --fail --location --output inlay-gomoku-0.5.3.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip'
 ```
 
-macOS 可用 `shasum -a 256 inlay-gomoku-0.5.1.zip`；Linux 可用 `sha256sum inlay-gomoku-0.5.1.zip`。
+macOS 可用 `shasum -a 256 inlay-gomoku-0.5.3.zip`；Linux 可用 `sha256sum inlay-gomoku-0.5.3.zip`。
 
 Windows PowerShell 示例：
 
 ```powershell
-Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.1.zip' -OutFile 'inlay-gomoku-0.5.1.zip'
-Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.5.1.zip'
+Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip' -OutFile 'inlay-gomoku-0.5.3.zip'
+Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.5.3.zip'
 ```
 
-再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.5.1.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
+再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.5.3.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
 
 ## 3. 安装到目标 IDE
 
 选择一个适合当前环境的方式即可。不要同时尝试多个方式，不要改项目源码或替换其他插件。
 
-安装前检查已有插件版本。若已安装并启用了 0.5.1 或更高版本，报告现状，不重复安装或降级。
+安装前检查已有插件版本。若已安装并启用了 0.5.3 或更高版本，报告现状，不重复安装或降级。
 
 ### IDE 已打开且 AI 能操作界面
 
@@ -84,7 +84,7 @@ Windows PowerShell：
 
 macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studio` 或 IDEA 的 `Contents/MacOS/idea`；Windows / Linux 使用目标 IDE 的 `bin` 目录中的启动程序。以已识别的实际路径为准。
 
-命令提示“已安装”不代表已经升级到 0.5.1，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
+命令提示“已安装”不代表已经升级到 0.5.3，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
 
 这个方法采用 JetBrains 的 [命令行安装机制](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html) 和 [自定义插件仓库格式](https://plugins.jetbrains.com/docs/intellij/custom-plugin-repository.html)。无需修改全局 Java 环境。
 
@@ -109,13 +109,19 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 1. 在插件目录旁的临时目录完整解压，保持 `inlay-gomoku/lib/*.jar` 结构，不要只复制主 JAR。
 2. 在用户插件目录查找 ID 为 `dev.gomoku.inlay` 的旧插件；以 JAR 内 `plugin.xml` 为依据，不只依赖文件夹名字。存在版本更高的插件时不降级。
 3. 把这个插件的旧目录移到**插件扫描目录之外**备份，再把暂存的 `inlay-gomoku` 目录移入用户插件目录；失败时恢复备份。不要合并新旧 `lib`，不要删除整个用户插件目录。
-4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.5.1.jar`。用户启动 IDE 后启用 Moyu Collection（摸鱼合集）；若原来手动禁用了它，保留该设置并提示用户。
+4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.5.3.jar`。用户启动 IDE 后启用 Moyu Collection（摸鱼合集）；若原来手动禁用了它，保留该设置并提示用户。
 
 ## 4. 如实反馈安装结果
 
 报告目标 IDE、Build、实际安装目录、插件版本，以及是否需要重启。已下载、已写入目录、IDE 已加载，是不同状态；只有在插件列表或启动日志确认加载成功后才能说“已加载”。不需要再做一轮完整联机对弈验收。
 
 如果 AI 没有本机访问权限，提供已下载文件的位置和“从磁盘安装”入口，不要宣称已替用户安装。
+
+## 自动配置更新源（0.5.3 起）
+
+安装后首次打开项目，插件自动添加上表的更新源，不弹确认通知，也无需点击“启用更新提醒”。只添加一次，不覆盖其他仓库；用户后来手动删除也不会被恢复。从 0.5.2 升级后，即使以前未点击启用，也会自动配置。
+
+后续由 IDE 检查并提示兼容的新版本，用户点击更新即可下载安装，必要时重启。此功能不强制修改 IDE 的全局自动检查或自动安装开关；若用户关闭了插件更新检查，告知其在 IDE 更新设置中开启。添加更新源不等于已经有新版本或已完成更新。
 
 ## 使用方式
 

@@ -18,6 +18,12 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
+## 0.5.3：自动配置更新源
+
+安装后首次打开项目，插件会自动添加网站更新源，无需点击或复制地址，不弹确认通知。后续由 IDE 检查兼容的新版本并提供“更新”按钮。保留已有仓库与全局更新设置；用户日后删除更新源不会被强行恢复。详见[安装与更新](docs/installation.md#自动配置更新源053-起)。
+
+[网站直接下载 0.5.3](https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip) · [GitHub 0.5.3 发行页](https://github.com/ZhuGeTian/inlay-games/releases/tag/v0.5.3)
+
 ## 支持的游戏
 
 | 游戏 | 人数 | 功能 | 详细规则 |
@@ -36,7 +42,7 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.1.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.3.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
 3. 打开文本代码文件，右键 **摸鱼合集 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
@@ -91,7 +97,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.5.1.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.5.3.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`
@@ -111,7 +117,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.1.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.3.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。

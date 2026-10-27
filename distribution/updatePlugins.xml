@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugins>
-    <plugin id="dev.gomoku.inlay" version="0.5.1" url="https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.1.zip">
+    <plugin id="dev.gomoku.inlay" version="0.5.3" url="https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip">
         <idea-version since-build="232.10072.27" until-build="262.*"/>
         <name>Moyu Collection</name>
     </plugin>
