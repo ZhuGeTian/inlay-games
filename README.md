@@ -2,9 +2,9 @@
 
 IDE插件列表名称为 **Moyu Collection**（插件规范限制使用英文名称），右键与Tools菜单显示“摸鱼合集”。
 
-在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州，也可以在光标旁阅读TXT小说。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
+在 **Android Studio / IntelliJ IDEA 的代码行间**玩联机五子棋、斗地主和德州，也可以在光标旁阅读TXT小说、逐题练习行测题库。通过 Block Inlay 绘制紧凑的代码数组，游戏内容不写入源文件；Ctrl+G 手动显隐，字号可调。
 
-[AI 一键下载安装](distribution/install.md) · [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md) · [小说阅读说明](docs/novel.md)
+[AI 一键下载安装](distribution/install.md) · [下载安装包](https://github.com/ZhuGeTian/inlay-games/releases/latest) · [安装步骤](docs/installation.md) · [界面数组说明](docs/array-guide.md) · [每个英文词的含义](docs/glossary.md) · [小说阅读说明](docs/novel.md) · [行测刷题说明](docs/practice.md)
 
 ## 让 AI 帮你下载安装
 
@@ -17,6 +17,10 @@ IDE插件列表名称为 **Moyu Collection**（插件规范限制使用英文名
 AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无法直接安装。说明中包含下载地址、SHA-256校验、兼容判断、安装与升级步骤。
 
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
+
+## 0.6.0：本地行测刷题（本地构建，尚未发布）
+
+新增 JSON 题库导入、原创示例、单题作答、提交后显示答案解析、错题复习和每份试卷独立进度。支持材料与图片、长题分页、固定位置、可调字号和 Ctrl+G。PDF 由 AI 转换成题库后再导入，缺答案的题目不判分。详见[刷题说明和题库格式](docs/practice.md)。下面的网站与 GitHub 下载链接仍指向已发布版本。
 
 ## 0.5.3：自动配置更新源
 
@@ -97,7 +101,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.5.3.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.6.0.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`

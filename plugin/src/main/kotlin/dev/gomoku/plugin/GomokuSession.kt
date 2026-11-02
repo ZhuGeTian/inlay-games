@@ -100,6 +100,7 @@ class GomokuSession(private val project: Project) : Disposable {
     fun hideBoard() { board?.let { Disposer.dispose(it) } }
 
     fun showBoard(editor: Editor) {
+        dev.gomoku.practice.PracticeSession.getInstance().deactivate()
         NovelReader.getInstance().deactivate()
         hideBoard()
         val view: GameView = when (game) { GameKind.TEXAS -> TexasView(editor, this); GameKind.DDZ -> DdzView(editor, this); GameKind.GOMOKU -> BoardView(editor, this) }

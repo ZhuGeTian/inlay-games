@@ -1,6 +1,7 @@
 package dev.gomoku.plugin
 
 import dev.gomoku.novel.NovelReader
+import dev.gomoku.practice.PracticeSession
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
@@ -79,17 +80,23 @@ class ToggleBoardAction : DumbAwareAction() {
         val session = e.project?.getServiceIfCreated(GomokuSession::class.java)
         val reader = NovelReader.getInstance()
         e.presentation.isEnabled = e.getData(CommonDataKeys.EDITOR) != null &&
-            ((reader.isSelected && reader.hasBook()) || (session != null && (session.hasSession || session.isBoardVisible)))
+            ((PracticeSession.getInstance().isSelected && PracticeSession.getInstance().hasPaper()) || (reader.isSelected && reader.hasBook()) || (session != null && (session.hasSession || session.isBoardVisible)))
     }
     override fun actionPerformed(e: AnActionEvent) {
         val target = e.getData(CommonDataKeys.EDITOR) ?: return
         val reader = NovelReader.getInstance()
-        if (reader.isSelected && reader.hasBook()) reader.toggleVisibility(target)
+        val practice = PracticeSession.getInstance()
+        if (practice.isSelected && practice.hasPaper()) practice.toggleVisibility(target)
+        else if (reader.isSelected && reader.hasBook()) reader.toggleVisibility(target)
         else e.project?.getService(GomokuSession::class.java)?.toggleBoard(target)
     }
 }
 class FontSizeAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
+        if (PracticeSession.getInstance().isSelected) {
+            dev.gomoku.practice.PracticeActions.FontSize().actionPerformed(e)
+            return
+        }
         val project = e.project ?: return
         val session = project.getService(GomokuSession::class.java)
         val value = Messages.showInputDialog(project, "输入字号（8–32）", "调节字号", null,

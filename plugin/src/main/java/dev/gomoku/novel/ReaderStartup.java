@@ -16,6 +16,7 @@ public final class ReaderStartup implements StartupActivity.DumbAware {
             if (!project.isDisposed()) {
                 project.getService(GomokuSession.class);
                 NovelReader.getInstance().start(project);
+                dev.gomoku.practice.PracticeSession.getInstance().start(project);
             }
         });
     }

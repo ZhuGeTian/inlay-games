@@ -1,0 +1,88 @@
+{
+  "formatVersion": 1,
+  "title": "原创示例试卷（功能演示，非粉笔真题）",
+  "questions": [
+    {
+      "id": "sample-1",
+      "stem": "【原创示例 · 数量关系】一个小组每天整理 12 份材料，连续整理 5 天，共整理多少份？",
+      "options": [
+        {
+          "text": "48 份"
+        },
+        {
+          "text": "60 份"
+        },
+        {
+          "text": "72 份"
+        },
+        {
+          "text": "84 份"
+        }
+      ],
+      "answer": "B",
+      "explanation": "12 × 5 = 60，所以选 B。此题仅用于演示插件，不代表真实考试难度。"
+    },
+    {
+      "id": "sample-2",
+      "material": "【原创示例材料】某阅览室第一季度借阅量：1 月 120 册，2 月 150 册，3 月 180 册。",
+      "stem": "3 月借阅量比 1 月增长了百分之几？",
+      "options": [
+        {
+          "text": "25%"
+        },
+        {
+          "text": "30%"
+        },
+        {
+          "text": "50%"
+        },
+        {
+          "text": "60%"
+        }
+      ],
+      "answer": "C",
+      "explanation": "增长率 = (180 - 120) / 120 × 100% = 50%。"
+    },
+    {
+      "id": "sample-3",
+      "stem": "【原创示例 · 图形】图中从左到右三组圆点分别为 1、2、3 个。按每组增加 1 个的规律，下一组应有多少个？",
+      "images": [
+        "iVBORw0KGgoAAAANSUhEUgAAARgAAABaCAIAAADsC94IAAACQElEQVR4nO3cbUpDQRQDULfm/helDBT8oFj6JkbvcM4GMrmQf+17eQO2vfz1A+AEhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBhgQBmSG9PhJJ6av1mnjA846zE7Q7pIfZv1G4oNZr4gHPO85+0NaQnorfb1tT6zXxgOcdJxJ0fUgX4nfa1tR6TTzgecdJBV0c0uX4a21rar0mHvC84wSDrgxpM/7ZtjW1XrWgoNqbhwY9PaRI/LdH/Ae1XrWgoNqb5wYZ0k2tVy0oqPbmuUHPDSkY//kRf67WqxbkOOUgQ1pqvWpBjlMOMqSl1qsW5DjlIENaar1qQY5TDjKkpdarFuQ45SBDWmq9akGOUw4ypKXWqxbkOOUgQ1pqvWpBjlMOMqSl1qsW5DjlIENaar1qQY5TDjKkpdarFuQ45SC/tbup9aoFBdXePDfIkG5qvWpBQbU3zw3yf6QPtV61oKDam4cG+YfsF7VeEw943nGCQb7Z8F2t18QDnnecVJCvCN1R6zXxgOcdJxLku3b31XpNPOB5x9kP8qXVn9R6TTzgecfZCfLtbwgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAgwJAh4Bz/fcC9WpcyQAAAAAElFTkSuQmCC"
+      ],
+      "options": [
+        {
+          "text": "2 个"
+        },
+        {
+          "text": "3 个"
+        },
+        {
+          "text": "4 个"
+        },
+        {
+          "text": "5 个"
+        }
+      ],
+      "answer": "C",
+      "explanation": "圆点数依次为 1、2、3、4。图片仅为演示，所有文字与图形均为自制。"
+    },
+    {
+      "id": "sample-4",
+      "stem": "【缺答案演示】选择任意选项并提交，观察“未提供答案”的提示。",
+      "options": [
+        {
+          "text": "选项一"
+        },
+        {
+          "text": "选项二"
+        },
+        {
+          "text": "选项三"
+        },
+        {
+          "text": "选项四"
+        }
+      ]
+    }
+  ]
+}

@@ -192,6 +192,7 @@ public final class NovelReader implements PersistentStateComponent<NovelReader.R
         modeRevision++;
         state.enabled = enabled;
         if (enabled) {
+            dev.gomoku.practice.PracticeSession.getInstance().deactivate();
             state.selected = true;
             for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
                 Project project = editor.getProject();
