@@ -161,6 +161,41 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
             session.deactivate(); awaitLoad(); assertFalse(session.isVisible()); assertFalse(session.isSelected());
         } finally { java.nio.file.Files.deleteIfExists(source); java.nio.file.Files.deleteIfExists(cache); }
     }
+    public void testBooleanControlsAndMultiChoiceClicks() throws Exception {
+        var json = PracticePaperTest.json(); var questions = json.getAsJsonArray("questions");
+        var bool = questions.get(0).getAsJsonObject(); bool.addProperty("type", "boolean");
+        bool.getAsJsonArray("options").remove(3); bool.getAsJsonArray("options").remove(2);
+        var multi = questions.get(1).getAsJsonObject(); multi.addProperty("type", "multiple"); multi.addProperty("answer", "BD");
+        session.accept(PracticePaperTest.parse(json)); session.show(myFixture.getEditor());
+        assertTrue(view().buttons().stream().noneMatch(b -> b.action().equals("C") || b.action().equals("D")));
+        click("B"); click("submit"); assertTrue(session.progress().result(session.question()).startsWith("正确"));
+        click("next"); click("D"); click("B"); assertEquals("BD", session.progress().choices.get(session.question().id()));
+        click("D"); assertEquals("B", session.progress().choices.get(session.question().id()));
+        click("D"); click("submit"); assertTrue(session.progress().result(session.question()).startsWith("正确"));
+    }
+    public void testBundledPapersLoadSwitchAndRestoreOwnProgress() throws Exception {
+        var entries = PracticeCatalog.bundled();
+        if (entries.isEmpty()) return; // Public builds have no user-supplied banks.
+        var idsBefore = new java.util.HashSet<>(session.getState().titles.keySet());
+        var created = new java.util.ArrayList<java.nio.file.Path>();
+        try {
+            for (var entry : entries) {
+                var cache = PracticeSession.directory().resolve(entry.id() + ".json");
+                if (!java.nio.file.Files.exists(cache)) created.add(cache);
+                session.openBundled(entry.id(), getProject(), myFixture.getEditor()); awaitLoad();
+                assertEquals(entry.id(), session.paper().id()); assertEquals(entry.count(), session.paper().questions().size());
+                assertEquals(0, session.progress().index);
+                session.choose("A"); session.submit(); assertTrue(session.progress().result(session.question()).contains("未提供答案"));
+                session.move(8); click("B"); click("D"); click("submit");
+                assertEquals("BD", session.progress().submitted.get(session.question().id()));
+                assertTrue(session.progress().mistakes.isEmpty());
+            }
+            var first = entries.get(0); session.openBundled(first.id(), getProject(), myFixture.getEditor()); awaitLoad();
+            assertEquals(8, session.progress().index); assertEquals("BD", session.progress().submitted.get(session.question().id()));
+            assertEquals(entries.size() + idsBefore.size(), session.getState().titles.size());
+            assertEquals(entries.size() + idsBefore.size(), PracticeCatalog.entries(session.getState()).size());
+        } finally { for (var cache : created) java.nio.file.Files.deleteIfExists(cache); }
+    }
     private void awaitLoad() {
         long deadline = System.nanoTime() + 15_000_000_000L;
         while (session.isLoading() && System.nanoTime() < deadline) {

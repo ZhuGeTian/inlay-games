@@ -121,10 +121,10 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             for (var image : q.materialImages()) picture(rows, image, null);
             text(rows, q.stem(), null);
             for (var image : q.images()) picture(rows, image, null);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < q.options().size(); i++) {
                 String letter = String.valueOf((char) ('A' + i));
                 var option = q.options().get(i);
-                boolean selected = letter.equals(progress.choices.get(q.id()));
+                boolean selected = progress.choices.getOrDefault(q.id(), "").contains(letter);
                 text(rows, (selected ? "[" + letter + "] " : letter + ". ") + option.text(), letter);
                 if (option.image() != null) picture(rows, option.image(), letter);
             }
@@ -153,7 +153,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         addButtons(footerTop, new String[][] {
                 {"上一页", "page-", Boolean.toString(page > 0)}, {"下一页", "page+", Boolean.toString(page + 1 < pages.size())},
                 {"A", "A", Boolean.toString(!empty && !submitted)}, {"B", "B", Boolean.toString(!empty && !submitted)},
-                {"C", "C", Boolean.toString(!empty && !submitted)}, {"D", "D", Boolean.toString(!empty && !submitted)},
+                {"C", "C", Boolean.toString(!empty && !submitted && session.question().options().size() > 2)}, {"D", "D", Boolean.toString(!empty && !submitted && session.question().options().size() > 3)},
                 {"提交", "submit", Boolean.toString(!empty && !submitted && !selected.isEmpty())},
                 {"重做", "retry", Boolean.toString(!empty && submitted)},
                 {"上一题", "previous", Boolean.toString(at > 0)}, {"下一题", "next", Boolean.toString(at >= 0 && at < available.size() - 1)},
@@ -169,6 +169,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private void addButtons(int top, String[][] values) {
         int x = 8, y = top;
         for (var value : values) {
+            if (!session.empty() && value[1].matches("[A-D]") && !session.question().validChoice(value[1])) continue;
             String label = "[" + value[0] + "]";
             int w = metrics.stringWidth(label) + 10;
             if (x + w > width - 8 && x > 8) { x = 8; y += lineHeight + 3; }
@@ -219,19 +220,19 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             g.setColor(normal);
             g.drawString(shorten("// " + session.paper().title()), 8, metrics.getAscent() + 2);
             var progress = session.progress();
-            String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size();
+            String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size() + " · " + session.question().typeLabel();
             g.drawString(shorten("// " + status + " · 页 " + (page + 1) + "/" + pages.size()
                     + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
             int y = lineHeight * 2 + 4;
-            String selected = session.empty() ? "" : progress.choices.get(session.question().id());
+            String selected = session.empty() ? "" : progress.choices.getOrDefault(session.question().id(), "");
             for (var row : pages.get(page)) {
-                g.setColor(row.action != null && row.action.equals(selected) ? new Color(0xD99545) : normal);
+                g.setColor(row.action != null && selected.contains(row.action) ? new Color(0xD99545) : normal);
                 if (row.image != null) g.drawImage(row.image, 10, y + 4, row.imageWidth, row.height - 8, null);
                 else g.drawString(row.text, 8, y + metrics.getAscent());
                 y += row.height;
             }
             for (var button : buttons) {
-                g.setColor(!button.enabled ? normal : button.action.equals(selected) ? new Color(0xD99545) : scheme.getDefaultForeground());
+                g.setColor(!button.enabled ? normal : (button.action.matches("[A-D]") && selected.contains(button.action)) ? new Color(0xD99545) : scheme.getDefaultForeground());
                 g.drawString(button.label, button.bounds.x, button.bounds.y + metrics.getAscent());
             }
         } finally { g.dispose(); }

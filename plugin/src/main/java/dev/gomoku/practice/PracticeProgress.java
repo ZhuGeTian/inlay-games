@@ -21,11 +21,11 @@ public final class PracticeProgress {
     }
 
     public void normalize(PracticePaper paper) {
-        var valid = new HashSet<String>();
-        for (var q : paper.questions()) valid.add(q.id());
-        choices.entrySet().removeIf(e -> !valid.contains(e.getKey()) || e.getValue() == null || !e.getValue().matches("[A-D]"));
-        submitted.entrySet().removeIf(e -> !valid.contains(e.getKey()) || e.getValue() == null || !e.getValue().matches("[A-D]"));
-        mistakes.removeIf(id -> !valid.contains(id));
+        var valid = new HashMap<String, PracticePaper.Question>();
+        for (var q : paper.questions()) valid.put(q.id(), q);
+        choices.entrySet().removeIf(e -> !valid.containsKey(e.getKey()) || !valid.get(e.getKey()).validChoice(e.getValue()));
+        submitted.entrySet().removeIf(e -> !valid.containsKey(e.getKey()) || !valid.get(e.getKey()).validChoice(e.getValue()));
+        mistakes.removeIf(id -> !valid.containsKey(id));
         index = Math.max(0, Math.min(index, paper.questions().size() - 1));
         if (onlyWrong && !mistakes.contains(paper.questions().get(index).id())) {
             for (int i = 0; i < paper.questions().size(); i++) {
@@ -50,12 +50,17 @@ public final class PracticeProgress {
     }
 
     public void select(PracticePaper.Question q, String choice) {
-        if (choice != null && choice.matches("[A-D]") && !submitted.containsKey(q.id())) choices.put(q.id(), choice);
+        if (choice == null || !choice.matches("[A-D]") || !q.validChoice(choice) || submitted.containsKey(q.id())) return;
+        if (q.type().equals("multiple")) {
+            String previous = choices.getOrDefault(q.id(), "");
+            String next = previous.contains(choice) ? previous.replace(choice, "") : PracticePaper.canonical(previous + choice);
+            if (next.isEmpty()) choices.remove(q.id()); else choices.put(q.id(), next);
+        } else choices.put(q.id(), choice);
     }
 
     public boolean submit(PracticePaper.Question q) {
         String choice = choices.get(q.id());
-        if (choice == null || submitted.containsKey(q.id())) return false;
+        if (!q.validChoice(choice) || submitted.containsKey(q.id())) return false;
         submitted.put(q.id(), choice);
         if (!q.answer().isEmpty() && !q.answer().equals(choice) && !mistakes.contains(q.id())) mistakes.add(q.id());
         return true;

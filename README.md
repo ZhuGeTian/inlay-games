@@ -18,9 +18,9 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
-## 0.6.0：本地行测刷题（本地构建，尚未发布）
+## 0.6.1：按试卷选择与行测刷题（本地构建，尚未发布）
 
-新增 JSON 题库导入、原创示例、单题作答、提交后显示答案解析、错题复习和每份试卷独立进度。支持材料与图片、长题分页、固定位置、可调字号和 Ctrl+G。PDF 由 AI 转换成题库后再导入，缺答案的题目不判分。详见[刷题说明和题库格式](docs/practice.md)。下面的网站与 GitHub 下载链接仍指向已发布版本。
+新增按年份/名称选择试卷、判断/单选/多选作答、JSON 题库导入、原创示例、提交后显示答案解析、错题复习和每份试卷独立进度。支持材料与图片、长题分页、固定位置、可调字号和 Ctrl+G。PDF 由 AI 转换成题库后再导入，缺答案的题目不判分。详见[刷题说明和题库格式](docs/practice.md)。下面的网站与 GitHub 下载链接仍指向已发布版本。
 
 ## 0.5.3：自动配置更新源
 
@@ -101,7 +101,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.6.0.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.6.1.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`

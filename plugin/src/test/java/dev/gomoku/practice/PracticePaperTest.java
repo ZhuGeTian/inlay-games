@@ -79,4 +79,26 @@ public final class PracticePaperTest {
         var copy = p.copy(); copy.retry(q); assertEquals("D", p.submitted.get(q.id()));
         p.choices.put("absent", "Z"); p.index = -1; p.normalize(paper); assertFalse(p.choices.containsKey("absent")); assertEquals(2, p.index);
     }
+    @Test public void booleanAndMultipleSelectionValidationAndExactScoring() throws Exception {
+        var json = json(); var questions = json.getAsJsonArray("questions");
+        var bool = questions.get(0).getAsJsonObject(); bool.addProperty("type", "boolean");
+        bool.getAsJsonArray("options").remove(3); bool.getAsJsonArray("options").remove(2);
+        var multi = questions.get(1).getAsJsonObject(); multi.addProperty("type", "multiple"); multi.addProperty("answer", "DB");
+        var paper = parse(json); var p = new PracticeProgress();
+        var q = paper.questions().get(0); assertEquals("boolean", q.type());
+        p.select(q, "C"); assertTrue(p.choices.isEmpty()); p.select(q, "A"); p.select(q, "B"); p.submit(q);
+        assertTrue(p.result(q).startsWith("正确"));
+        q = paper.questions().get(1); assertEquals("BD", q.answer());
+        p.select(q, "D"); p.select(q, "B"); assertEquals("BD", p.choices.get(q.id()));
+        p.select(q, "D"); assertEquals("B", p.choices.get(q.id())); p.submit(q);
+        assertTrue(p.result(q).startsWith("错误")); // Partial selection scores no credit.
+        p.retry(q); p.select(q, "D"); p.select(q, "B"); p.select(q, "A"); p.submit(q);
+        assertTrue(p.result(q).startsWith("错误")); // Extra selection scores no credit.
+        p.retry(q); p.select(q, "D"); p.select(q, "B"); p.submit(q); assertTrue(p.result(q).startsWith("正确"));
+        p.normalize(paper); assertEquals("BD", p.submitted.get(q.id()));
+        p.retry(q); p.select(q, "B"); p.select(q, "B"); assertFalse(p.submit(q));
+        multi.addProperty("answer", "BB"); assertThrows(IOException.class, () -> parse(json));
+        multi.addProperty("answer", "BD"); bool.addProperty("answer", "C"); assertThrows(IOException.class, () -> parse(json));
+    }
+
 }

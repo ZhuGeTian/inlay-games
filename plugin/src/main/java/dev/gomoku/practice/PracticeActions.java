@@ -33,17 +33,20 @@ public final class PracticeActions {
     public static final class Sample extends LoadAction {
         @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().openSample(e.getProject(), editor(e)); }
     }
-    private record Entry(String id, String title) { @Override public String toString() { return title + " · " + id.substring(0, 6); } }
     public static final class Papers extends LoadAction {
         @Override public void actionPerformed(AnActionEvent e) {
             var session = PracticeSession.getInstance();
-            var entries = session.getState().titles.entrySet().stream().filter(x -> PracticeSession.validId(x.getKey()))
-                    .map(x -> new Entry(x.getKey(), x.getValue())).sorted(Comparator.comparing(Entry::title)).toList();
-            if (entries.isEmpty()) { Messages.showInfoMessage(e.getProject(), "请先导入题库或打开示例试卷。", "我的试卷"); return; }
+            java.util.List<PracticeCatalog.Entry> entries;
+            try { entries = PracticeCatalog.entries(session.getState()); }
+            catch (java.io.IOException error) { Messages.showErrorDialog(e.getProject(), error.getMessage(), "选择试卷"); return; }
+            if (entries.isEmpty()) { Messages.showInfoMessage(e.getProject(), "请先导入题库或打开示例试卷。", "选择试卷"); return; }
             Editor target = editor(e);
-            JBPopupFactory.getInstance().createPopupChooserBuilder(entries).setTitle("我的试卷（输入名称筛选）")
-                    .setNamerForFiltering(Entry::title).setItemChosenCallback(entry -> session.openPaper(entry.id(), e.getProject(), target))
-                    .createPopup().showInFocusCenter();
+            JBPopupFactory.getInstance().createPopupChooserBuilder(entries).setTitle("选择试卷（输入年份或名称筛选）")
+                    .setNamerForFiltering(PracticeCatalog.Entry::title).setItemChosenCallback(entry -> {
+                        if (e.getProject() != null && e.getProject().isDisposed()) return;
+                        if (entry.bundled()) session.openBundled(entry.id(), e.getProject(), target);
+                        else session.openPaper(entry.id(), e.getProject(), target);
+                    }).createPopup().showInFocusCenter();
         }
     }
     public static final class Show extends DumbAwareAction {
@@ -51,7 +54,7 @@ public final class PracticeActions {
             var session = PracticeSession.getInstance();
             Editor editor = editor(e);
             if (editor == null) Messages.showInfoMessage(e.getProject(), "请先打开一个代码或文本文件。", "行测刷题");
-            else if (!session.hasPaper()) Messages.showInfoMessage(e.getProject(), "请先导入题库或打开示例试卷。", "行测刷题");
+            else if (!session.hasPaper()) Messages.showInfoMessage(e.getProject(), "请先通过“选择试卷”打开试卷，也可以导入题库或打开示例。", "行测刷题");
             else session.show(editor);
         }
     }
@@ -77,8 +80,14 @@ public final class PracticeActions {
     public static final class Hide extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().hide(); } }
     public static final class A extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("A"); } }
     public static final class B extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("B"); } }
-    public static final class C extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("C"); } }
-    public static final class D extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("D"); } }
+    public static final class C extends QuestionAction {
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("C"); }
+        @Override public void update(AnActionEvent e) { super.update(e); var s = PracticeSession.getInstance(); e.getPresentation().setEnabled(e.getPresentation().isEnabled() && !s.empty() && s.question().options().size() > 2); }
+    }
+    public static final class D extends QuestionAction {
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().choose("D"); }
+        @Override public void update(AnActionEvent e) { super.update(e); var s = PracticeSession.getInstance(); e.getPresentation().setEnabled(e.getPresentation().isEnabled() && !s.empty() && s.question().options().size() > 3); }
+    }
     public static final class Images extends QuestionAction {
         @Override public void actionPerformed(AnActionEvent e) {
             var session = PracticeSession.getInstance();

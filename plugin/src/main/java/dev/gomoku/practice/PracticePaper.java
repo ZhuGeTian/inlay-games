@@ -14,8 +14,19 @@ import java.util.*;
 public record PracticePaper(String id, String title, List<Question> questions) {
     public static final int MAX_BYTES = 16 * 1024 * 1024;
     public record Option(String text, BufferedImage image) {}
-    public record Question(String id, String material, List<BufferedImage> materialImages, String stem,
-                           List<BufferedImage> images, List<Option> options, String answer, String explanation) {}
+    public record Question(String id, String type, String material, List<BufferedImage> materialImages, String stem,
+                           List<BufferedImage> images, List<Option> options, String answer, String explanation) {
+        public boolean validChoice(String value) {
+            if (value == null || value.isEmpty() || !value.matches("[A-D]+")) return false;
+            if (!type.equals("multiple") && value.length() != 1) return false;
+            return value.equals(canonical(value)) && value.chars().allMatch(ch -> ch - 'A' < options.size());
+        }
+        public String typeLabel() { return switch (type) { case "multiple" -> "多选"; case "boolean" -> "判断"; default -> "单选"; }; }
+    }
+
+    static String canonical(String value) {
+        return value.chars().distinct().sorted().collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+    }
 
     public static byte[] readBytes(Path path) throws IOException {
         try (var input = Files.newInputStream(path)) { return readBytes(input); }
@@ -46,8 +57,12 @@ public record PracticePaper(String id, String title, List<Question> questions) {
                 JsonObject q = element.getAsJsonObject();
                 String id = text(q, "id", true, 80);
                 if (!id.matches("[a-zA-Z0-9_-]+") || !ids.add(id)) fail("题号 id 必须唯一，只能包含字母、数字、下划线和横线。");
+                String type = text(q, "type", false, 16);
+                if (type.isEmpty()) type = "single";
+                if (!Set.of("single", "multiple", "boolean").contains(type)) fail("未知题型：" + type);
                 JsonArray rawOptions = array(q, "options", true, 4);
-                if (rawOptions.size() != 4) fail("题目 " + id + " 必须有 A/B/C/D 四个选项。");
+                int optionCount = type.equals("boolean") ? 2 : 4;
+                if (rawOptions.size() != optionCount) fail("题目 " + id + " 的选项数量必须为 " + optionCount + "。");
                 var options = new ArrayList<Option>();
                 for (JsonElement raw : rawOptions) {
                     JsonObject option = raw.getAsJsonObject();
@@ -57,8 +72,12 @@ public record PracticePaper(String id, String title, List<Question> questions) {
                     options.add(new Option(label, image));
                 }
                 String answer = text(q, "answer", false, 4);
-                if (!answer.isEmpty() && !answer.matches("[A-D]")) fail("答案必须是 A/B/C/D 之一，或留空。");
-                questions.add(new Question(id, text(q, "material", false, 40000), decoder.list(q, "materialImages"),
+                if (!answer.isEmpty()) {
+                    String pattern = type.equals("boolean") ? "[AB]" : type.equals("multiple") ? "[A-D]{2,4}" : "[A-D]";
+                    if (!answer.matches(pattern) || canonical(answer).length() != answer.length()) fail("答案与题型不匹配，或选项重复。");
+                    answer = canonical(answer);
+                }
+                questions.add(new Question(id, type, text(q, "material", false, 40000), decoder.list(q, "materialImages"),
                         text(q, "stem", true, 16000), decoder.list(q, "images"), List.copyOf(options), answer,
                         text(q, "explanation", false, 40000)));
             }

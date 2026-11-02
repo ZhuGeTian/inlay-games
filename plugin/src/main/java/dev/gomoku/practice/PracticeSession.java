@@ -22,6 +22,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         public boolean selected;
         public int fontSize;
         public Map<String, String> titles = new HashMap<>();
+        public Map<String, Integer> counts = new HashMap<>();
         public Map<String, PracticeProgress> progress = new HashMap<>();
     }
     private SavedState state = new SavedState();
@@ -49,6 +50,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         copy.selected = state.selected;
         copy.fontSize = state.fontSize;
         copy.titles = new HashMap<>(state.titles);
+        copy.counts = new HashMap<>(state.counts);
         state.progress.forEach((id, progress) -> copy.progress.put(id, progress.copy()));
         return copy;
     }
@@ -79,7 +81,14 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         if (!validId(id)) return;
         load(directory().resolve(id + ".json"), false, true, project, editor);
     }
+    public void openBundled(String id, Project project, Editor editor) {
+        if (!validId(id)) return;
+        load(null, true, true, project, editor, id);
+    }
     private void load(Path file, boolean cache, boolean reveal, Project project, Editor editor) {
+        load(file, cache, reveal, project, editor, null);
+    }
+    private void load(Path file, boolean cache, boolean reveal, Project project, Editor editor, String bundledId) {
         if (loading || disposed) return;
         loading = true;
         long requested = ++revision;
@@ -89,13 +98,14 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
                 try {
                     byte[] bytes;
                     if (file == null) {
-                        try (var input = PracticeSession.class.getResourceAsStream("/practice/sample-practice.json")) {
+                        try (var input = bundledId == null ? PracticeSession.class.getResourceAsStream("/practice/sample-practice.json") : PracticeCatalog.open(bundledId)) {
                             if (input == null) throw new IOException("示例题库不存在。");
                             bytes = PracticePaper.readBytes(input);
                         }
                     } else bytes = PracticePaper.readBytes(file);
                     indicator.checkCanceled();
                     parsed = PracticePaper.parse(bytes);
+                    if (bundledId != null && !bundledId.equals(parsed.id())) throw new IOException("安装包内试卷校验失败。");
                     if (!cache && !file.getFileName().toString().equals(parsed.id() + ".json"))
                         throw new IOException("缓存内容已变化，请重新导入题库。");
                     indicator.checkCanceled();
@@ -130,6 +140,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         paper = value;
         state.paperId = value.id();
         state.titles.put(value.id(), value.title());
+        state.counts.put(value.id(), value.questions().size());
         progress().normalize(value);
     }
     public synchronized void show(Editor editor) {

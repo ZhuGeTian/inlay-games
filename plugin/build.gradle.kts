@@ -57,3 +57,12 @@ tasks.runIde {
     jvmArgs("-Didea.trust.all.projects=true", "-Dide.show.tips.on.startup.default.value=false")
 }
 
+
+// Explicit local builds can include personal question banks; ordinary builds contain none.
+providers.gradleProperty("practiceBanksDir").orNull?.let { directory ->
+    require(file(directory).resolve("practice/papers/index.json").isFile) { "practiceBanksDir must contain practice/papers/index.json" }
+    sourceSets.main { resources.srcDir(directory) }
+}
+
+// Do not leave private resources in a later ordinary build's output directory.
+tasks.processResources { doFirst { delete(destinationDir.resolve("practice/papers")) } }

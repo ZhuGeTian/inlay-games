@@ -16,3 +16,5 @@ __pycache__/
 *.key
 *.p12
 *.zip
+# User-provided study papers and locally converted question banks.
+private/

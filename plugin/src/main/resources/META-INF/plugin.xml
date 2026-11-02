@@ -46,9 +46,9 @@
                 <action id="Texas.Ready" class="dev.gomoku.plugin.TexasReadyAction" text="准备下一手／重置积分"/>
             </group>
             <group id="Moyu.Practice.Menu" text="行测刷题" popup="true">
+                <action id="Moyu.Practice.Papers" class="dev.gomoku.practice.PracticeActions$Papers" text="选择试卷…"/>
                 <action id="Moyu.Practice.Import" class="dev.gomoku.practice.PracticeActions$Import" text="导入 JSON 题库…"/>
                 <action id="Moyu.Practice.Sample" class="dev.gomoku.practice.PracticeActions$Sample" text="打开示例试卷"/>
-                <action id="Moyu.Practice.Papers" class="dev.gomoku.practice.PracticeActions$Papers" text="我的试卷…"/>
                 <action id="Moyu.Practice.Show" class="dev.gomoku.practice.PracticeActions$Show" text="在此显示"/>
                 <action id="Moyu.Practice.Previous" class="dev.gomoku.practice.PracticeActions$Previous" text="上一题"/>
                 <action id="Moyu.Practice.Next" class="dev.gomoku.practice.PracticeActions$Next" text="下一题"/>
