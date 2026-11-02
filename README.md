@@ -18,15 +18,15 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
-## 0.6.1：按试卷选择与行测刷题（本地构建，尚未发布）
+## 0.6.1：按试卷选择与行测刷题
 
-新增按年份/名称选择试卷、判断/单选/多选作答、JSON 题库导入、原创示例、提交后显示答案解析、错题复习和每份试卷独立进度。支持材料与图片、长题分页、固定位置、可调字号和 Ctrl+G。PDF 由 AI 转换成题库后再导入，缺答案的题目不判分。详见[刷题说明和题库格式](docs/practice.md)。下面的网站与 GitHub 下载链接仍指向已发布版本。
+新增按年份/名称选择试卷、判断/单选/多选作答、JSON 题库导入、原创示例、提交后显示答案解析、错题复习和每份试卷独立进度。支持材料与图片、长题分页、固定位置、可调字号和 Ctrl+G。PDF 由 AI 转换成题库后再导入，缺答案的题目不判分。详见[刷题说明和题库格式](docs/practice.md)。发行包内含 2026、2025 广东行测网友回忆版各 90 题，共 180 题。两份原 PDF 未附答案解析，当前仅记录作答，暂不判分。
 
 ## 0.5.3：自动配置更新源
 
 安装后首次打开项目，插件会自动添加网站更新源，无需点击或复制地址，不弹确认通知。后续由 IDE 检查兼容的新版本并提供“更新”按钮。保留已有仓库与全局更新设置；用户日后删除更新源不会被强行恢复。详见[安装与更新](docs/installation.md#自动配置更新源053-起)。
 
-[网站直接下载 0.5.3](https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.5.3.zip) · [GitHub 0.5.3 发行页](https://github.com/ZhuGeTian/inlay-games/releases/tag/v0.5.3)
+[网站直接下载 0.6.1](https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.1.zip) · [GitHub 0.6.1 发行页](https://github.com/ZhuGeTian/inlay-games/releases/tag/v0.6.1)
 
 ## 支持的游戏
 
@@ -42,11 +42,11 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 已集成[datouggg/missNovel](https://github.com/datouggg/missNovel)的阅读功能：本地TXT导入、书架切换、章节跳转、手动／自动翻页、每本书独立进度，以及主动搜索下载。右键 **摸鱼合集 → 小说 → 导入 TXT 小说**，正文以注释样式显示在光标上方，不写进源码。
 
-小说菜单可取消勾选“跟随光标”，把正文固定在当前代码位置。Ctrl+G控制最近使用的小说或游戏；切换只隐藏显示，不退出游戏房间。小说字号跟随编辑器，正文显示1～10行，自动间隔1～3600秒。缓存与进度只在IDE本地，原独立Novel Inlay的数据不会被修改或自动迁移。完整操作、网络边界和数据位置见[小说说明](docs/novel.md)。
+小说菜单可取消勾选“跟随光标”，把正文固定在当前代码位置。Ctrl+G控制最近使用的刷题、小说或游戏；切换只隐藏显示，不退出游戏房间。小说字号跟随编辑器，正文显示1～10行，自动间隔1～3600秒。缓存与进度只在IDE本地，原独立Novel Inlay的数据不会被修改或自动迁移。完整操作、网络边界和数据位置见[小说说明](docs/novel.md)。
 
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.5.3.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.6.1.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
 3. 打开文本代码文件，右键 **摸鱼合集 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
@@ -99,6 +99,8 @@ val auto = intArrayOf(0, 0, 1)
 ./gradlew :core:test :server:test :plugin:test :plugin:buildPlugin :server:installDist
 ```
 
+发行包包含的两份试卷通过 `-PpracticeBanksDir=...` 加入；默认源码构建仅包含原创示例。详见[题库构建说明](docs/practice.md#构建带指定题库的安装包)。
+
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
 - 插件：`plugin/build/distributions/inlay-gomoku-0.6.1.zip`
@@ -121,7 +123,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.5.3.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.6.1.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。
