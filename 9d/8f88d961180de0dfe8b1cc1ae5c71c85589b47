@@ -1,0 +1,65 @@
+plugin/src/main/resources/META-INF/plugin.xml
+  s_882bdfd446838a::t_b12b21c1663370 49
+.gitignore
+  s_28ede11b99a22d::t_5bfd90474d3280 19-20
+plugin/src/main/java/dev/gomoku/practice/PracticeView.java
+  s_882bdfd446838a::t_a67fb8b32942be 124,127,156,172,223,227,229,235
+plugin/src/main/java/dev/gomoku/practice/PracticeProgress.java
+  s_882bdfd446838a::t_a67fb8b32942be 24-28,53-58,63
+docs/superpowers/specs/2026-11-02-paper-selection.md
+  s_28ede11b99a22d::t_5bfd90474d3280 1-10
+docs/superpowers/plans/2026-11-02-paper-selection.md
+  s_882bdfd446838a::t_191fe694a0c5de 9-13
+  s_28ede11b99a22d::t_5bfd90474d3280 1-8
+plugin/src/main/java/dev/gomoku/practice/PracticePaper.java
+  s_882bdfd446838a::t_a67fb8b32942be 17-29,60-62,64-65,75-80
+docs/practice.md
+  s_882bdfd446838a::t_b12b21c1663370 1,5-9,13-14,17,64,69,72,87-101
+README.md
+  s_882bdfd446838a::t_b12b21c1663370 21,23,104
+scripts/convert_fenbi_paper.py
+  s_28ede11b99a22d::t_9168a083cda208 1-154
+plugin/src/main/java/dev/gomoku/practice/PracticeActions.java
+  s_882bdfd446838a::t_a67fb8b32942be 83-90
+  s_882bdfd446838a::t_b12b21c1663370 39-42,44-49,57
+docs/verification.md
+  s_882bdfd446838a::t_191fe694a0c5de 88-97
+build.gradle.kts
+  s_28ede11b99a22d::t_41fdbfcf4dba12 9
+plugin/build.gradle.kts
+  s_882bdfd446838a::t_8fa71a36e19d65 60-68
+plugin/src/main/java/dev/gomoku/practice/PracticeCatalog.java
+  s_28ede11b99a22d::t_3f91ea1de1adfd 1-53
+plugin/src/main/java/dev/gomoku/practice/PracticeSession.java
+  s_28ede11b99a22d::t_402f00e4e37b0c 25,53,84-87,89-91,101,108,143
+plugin/src/test/java/dev/gomoku/practice/PracticeCatalogTest.java
+  s_882bdfd446838a::t_95439c5c648372 1-39
+plugin/src/test/java/dev/gomoku/practice/PracticeIntegrationTest.java
+  s_882bdfd446838a::t_61ba68f33d9adc 164-198
+plugin/src/test/java/dev/gomoku/practice/PracticePaperTest.java
+  s_882bdfd446838a::t_e275bf36b43b0b 82-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9d8f88d961180de0dfe8b1cc1ae5c71c85589b47",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
