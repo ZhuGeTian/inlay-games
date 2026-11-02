@@ -270,6 +270,87 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         assertTrue(sawImage);
         click("B"); click("submit"); assertTrue(session.progress().submitted.containsKey(session.question().id()));
     }
+    // 生成真实注册动作的编辑器上下文，检查快捷键与右键菜单共用的逻辑。
+    private AnActionEvent practiceEvent(String id, Editor editor) {
+        var action = ActionManager.getInstance().getAction(id);
+        DataContext context = key -> CommonDataKeys.EDITOR.is(key) ? editor : CommonDataKeys.PROJECT.is(key) ? getProject() : null;
+        return AnActionEvent.createFromAnAction(action, null, "test", context);
+    }
+    // 隐藏辅助区后正文和页码不变，旧按钮区域失效，恢复时回到原布局。
+    public void testDetailsToggleShrinksAndPreservesCurrentPage() {
+        session.setVisibleLines(2);
+        Editor editor = myFixture.getEditor();
+        String source = editor.getDocument().getText(); long stamp = editor.getDocument().getModificationStamp();
+        session.show(editor); click("B"); click("page+");
+        int page = view().pageIndex(), pages = view().pageCount(), height = blocks().get(0).getHeightInPixels();
+        String body = view().visibleText();
+        var next = view().buttons().stream().filter(b -> b.action().equals("next")).findFirst().orElseThrow().bounds();
+        var action = ActionManager.getInstance().getAction("Moyu.Practice.Details");
+        var event = practiceEvent("Moyu.Practice.Details", editor);
+        action.update(event); assertTrue(event.getPresentation().isEnabled()); action.actionPerformed(event);
+        assertFalse(session.isDetailsVisible()); assertTrue(view().buttons().isEmpty());
+        assertTrue(blocks().get(0).getHeightInPixels() < height);
+        assertEquals(page, view().pageIndex()); assertEquals(pages, view().pageCount()); assertEquals(body, view().visibleText());
+        view().activateAt(next.x + 1, next.y + 1); assertEquals(0, session.progress().index);
+        assertEquals("B", session.progress().choices.get(session.question().id()));
+        action.actionPerformed(event);
+        assertTrue(session.isDetailsVisible()); assertFalse(view().buttons().isEmpty());
+        assertEquals(height, blocks().get(0).getHeightInPixels()); assertEquals(body, view().visibleText());
+        assertEquals(source, editor.getDocument().getText()); assertEquals(stamp, editor.getDocument().getModificationStamp());
+    }
+    // 隐藏后选项命中随正文上移，右键仍能提交和翻页，设置可恢复。
+    public void testHiddenDetailsOptionsMenusAndPersistence() {
+        Editor editor = myFixture.getEditor(); session.show(editor);
+        int oldY = view().optionHits().stream().filter(b -> b.action().equals("B")).findFirst().orElseThrow().bounds().y;
+        session.toggleDetails();
+        var box = view().optionHits().stream().filter(b -> b.action().equals("B")).findFirst().orElseThrow().bounds();
+        assertTrue(box.y < oldY); view().activateAt(box.x + 1, box.y + 1);
+        ActionManager.getInstance().getAction("Moyu.Practice.Submit").actionPerformed(practiceEvent("Moyu.Practice.Submit", editor));
+        assertEquals("B", session.progress().submitted.get(session.question().id()));
+        var serialized = XmlSerializer.deserialize(XmlSerializer.serialize(session.getState()), PracticeSession.SavedState.class);
+        session.loadState(serialized); assertFalse(session.isDetailsVisible());
+        toggle(); assertFalse(session.isVisible()); toggle(); assertTrue(session.isVisible()); assertTrue(view().buttons().isEmpty());
+        session.retry(); session.setVisibleLines(1);
+        var previous = ActionManager.getInstance().getAction("Moyu.Practice.PreviousPage");
+        var prevEvent = practiceEvent("Moyu.Practice.PreviousPage", editor);
+        previous.update(prevEvent); assertFalse(prevEvent.getPresentation().isEnabled());
+        var next = ActionManager.getInstance().getAction("Moyu.Practice.NextPage");
+        var nextEvent = practiceEvent("Moyu.Practice.NextPage", editor);
+        next.update(nextEvent); assertTrue(nextEvent.getPresentation().isEnabled()); next.actionPerformed(nextEvent);
+        assertEquals(1, view().pageIndex()); previous.actionPerformed(prevEvent); assertEquals(0, view().pageIndex());
+        while (session.canMovePage(1)) next.actionPerformed(nextEvent);
+        next.update(nextEvent); assertFalse(nextEvent.getPresentation().isEnabled());
+        assertTrue(view().buttons().isEmpty());
+        session.loadState(XmlSerializer.deserialize(new org.jdom.Element("state"), PracticeSession.SavedState.class));
+        assertTrue(session.isDetailsVisible());
+    }
+    // 局部 Ctrl+D 优先级仅在刷题视图存活时生效，其他编辑器不会触发。
+    public void testDetailsShortcutScopeAndDisposal() {
+        Editor editor = myFixture.getEditor();
+        var action = ActionManager.getInstance().getAction("Moyu.Practice.Details");
+        assertTrue(java.util.Arrays.stream(action.getShortcutSet().getShortcuts()).anyMatch(s ->
+                s instanceof KeyboardShortcut key && key.getFirstKeyStroke().equals(javax.swing.KeyStroke.getKeyStroke("control D"))));
+        var event = practiceEvent("Moyu.Practice.Details", editor);
+        action.update(event); assertFalse(event.getPresentation().isEnabled());
+        session.show(editor);
+        var nonEditorEvent = practiceEvent("Moyu.Practice.Details", null);
+        action.update(nonEditorEvent); assertFalse(nonEditorEvent.getPresentation().isEnabled());
+        action.actionPerformed(nonEditorEvent); assertTrue(session.isDetailsVisible());
+        assertTrue(com.intellij.openapi.actionSystem.ex.ActionUtil.getActions(editor.getContentComponent()).contains(action));
+        Editor other = EditorFactory.getInstance().createEditor(EditorFactory.getInstance().createDocument("other"), getProject());
+        try {
+            var otherEvent = practiceEvent("Moyu.Practice.Details", other);
+            action.update(otherEvent); assertFalse(otherEvent.getPresentation().isEnabled());
+            action.actionPerformed(otherEvent); assertTrue(session.isDetailsVisible());
+        } finally { EditorFactory.getInstance().releaseEditor(other); }
+        session.hide();
+        action.update(event); assertFalse(event.getPresentation().isEnabled());
+        assertFalse(com.intellij.openapi.actionSystem.ex.ActionUtil.getActions(editor.getContentComponent()).contains(action));
+        session.show(editor); assertTrue(com.intellij.openapi.actionSystem.ex.ActionUtil.getActions(editor.getContentComponent()).contains(action));
+        NovelReader.getInstance().setEnabled(true);
+        action.update(event); assertFalse(event.getPresentation().isEnabled());
+        assertFalse(com.intellij.openapi.actionSystem.ex.ActionUtil.getActions(editor.getContentComponent()).contains(action));
+    }
     private void awaitLoad() {
         long deadline = System.nanoTime() + 15_000_000_000L;
         while (session.isLoading() && System.nanoTime() < deadline) {

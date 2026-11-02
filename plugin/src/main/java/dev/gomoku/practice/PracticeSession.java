@@ -22,6 +22,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         public boolean selected;
         public int fontSize;
         public int visibleLines = 6;
+        public boolean detailsVisible = true;
         public Map<String, String> titles = new HashMap<>();
         public Map<String, Integer> counts = new HashMap<>();
         public Map<String, PracticeProgress> progress = new HashMap<>();
@@ -51,6 +52,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         copy.selected = state.selected;
         copy.fontSize = state.fontSize;
         copy.visibleLines = state.visibleLines;
+        copy.detailsVisible = state.detailsVisible;
         copy.titles = new HashMap<>(state.titles);
         copy.counts = new HashMap<>(state.counts);
         state.progress.forEach((id, progress) -> copy.progress.put(id, progress.copy()));
@@ -64,6 +66,21 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     }
     public boolean isSelected() { return state.selected; }
     public boolean isVisible() { return view != null; }
+    // 仅显示刷题的编辑器接管辅助信息快捷键。
+    public boolean isVisibleIn(Editor editor) { return view != null && anchorEditor == editor; }
+    // 读取顶部信息和底部操作区的共同显隐状态。
+    public boolean isDetailsVisible() { return state.detailsVisible; }
+    // 切换辅助信息并收缩布局，保留当前题页与作答。
+    public synchronized void toggleDetails() {
+        state.detailsVisible = !state.detailsVisible;
+        refresh();
+    }
+    // 通过右键菜单翻阅当前题，隐藏底部按钮时仍可操作。
+    public void movePage(int delta) { if (view != null) view.movePage(delta); }
+    // 禁用已经到达边界的翻页操作。
+    public boolean canMovePage(int delta) {
+        return view != null && view.pageIndex() + delta >= 0 && view.pageIndex() + delta < view.pageCount();
+    }
     public boolean isLoading() { return loading; }
     public boolean hasPaper() { return paper != null; }
     PracticePaper paper() { return paper; }

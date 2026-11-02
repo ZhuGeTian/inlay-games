@@ -50,6 +50,13 @@
                 <action id="Moyu.Practice.Import" class="dev.gomoku.practice.PracticeActions$Import" text="导入 JSON 题库…"/>
                 <action id="Moyu.Practice.Sample" class="dev.gomoku.practice.PracticeActions$Sample" text="打开示例试卷"/>
                 <action id="Moyu.Practice.Show" class="dev.gomoku.practice.PracticeActions$Show" text="在此显示"/>
+                <action id="Moyu.Practice.Details" class="dev.gomoku.practice.PracticeActions$Details" text="隐藏／显示试卷信息和操作栏">
+                    <keyboard-shortcut keymap="$default" first-keystroke="control D"/>
+                    <keyboard-shortcut keymap="Mac OS X" first-keystroke="control D" replace-all="true"/>
+                    <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control D" replace-all="true"/>
+                </action>
+                <action id="Moyu.Practice.PreviousPage" class="dev.gomoku.practice.PracticeActions$PreviousPage" text="上一页"/>
+                <action id="Moyu.Practice.NextPage" class="dev.gomoku.practice.PracticeActions$NextPage" text="下一页"/>
                 <action id="Moyu.Practice.Previous" class="dev.gomoku.practice.PracticeActions$Previous" text="上一题"/>
                 <action id="Moyu.Practice.Next" class="dev.gomoku.practice.PracticeActions$Next" text="下一题"/>
                 <action id="Moyu.Practice.A" class="dev.gomoku.practice.PracticeActions$A" text="选择 A"/>

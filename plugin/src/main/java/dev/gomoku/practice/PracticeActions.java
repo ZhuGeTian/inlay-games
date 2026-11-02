@@ -66,6 +66,38 @@ public final class PracticeActions {
         }
     }
     public static final class Previous extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().move(-1); } }
+    public static final class Details extends QuestionAction {
+        // Ctrl+D 只在当前刷题编辑器中切换辅助区，其他位置让出快捷键。
+        @Override public void update(AnActionEvent e) {
+            super.update(e);
+            var session = PracticeSession.getInstance();
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.isVisibleIn(e.getData(CommonDataKeys.EDITOR)));
+            e.getPresentation().setText(session.isDetailsVisible() ? "隐藏试卷信息和操作栏" : "显示试卷信息和操作栏");
+        }
+        // 即使动作被直接调用，也只修改当前显示的刷题面板。
+        @Override public void actionPerformed(AnActionEvent e) {
+            var session = PracticeSession.getInstance();
+            if (session.isVisibleIn(e.getData(CommonDataKeys.EDITOR))) session.toggleDetails();
+        }
+    }
+    public static final class PreviousPage extends QuestionAction {
+        // 在首屏禁用上一页，隐藏辅助区时仍可从菜单访问。
+        @Override public void update(AnActionEvent e) {
+            super.update(e);
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && PracticeSession.getInstance().canMovePage(-1));
+        }
+        // 翻阅当前题的上一页。
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().movePage(-1); }
+    }
+    public static final class NextPage extends QuestionAction {
+        // 在末屏禁用下一页，避免菜单越过题目边界。
+        @Override public void update(AnActionEvent e) {
+            super.update(e);
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && PracticeSession.getInstance().canMovePage(1));
+        }
+        // 翻阅当前题的下一页。
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().movePage(1); }
+    }
     public static final class Next extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().move(1); } }
     public static final class Submit extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().submit(); } }
     public static final class Retry extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().retry(); } }

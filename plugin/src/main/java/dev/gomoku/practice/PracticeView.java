@@ -1,6 +1,7 @@
 package dev.gomoku.practice;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.editor.event.*;
@@ -14,7 +15,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-/** A painted inlay, never a document edit. Footer controls stay available on every page. */
+/** A painted inlay, never a document edit. Optional details surround the question body. */
 final class PracticeView implements EditorCustomElementRenderer, Disposable {
     record Row(String text, BufferedImage image, String action, int height, int imageWidth) {}
     record Button(String label, String action, boolean enabled, Rectangle bounds) {}
@@ -23,7 +24,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private Inlay<PracticeView> inlay;
     private Font font;
     private FontMetrics metrics;
-    private int width, height, lineHeight, bodyHeight, page, footerTop;
+    private int width, height, lineHeight, bodyHeight, bodyTop, page, footerTop;
     private int answerRow;
     private final List<List<Row>> pages = new ArrayList<>();
     private final List<Button> buttons = new ArrayList<>();
@@ -33,9 +34,12 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private boolean disposed;
 
     PracticeView(Editor editor, PracticeSession session) { this.editor = editor; this.session = session; layout(); }
+    // 绑定鼠标与局部快捷键，随刷题视图一起释放。
     void attach(int offset) {
         inlay = editor.getInlayModel().addBlockElement(offset, true, false, 0, this);
         if (inlay == null) { Disposer.dispose(this); return; }
+        ActionManager.getInstance().getAction("Moyu.Practice.Details")
+                .registerCustomShortcutSet(editor.getContentComponent(), this);
         editor.addEditorMouseListener(new EditorMouseListener() {
             @Override public void mousePressed(EditorMouseEvent event) {
                 if (inlay == null || !inlay.isValid() || event.isConsumed() || event.getInlay() != inlay
@@ -55,7 +59,8 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         var area = editor.getScrollingModel().getVisibleArea();
         var scheme = editor.getColorsScheme();
         return area.width + ":" + area.height + ":" + scheme.getEditorFontName() + ":" + scheme.getEditorFontSize()
-                + ":" + scheme.getDefaultForeground() + ":" + session.getFontSize() + ":" + session.getVisibleLines();
+                + ":" + scheme.getDefaultForeground() + ":" + session.getFontSize() + ":" + session.getVisibleLines()
+                + ":" + session.isDetailsVisible();
     }
     private void checkLayout() {
         if (disposed) return;
@@ -79,6 +84,11 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     }
     int pageCount() { return pages.size(); }
     int pageIndex() { return page; }
+    // 按边界翻页，供菜单与可见按钮共用。
+    void movePage(int delta) {
+        page = Math.max(0, Math.min(pages.size() - 1, page + delta));
+        refresh();
+    }
     List<Button> buttons() { return List.copyOf(buttons); }
     List<Button> optionHits() { return List.copyOf(optionHits); }
     String visibleText() {
@@ -88,10 +98,11 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         for (Button button : buttons) if (button.enabled && button.bounds.contains(x, y)) { act(button.action); return; }
         for (Button button : optionHits) if (button.enabled && button.bounds.contains(x, y)) { act(button.action); return; }
     }
+    // 分派正文和底部按钮动作，翻页复用同一边界逻辑。
     private void act(String action) {
         switch (action) {
-            case "page-" -> { page = Math.max(0, page - 1); refresh(); }
-            case "page+" -> { page = Math.min(pages.size() - 1, page + 1); refresh(); }
+            case "page-" -> movePage(-1);
+            case "page+" -> movePage(1);
             case "previous" -> session.move(-1);
             case "next" -> session.move(1);
             case "submit" -> session.submit();
@@ -101,7 +112,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             default -> session.choose(action);
         }
     }
-    // 按正文行数与视口高度分页，并保持每页操作按钮可用。
+    // 按正文行数分页；隐藏辅助区时同时移除占位和按钮命中区域。
     private void layout() {
         layoutKey = key();
         Font preferred = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
@@ -147,13 +158,14 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         }
         if (!current.isEmpty() || pages.isEmpty()) pages.add(current);
         page = Math.max(0, Math.min(page, pages.size() - 1));
-        footerTop = 2 * lineHeight + bodyHeight + 8;
+        bodyTop = (session.isDetailsVisible() ? 2 * lineHeight : 0) + 4;
+        footerTop = bodyTop + bodyHeight + 4;
         buttons.clear();
         var available = progress.indices(session.paper());
         int at = available.indexOf(progress.index);
         boolean submitted = !empty && progress.submitted.containsKey(session.question().id());
         String selected = empty ? "" : progress.choices.getOrDefault(session.question().id(), "");
-        addButtons(footerTop, new String[][] {
+        if (session.isDetailsVisible()) addButtons(footerTop, new String[][] {
                 {"上一页", "page-", Boolean.toString(page > 0)}, {"下一页", "page+", Boolean.toString(page + 1 < pages.size())},
                 {"A", "A", Boolean.toString(!empty && !submitted)}, {"B", "B", Boolean.toString(!empty && !submitted)},
                 {"C", "C", Boolean.toString(!empty && !submitted && session.question().options().size() > 2)}, {"D", "D", Boolean.toString(!empty && !submitted && session.question().options().size() > 3)},
@@ -162,8 +174,9 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
                 {"上一题", "previous", Boolean.toString(at > 0)}, {"下一题", "next", Boolean.toString(at >= 0 && at < available.size() - 1)},
                 {progress.onlyWrong ? "全部题" : "只看错题", "filter", "true"}, {"收起", "hide", "true"}
         });
+        else height = bodyTop + pages.get(page).stream().mapToInt(Row::height).sum() + 4;
         optionHits.clear();
-        int y = 2 * lineHeight + 4;
+        int y = bodyTop;
         for (var row : pages.get(page)) {
             if (row.action != null) optionHits.add(new Button(row.action, row.action, !submitted, new Rectangle(6, y, width - 12, row.height)));
             y += row.height;
@@ -207,6 +220,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     @Override public int calcWidthInPixels(Inlay inlay) { return width; }
     @Override public int calcHeightInPixels(Inlay inlay) { return height; }
     @Override public String getContextMenuGroupId(Inlay inlay) { return "Moyu.Practice.Menu"; }
+    // 辅助信息按设置绘制，正文与选项使用统一的布局起点。
     @Override public void paint(Inlay inlay, Graphics graphics, Rectangle region, TextAttributes attributes) {
         Graphics2D g = (Graphics2D) graphics.create();
         try {
@@ -221,12 +235,14 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             var comment = scheme.getAttributes(DefaultLanguageHighlighterColors.LINE_COMMENT);
             Color normal = comment != null && comment.getForegroundColor() != null ? comment.getForegroundColor() : scheme.getDefaultForeground();
             g.setColor(normal);
-            g.drawString(shorten("// " + session.paper().title()), 8, metrics.getAscent() + 2);
             var progress = session.progress();
-            String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size() + " · " + session.question().typeLabel();
-            g.drawString(shorten("// " + status + " · 页 " + (page + 1) + "/" + pages.size()
-                    + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
-            int y = lineHeight * 2 + 4;
+            if (session.isDetailsVisible()) {
+                g.drawString(shorten("// " + session.paper().title()), 8, metrics.getAscent() + 2);
+                String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size() + " · " + session.question().typeLabel();
+                g.drawString(shorten("// " + status + " · 页 " + (page + 1) + "/" + pages.size()
+                        + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
+            }
+            int y = bodyTop;
             String selected = session.empty() ? "" : progress.choices.getOrDefault(session.question().id(), "");
             for (var row : pages.get(page)) {
                 g.setColor(row.action != null && selected.contains(row.action) ? new Color(0xD99545) : normal);
