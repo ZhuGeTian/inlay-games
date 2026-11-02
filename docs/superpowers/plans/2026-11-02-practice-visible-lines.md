@@ -13,4 +13,4 @@
 - [x] Actions/XML: 添加 VisibleLines action，Messages 输入框整数 1–20，默认当前值，取消不变；菜单放在字号旁。
 - [x] Integration tests: 长材料从 6→1 行高度下降、页数增加；逐页还原全部材料；底部 B/submit 可用且源码不变；XML往返恢复 3 行、非法值恢复默认、旧状态默认6；1行图像仍可绘制且按钮在inlay范围内。
 - [x] Build: `JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' ./gradlew :plugin:test :plugin:buildPlugin '-PlocalIdePath=/Applications/IntelliJ IDEA CE.app' '-PpracticeBanksDir=/Users/lidangjuanyan.0815/Desktop/酒店比价/inlay-games/private/practice-banks'`，预期全通过且0.6.2包内保留两卷180题。
-- [ ] 更新使用文档、AGENTS未来区域约定；按现有流程发布0.6.2，核对公网文件字节数/SHA/更新源并记录证据。
+- [x] 更新使用文档、AGENTS未来区域约定；按现有流程发布0.6.2，核对公网文件字节数/SHA/更新源并记录证据。
