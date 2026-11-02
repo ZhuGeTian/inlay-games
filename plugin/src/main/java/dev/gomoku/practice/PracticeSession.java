@@ -21,6 +21,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         public String paperId = "";
         public boolean selected;
         public int fontSize;
+        public int visibleLines = 6;
         public Map<String, String> titles = new HashMap<>();
         public Map<String, Integer> counts = new HashMap<>();
         public Map<String, PracticeProgress> progress = new HashMap<>();
@@ -43,20 +44,23 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     public static PracticeSession getInstance() { return ApplicationManager.getApplication().getService(PracticeSession.class); }
     static Path directory() { return PathManager.getConfigDir().resolve("moyu-practice/papers"); }
     static boolean validId(String id) { return id != null && id.matches("[0-9a-f]{64}"); }
-    // IDE persistence may snapshot state off the EDT while the user answers a question.
+    // 复制快照，避免后台持久化读取正在作答的可变数据。
     @Override public synchronized SavedState getState() {
         var copy = new SavedState();
         copy.paperId = state.paperId;
         copy.selected = state.selected;
         copy.fontSize = state.fontSize;
+        copy.visibleLines = state.visibleLines;
         copy.titles = new HashMap<>(state.titles);
         copy.counts = new HashMap<>(state.counts);
         state.progress.forEach((id, progress) -> copy.progress.put(id, progress.copy()));
         return copy;
     }
+    // 恢复设置，旧版本缺失字段与非法显示行数使用默认值。
     @Override public synchronized void loadState(SavedState value) {
         state = value;
         if (value.fontSize != 0 && (value.fontSize < 8 || value.fontSize > 32)) value.fontSize = 0;
+        if (value.visibleLines < 1 || value.visibleLines > 20) value.visibleLines = 6;
     }
     public boolean isSelected() { return state.selected; }
     public boolean isVisible() { return view != null; }
@@ -65,6 +69,14 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     PracticePaper paper() { return paper; }
     synchronized PracticeProgress progress() { return state.progress.computeIfAbsent(paper.id(), id -> new PracticeProgress()); }
     public int getFontSize() { return state.fontSize; }
+    // 获取正文每页最多显示的行数，不含标题和按钮。
+    public int getVisibleLines() { return state.visibleLines; }
+    // 保存显示行数并重新分页，保留当前题目和作答。
+    public synchronized void setVisibleLines(int lines) {
+        if (lines < 1 || lines > 20) throw new IllegalArgumentException("显示行数必须是 1–20。");
+        state.visibleLines = lines;
+        if (view != null) view.firstPage();
+    }
     public synchronized void setFontSize(int size) {
         if (size != 0 && (size < 8 || size > 32)) throw new IllegalArgumentException("字号必须是 0 或 8–32。");
         state.fontSize = size;

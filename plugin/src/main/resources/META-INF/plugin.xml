@@ -61,6 +61,7 @@
                 <action id="Moyu.Practice.Filter" class="dev.gomoku.practice.PracticeActions$Filter" text="只看错题"/>
                 <action id="Moyu.Practice.Images" class="dev.gomoku.practice.PracticeActions$Images" text="查看本题原图…"/>
                 <action id="Moyu.Practice.FontSize" class="dev.gomoku.practice.PracticeActions$FontSize" text="调节刷题字号…"/>
+                <action id="Moyu.Practice.VisibleLines" class="dev.gomoku.practice.PracticeActions$VisibleLines" text="调节显示行数…"/>
                 <action id="Moyu.Practice.Hide" class="dev.gomoku.practice.PracticeActions$Hide" text="收起"/>
             </group>
             <group id="InlayGames.Novel.Menu" text="小说" popup="true">

@@ -69,6 +69,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         click("previous"); assertEquals(0, session.progress().index);
         assertEquals(original, editor.getDocument().getText()); assertEquals(stamp, editor.getDocument().getModificationStamp());
     }
+    // 未知答案不判分，缩小区域后也能分页读到解析提示。
     public void testRealOptionHitAndUnknownAnswerAndEmptyWrongFilter() {
         session.show(myFixture.getEditor());
         click("filter"); assertTrue(view().visibleText().contains("还没有错题"));
@@ -77,7 +78,11 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         view().activateAt(box.x + 2, box.y + 2); assertEquals("B", session.progress().choices.get("sample-1"));
         session.move(3); click("D"); click("submit");
         assertTrue(view().visibleText().contains("未提供答案")); assertTrue(session.progress().mistakes.isEmpty());
-        assertTrue(view().visibleText().contains("未提供解析"));
+        StringBuilder resultPages = new StringBuilder(view().visibleText());
+        while (view().pageIndex() + 1 < view().pageCount()) {
+            click("page+"); resultPages.append(view().visibleText());
+        }
+        assertTrue(resultPages.toString().contains("未提供解析"));
     }
     public void testFixedAnchorCtrlGAndGameSwitchKeepsRoom() throws Exception {
         Editor editor = myFixture.getEditor();
@@ -195,6 +200,75 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
             assertEquals(entries.size() + idsBefore.size(), session.getState().titles.size());
             assertEquals(entries.size() + idsBefore.size(), PracticeCatalog.entries(session.getState()).size());
         } finally { for (var cache : created) java.nio.file.Files.deleteIfExists(cache); }
+    }
+    // 缩小正文后仍能读完长材料、作答，且不会改动源文件。
+    public void testVisibleLinesShrinkWithoutLosingContentOrAnswers() throws Exception {
+        var json = PracticePaperTest.json();
+        String material = "逐行阅读测试🌌。".repeat(80);
+        json.getAsJsonArray("questions").get(0).getAsJsonObject().addProperty("material", material);
+        session.accept(PracticePaperTest.parse(json));
+        Editor editor = myFixture.getEditor();
+        String source = editor.getDocument().getText();
+        long stamp = editor.getDocument().getModificationStamp();
+        session.show(editor);
+        int height = blocks().get(0).getHeightInPixels(), count = view().pageCount();
+        click("B"); click("page+");
+        session.setVisibleLines(1);
+        assertTrue(blocks().get(0).getHeightInPixels() < height);
+        assertTrue(view().pageCount() > count);
+        assertEquals(0, view().pageIndex());
+        assertEquals("B", session.progress().choices.get(session.question().id()));
+        StringBuilder text = new StringBuilder();
+        for (int i = 0, pages = view().pageCount(); i < pages; i++) {
+            assertEquals(1, view().visibleText().lines().filter(line -> !line.isEmpty()).count());
+            text.append(view().visibleText().replace("\n", "").replace("// ", ""));
+            if (i + 1 < pages) click("page+");
+        }
+        assertTrue(text.toString().contains(material));
+        click("submit");
+        assertEquals("B", session.progress().submitted.get(session.question().id()));
+        assertTrue(session.progress().result(session.question()).startsWith("正确"));
+        session.setVisibleLines(3);
+        assertEquals(0, session.progress().index);
+        assertEquals("B", session.progress().submitted.get(session.question().id()));
+        assertEquals(source, editor.getDocument().getText());
+        assertEquals(stamp, editor.getDocument().getModificationStamp());
+        assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.VisibleLines"));
+    }
+    // 行数设置可序列化恢复，旧配置和损坏配置使用紧凑默认值。
+    public void testVisibleLinesPersistenceAndInvalidValues() {
+        assertEquals(6, session.getVisibleLines());
+        session.setVisibleLines(3);
+        var savedState = session.getState(); savedState.visibleLines = 12;
+        assertEquals(3, session.getVisibleLines());
+        var serialized = XmlSerializer.deserialize(XmlSerializer.serialize(session.getState()), PracticeSession.SavedState.class);
+        session.setVisibleLines(20); session.loadState(serialized);
+        assertEquals(3, session.getVisibleLines());
+        session.loadState(XmlSerializer.deserialize(new org.jdom.Element("state"), PracticeSession.SavedState.class));
+        assertEquals(6, session.getVisibleLines());
+        for (int invalid : new int[]{-1, 0, 21, Integer.MAX_VALUE}) {
+            try { session.setVisibleLines(invalid); fail("Invalid line count accepted"); }
+            catch (IllegalArgumentException expected) { assertEquals(6, session.getVisibleLines()); }
+            var damaged = new PracticeSession.SavedState(); damaged.visibleLines = invalid;
+            session.loadState(damaged); assertEquals(6, session.getVisibleLines());
+        }
+    }
+    // 最小正文高度下图片仍可绘制，底部按钮不会被裁掉。
+    public void testOneLineImagePaginationAndFooterBounds() {
+        session.setVisibleLines(1); session.show(myFixture.getEditor()); session.move(2);
+        boolean sawImage = false;
+        for (int i = 0, pages = view().pageCount(); i < pages; i++) {
+            sawImage |= view().visibleText().contains("[图片]");
+            var inlay = blocks().get(0);
+            var image = new java.awt.image.BufferedImage(inlay.getWidthInPixels(), inlay.getHeightInPixels(), java.awt.image.BufferedImage.TYPE_INT_RGB);
+            var graphics = image.createGraphics();
+            try { view().paint(inlay, (Graphics) graphics, new Rectangle(image.getWidth(), image.getHeight()), null); }
+            finally { graphics.dispose(); }
+            for (var button : view().buttons()) assertTrue(button.bounds().y + button.bounds().height <= image.getHeight());
+            if (i + 1 < pages) click("page+");
+        }
+        assertTrue(sawImage);
+        click("B"); click("submit"); assertTrue(session.progress().submitted.containsKey(session.question().id()));
     }
     private void awaitLoad() {
         long deadline = System.nanoTime() + 15_000_000_000L;

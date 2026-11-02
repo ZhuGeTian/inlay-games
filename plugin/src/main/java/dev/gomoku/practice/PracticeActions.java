@@ -110,6 +110,24 @@ public final class PracticeActions {
             }.show();
         }
     }
+    public static final class VisibleLines extends DumbAwareAction {
+        // 调整正文展示高度，取消对话框时保留原设置。
+        @Override public void actionPerformed(AnActionEvent e) {
+            var session = PracticeSession.getInstance();
+            String value = Messages.showInputDialog(e.getProject(),
+                    "输入正文显示行数 1–20（默认 6）；不含题号和按钮，超出内容可翻页查看。",
+                    "刷题显示行数", null, Integer.toString(session.getVisibleLines()), new InputValidator() {
+                        // 仅接受范围内的整数，避免无效设置进入布局。
+                        @Override public boolean checkInput(String text) {
+                            try { int lines = Integer.parseInt(text.trim()); return lines >= 1 && lines <= 20; }
+                            catch (NumberFormatException ignored) { return false; }
+                        }
+                        // 输入有效时才允许提交。
+                        @Override public boolean canClose(String text) { return checkInput(text); }
+                    });
+            if (value != null) session.setVisibleLines(Integer.parseInt(value.trim()));
+        }
+    }
     public static final class FontSize extends DumbAwareAction {
         @Override public void actionPerformed(AnActionEvent e) {
             var session = PracticeSession.getInstance();

@@ -50,11 +50,12 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         editor.getScrollingModel().addVisibleAreaListener(event -> checkLayout(), this);
         resize.start();
     }
+    // 展示设置或编辑器尺寸变化时触发重新布局。
     private String key() {
         var area = editor.getScrollingModel().getVisibleArea();
         var scheme = editor.getColorsScheme();
         return area.width + ":" + area.height + ":" + scheme.getEditorFontName() + ":" + scheme.getEditorFontSize()
-                + ":" + scheme.getDefaultForeground() + ":" + session.getFontSize();
+                + ":" + scheme.getDefaultForeground() + ":" + session.getFontSize() + ":" + session.getVisibleLines();
     }
     private void checkLayout() {
         if (disposed) return;
@@ -100,6 +101,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             default -> session.choose(action);
         }
     }
+    // 按正文行数与视口高度分页，并保持每页操作按钮可用。
     private void layout() {
         layoutKey = key();
         Font preferred = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
@@ -110,7 +112,8 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         lineHeight = Math.max(metrics.getHeight() + 2, editor.getLineHeight());
         var area = editor.getScrollingModel().getVisibleArea();
         width = Math.max(180, Math.min(JBUI.scale(760), (area.width > 0 ? area.width : 700) - 28));
-        bodyHeight = Math.max(lineHeight * 3, Math.min(JBUI.scale(340), (area.height > 0 ? area.height : 600) / 2));
+        bodyHeight = lineHeight * Math.max(1, Math.min(session.getVisibleLines(),
+                (area.height > 0 ? area.height : 600) / 2 / lineHeight));
         var rows = new ArrayList<Row>();
         var progress = session.progress();
         boolean empty = session.empty();
