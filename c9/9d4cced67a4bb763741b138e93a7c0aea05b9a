@@ -1,0 +1,68 @@
+docs/practice.md
+  s_882bdfd446838a::t_42cc6fea87217e 1-14,17-81
+  s_882bdfd446838a::t_d0c79f6dd110be 15-16
+plugin/src/main/java/dev/gomoku/practice/PracticePaper.java
+  s_882bdfd446838a::t_e60efd38b2c15d 67
+  s_28ede11b99a22d::t_0d6bc17b1c501a 1-66,68-144
+plugin/src/main/java/dev/gomoku/practice/PracticeProgress.java
+  s_28ede11b99a22d::t_0d6bc17b1c501a 1-75
+docs/superpowers/plans/2026-11-02-practice.md
+  s_28ede11b99a22d::t_40c4d3d1aea33c 1-9,13-14,18-19
+  s_28ede11b99a22d::t_97efa4fd65b5fa 10-12,15-17,20-22
+plugin/src/main/java/dev/gomoku/practice/PracticeSession.java
+  s_882bdfd446838a::t_c5f6c23a316707 45-46,55,64,66,128,135,160,165,170,178,183,187
+  s_28ede11b99a22d::t_50230dbd0c0e32 1-44,47-54,56-63,65,67-127,129-134,136-159,162-164,166-169,171-177,179-182,184-186,188-193
+  s_28ede11b99a22d::t_e1982a627b98ff 161
+plugin/src/main/java/dev/gomoku/practice/PracticeView.java
+  s_28ede11b99a22d::t_aa69f30d49d95c 1-253
+plugin/src/main/resources/practice/sample-practice.json
+  s_882bdfd446838a::t_e60efd38b2c15d 1-88
+docs/superpowers/specs/2026-11-02-practice-design.md
+  s_28ede11b99a22d::t_40c4d3d1aea33c 1-12
+README.md
+  s_882bdfd446838a::t_42cc6fea87217e 5,7,21-24,104
+docs/verification.md
+  s_28ede11b99a22d::t_97efa4fd65b5fa 79-87
+plugin/src/test/java/dev/gomoku/practice/PracticePaperTest.java
+  s_882bdfd446838a::t_e60efd38b2c15d 1-82
+build.gradle.kts
+  s_28ede11b99a22d::t_c17fd649c8263f 9
+plugin/src/main/java/dev/gomoku/novel/NovelReader.java
+  s_28ede11b99a22d::t_c15e7f6f0d7a65 195
+plugin/src/main/java/dev/gomoku/novel/ReaderStartup.java
+  s_28ede11b99a22d::t_a877c92782e759 19
+plugin/src/main/java/dev/gomoku/practice/PracticeActions.java
+  s_882bdfd446838a::t_9f90fed221f719 1-118
+plugin/src/main/kotlin/dev/gomoku/plugin/Actions.kt
+  s_28ede11b99a22d::t_e8e8dcb3e4f74f 4,83,88-90,96-99
+plugin/src/main/kotlin/dev/gomoku/plugin/GomokuSession.kt
+  s_28ede11b99a22d::t_457327f23fb245 103
+plugin/src/main/resources/META-INF/plugin.xml
+  s_882bdfd446838a::t_c82edf8abdc4fa 5,11,48-65,80
+plugin/src/test/java/dev/gomoku/practice/PracticeIntegrationTest.java
+  s_882bdfd446838a::t_f2e6c7e63eab63 1-173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c99d4cced67a4bb763741b138e93a7c0aea05b9a",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
