@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-11-02-practice-visible-lines.md
+  s_28ede11b99a22d::t_db133c2c05171e 16
+docs/verification.md
+  s_28ede11b99a22d::t_be93c1d13a2c58 116-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f267fafb7a046e5b396171fc5b97bf5ce968f08d",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
