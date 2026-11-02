@@ -1,0 +1,29 @@
+docs/installation.md
+  s_882bdfd446838a::t_e131567dc8e980 5,7,10,13,19,34-38,48
+AGENTS.md
+  s_882bdfd446838a::t_e131567dc8e980 1-10
+README.md
+  s_882bdfd446838a::t_e131567dc8e980 21,23,29,45,49,102-103,126
+docs/practice.md
+  s_882bdfd446838a::t_e131567dc8e980 7,9,88,101
+distribution/install.md
+  s_882bdfd446838a::t_e131567dc8e980 19-23,45,48,53-54,57,63,87,112,128-129,136,161
+distribution/updatePlugins.xml
+  s_882bdfd446838a::t_e131567dc8e980 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e9f5aabd7b441026d1f1e8fd2d0391fc76cabc82",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
