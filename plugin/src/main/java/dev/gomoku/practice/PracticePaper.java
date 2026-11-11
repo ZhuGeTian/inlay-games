@@ -15,7 +15,8 @@ public record PracticePaper(String id, String title, List<Question> questions) {
     public static final int MAX_BYTES = 16 * 1024 * 1024;
     public record Option(String text, BufferedImage image) {}
     public record Question(String id, String type, String material, List<BufferedImage> materialImages, String stem,
-                           List<BufferedImage> images, List<Option> options, String answer, String explanation, String section) {
+                           List<BufferedImage> images, List<Option> options, String answer, String explanation, String section, String answerSource) {
+        public String answerLabel() { return answerSource.isEmpty() ? "正确答案" : "参考答案"; }
         public boolean validChoice(String value) {
             if (value == null || value.isEmpty() || !value.matches("[A-D]+")) return false;
             if (!type.equals("multiple") && value.length() != 1) return false;
@@ -83,10 +84,10 @@ public record PracticePaper(String id, String title, List<Question> questions) {
                 }
                 questions.add(new Question(id, type, text(q, "material", false, 40000), decoder.list(q, "materialImages"),
                         text(q, "stem", true, 16000), decoder.list(q, "images"), List.copyOf(options), answer,
-                        text(q, "explanation", false, 40000), section));
+                        text(q, "explanation", false, 40000), section, text(q, "answerSource", false, 4000)));
             }
             String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
-            return new PracticePaper(hash, title, List.copyOf(questions));
+            return PracticeAnswers.apply(new PracticePaper(hash, title, List.copyOf(questions)));
         } catch (JsonParseException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException | NoSuchAlgorithmException e) {
             throw new IOException("题库格式错误：" + e.getMessage(), e);
         }

@@ -11,6 +11,7 @@ public final class PracticeSectionsTest {
             try (var input = PracticeCatalog.open(entry.id())) {
                 var paper = PracticePaper.parse(PracticePaper.readBytes(input));
                 assertEquals(entry.id(), paper.id());
+                if (entry.count() == 225) { assertEquals(225, PracticeSections.count(paper, "言语理解")); continue; }
                 assertEquals(10, PracticeSections.count(paper, "政治理论"));
                 assertEquals(5, PracticeSections.count(paper, "常识"));
                 assertEquals(15, PracticeSections.count(paper, "言语理解"));

@@ -190,9 +190,12 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
                 session.openBundled(entry.id(), getProject(), myFixture.getEditor()); awaitLoad();
                 assertEquals(entry.id(), session.paper().id()); assertEquals(entry.count(), session.paper().questions().size());
                 assertEquals(0, session.progress().index);
-                session.choose("A"); session.submit(); assertTrue(session.progress().result(session.question()).contains("未提供答案"));
-                session.move(8); click("B"); click("D"); click("submit");
-                assertEquals("BD", session.progress().submitted.get(session.question().id()));
+                String firstAnswer = session.question().answer();
+                session.choose(firstAnswer); session.submit(); assertTrue(session.progress().result(session.question()).startsWith("正确"));
+                session.move(8);
+                String answer = session.question().answer();
+                for (char letter : answer.toCharArray()) session.choose(String.valueOf(letter));
+                session.submit(); assertEquals(answer, session.progress().submitted.get(session.question().id()));
                 assertTrue(session.progress().mistakes.isEmpty());
             }
             var first = entries.get(0); session.openBundled(first.id(), getProject(), myFixture.getEditor()); awaitLoad();
@@ -397,6 +400,69 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         assertTrue(view().visibleText().contains("正确答案"));
         session.selectSection("言语理解"); assertEquals("政治理论", session.getSection());
         assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.Sections"));
+    }
+    // 隐藏、切换板块和持久化恢复均继续原段落及答案阶段。
+    public void testResumePageAcrossHideSectionAndRestart() throws Exception {
+        var json = PracticePaperTest.json(); var q = json.getAsJsonArray("questions").get(0).getAsJsonObject();
+        q.addProperty("section", "言语理解"); q.addProperty("material", "续做材料。".repeat(80));
+        q.addProperty("explanation", "续做解析。".repeat(80));
+        var paper = PracticePaperTest.parse(json); session.accept(paper); session.setVisibleLines(2); session.show(myFixture.getEditor());
+        session.movePage(2); String text = view().visibleText(); assertEquals(2, view().pageIndex());
+        session.hide(); session.show(myFixture.getEditor()); assertEquals(2, view().pageIndex()); assertEquals(text, view().visibleText());
+        session.selectSection("言语理解"); assertEquals(0, view().pageIndex());
+        session.movePage(1); assertTrue(session.progress().answerVisible); session.moveSegment(2);
+        String answerText = view().visibleText(); assertEquals(2, view().pageIndex());
+        session.selectSection(""); assertEquals(2, view().pageIndex()); assertEquals(text, view().visibleText());
+        session.selectSection("言语理解"); assertEquals(answerText, view().visibleText());
+        var state = XmlSerializer.deserialize(XmlSerializer.serialize(session.getState()), PracticeSession.SavedState.class);
+        session.hide(); session.loadState(state); session.accept(paper); session.show(myFixture.getEditor());
+        assertTrue(session.progress().answerVisible); assertEquals(2, view().pageIndex()); assertEquals(answerText, view().visibleText());
+        session.movePage(-1); assertFalse(session.progress().answerVisible); assertEquals(0, view().pageIndex());
+    }
+    // 实际绘制必须保持灰色，仅选中选项使用粗体。
+    public void testSelectedOptionOnlyUsesBoldWithoutColorOrLabelChange() {
+        var editor = myFixture.getEditor(); var scheme = editor.getColorsScheme();
+        var oldComment = scheme.getAttributes(com.intellij.openapi.editor.DefaultLanguageHighlighterColors.LINE_COMMENT).clone();
+        try {
+            scheme.setAttributes(com.intellij.openapi.editor.DefaultLanguageHighlighterColors.LINE_COMMENT,
+                    new com.intellij.openapi.editor.markup.TextAttributes(Color.GRAY, null, null, null, Font.PLAIN));
+            session.show(editor); String before = view().visibleText(); click("A");
+            assertEquals(before, view().visibleText()); assertTrue(view().optionFont("A").isBold()); assertFalse(view().optionFont("B").isBold());
+            session.toggleDetails();
+            var inlay = blocks().get(0); var image = new java.awt.image.BufferedImage(inlay.getWidthInPixels(), inlay.getHeightInPixels(), java.awt.image.BufferedImage.TYPE_INT_RGB);
+            var graphics = image.createGraphics();
+            try { view().paint(inlay, (Graphics) graphics, new Rectangle(image.getWidth(), image.getHeight()), null); } finally { graphics.dispose(); }
+            Color background = scheme.getDefaultBackground(); int ink = 0;
+            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                Color pixel = new Color(image.getRGB(x, y));
+                if (!pixel.equals(background)) {
+                    // 灰色文字与背景混合后的色差不能超出背景本身；橙色选中会超出。
+                    int spread = Math.max(pixel.getRed(), Math.max(pixel.getGreen(), pixel.getBlue())) - Math.min(pixel.getRed(), Math.min(pixel.getGreen(), pixel.getBlue()));
+                    int backgroundSpread = Math.max(background.getRed(), Math.max(background.getGreen(), background.getBlue())) - Math.min(background.getRed(), Math.min(background.getGreen(), background.getBlue()));
+                    assertTrue(spread <= backgroundSpread + 1); ink++;
+                }
+            }
+            assertTrue(ink > 10);
+        } finally { scheme.setAttributes(com.intellij.openapi.editor.DefaultLanguageHighlighterColors.LINE_COMMENT, oldComment); }
+    }
+    // 错题入口能从别的试卷跳回原卷原板块，重做正确仍保留历史。
+    public void testOpenGlobalMistakeReturnsToOriginalPaperAndSection() throws Exception {
+        var json = PracticePaperTest.json(); json.addProperty("title", "错题跳转测试" + System.nanoTime());
+        json.getAsJsonArray("questions").get(0).getAsJsonObject().addProperty("section", "政治理论");
+        byte[] bytes = json.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8); var paper = PracticePaper.parse(bytes);
+        var cache = PracticeSession.directory().resolve(paper.id() + ".json");
+        java.nio.file.Files.createDirectories(cache.getParent()); java.nio.file.Files.write(cache, bytes);
+        try {
+            session.accept(paper); session.selectSection("政治理论"); session.show(myFixture.getEditor()); click("A"); click("page+");
+            var entry = PracticeMistakes.entries(session.getState(), paper).get(0);
+            session.accept(PracticePaper.parse(PracticePaperTest.sample())); session.show(myFixture.getEditor());
+            session.openMistake(entry, getProject(), myFixture.getEditor()); awaitLoad();
+            assertEquals(paper.id(), session.paper().id()); assertEquals("政治理论", session.getSection());
+            assertFalse(session.progress().answerVisible); assertTrue(session.progress().onlyWrong); assertEquals(0, session.progress().index);
+            click("retry"); click("B"); click("page+"); assertTrue(session.progress().result(session.question()).startsWith("正确"));
+            assertEquals(1, PracticeMistakes.entries(session.getState(), paper).size());
+            assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.Mistakes"));
+        } finally { java.nio.file.Files.deleteIfExists(cache); }
     }
     private void awaitLoad() {
         long deadline = System.nanoTime() + 15_000_000_000L;

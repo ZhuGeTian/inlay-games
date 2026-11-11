@@ -16,11 +16,11 @@
 | --- | --- |
 | 插件名称 | Moyu Collection（摸鱼合集） |
 | 插件 ID | `dev.gomoku.inlay` |
-| 版本 | `0.6.4` |
-| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.4.zip |
-| 文件大小 | `1753458` 字节 |
-| SHA-256 | `967845a22ce0215e7ea9b053705d968b6a7fa25bcc2ea9473546f00c9c5c8975` |
-| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.4.zip.sha256 |
+| 版本 | `0.6.5` |
+| ZIP | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.5.zip |
+| 文件大小 | `1884640` 字节 |
+| SHA-256 | `fefab3064fb7dbf90cb6d54ea72d8568ca082f2a5d2c48d5c339ba88b9f8e270` |
+| 校验文件 | https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.5.zip.sha256 |
 | 插件仓库 | https://zhugetian.com/gomoku/updatePlugins.xml |
 | IntelliJ 平台 Build 范围 | `232.10072.27` 至 `262.*` |
 | ZIP 内顶层目录 | `inlay-gomoku/` |
@@ -42,25 +42,25 @@
 macOS / Linux 下载示例（使用系统已有工具即可）：
 
 ```sh
-curl --fail --location --output inlay-gomoku-0.6.4.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.4.zip'
+curl --fail --location --output inlay-gomoku-0.6.5.zip 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.5.zip'
 ```
 
-macOS 可用 `shasum -a 256 inlay-gomoku-0.6.4.zip`；Linux 可用 `sha256sum inlay-gomoku-0.6.4.zip`。
+macOS 可用 `shasum -a 256 inlay-gomoku-0.6.5.zip`；Linux 可用 `sha256sum inlay-gomoku-0.6.5.zip`。
 
 Windows PowerShell 示例：
 
 ```powershell
-Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.4.zip' -OutFile 'inlay-gomoku-0.6.4.zip'
-Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.6.4.zip'
+Invoke-WebRequest -Uri 'https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.5.zip' -OutFile 'inlay-gomoku-0.6.5.zip'
+Get-FileHash -Algorithm SHA256 'inlay-gomoku-0.6.5.zip'
 ```
 
-再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.6.4.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
+再检查 ZIP 中 `inlay-gomoku/lib/plugin-0.6.5.jar` 的 `META-INF/plugin.xml`，确认插件 ID、版本、Build 范围与上表相同。解压前拒绝绝对路径、`..` 路径和符号链接。
 
 ## 3. 安装到目标 IDE
 
 选择一个适合当前环境的方式即可。不要同时尝试多个方式，不要改项目源码或替换其他插件。
 
-安装前检查已有插件版本。若已安装并启用了 0.6.4 或更高版本，报告现状，不重复安装或降级。
+安装前检查已有插件版本。若已安装并启用了 0.6.5 或更高版本，报告现状，不重复安装或降级。
 
 ### IDE 已打开且 AI 能操作界面
 
@@ -84,7 +84,7 @@ Windows PowerShell：
 
 macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studio` 或 IDEA 的 `Contents/MacOS/idea`；Windows / Linux 使用目标 IDE 的 `bin` 目录中的启动程序。以已识别的实际路径为准。
 
-命令提示“已安装”不代表已经升级到 0.6.4，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
+命令提示“已安装”不代表已经升级到 0.6.5，必须检查实际版本。已有相同或更高版本时保留；已有更低版本但命令未升级时，改用“从磁盘安装”或下面的离线步骤。部分 Android Studio 构建可能不支持此命令，不能把启动 IDE 窗口当作安装成功。
 
 这个方法采用 JetBrains 的 [命令行安装机制](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html) 和 [自定义插件仓库格式](https://plugins.jetbrains.com/docs/intellij/custom-plugin-repository.html)。无需修改全局 Java 环境。
 
@@ -109,7 +109,7 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 1. 在插件目录旁的临时目录完整解压，保持 `inlay-gomoku/lib/*.jar` 结构，不要只复制主 JAR。
 2. 在用户插件目录查找 ID 为 `dev.gomoku.inlay` 的旧插件；以 JAR 内 `plugin.xml` 为依据，不只依赖文件夹名字。存在版本更高的插件时不降级。
 3. 把这个插件的旧目录移到**插件扫描目录之外**备份，再把暂存的 `inlay-gomoku` 目录移入用户插件目录；失败时恢复备份。不要合并新旧 `lib`，不要删除整个用户插件目录。
-4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.6.4.jar`。用户启动 IDE 后启用 Moyu Collection（摸鱼合集）；若原来手动禁用了它，保留该设置并提示用户。
+4. 确认目标形如 `<真实用户插件目录>/inlay-gomoku/lib/plugin-0.6.5.jar`。用户启动 IDE 后启用 Moyu Collection（摸鱼合集）；若原来手动禁用了它，保留该设置并提示用户。
 
 ## 4. 如实反馈安装结果
 
@@ -125,13 +125,13 @@ macOS 常见启动程序为 Android Studio 应用包内的 `Contents/MacOS/studi
 
 ## 使用方式
 
-0.6.4 新增板块练习：先“选择试卷”，再进入“行测刷题 → 板块练习”，选择言语理解、政治理论或常识。下一页依次显示题目、答案、下一题；长题或长解析用上段／下段阅读。整卷和各板块分别保存进度，显示行数、字号及 Ctrl+D 仍可用。两份原题库没有答案解析，答案页明确提示缺失，不自动判分或补猜。
+0.6.5 新增言语专项225题及配套参考答案解析、断点续做、同色加粗选项、跨卷错题库。板块练习：先“选择试卷”，再进入“行测刷题 → 板块练习”，选择言语理解、政治理论或常识。下一页依次显示题目、答案、下一题；长题或长解析用上段／下段阅读。整卷和各板块分别保存进度，显示行数、字号及 Ctrl+D 仍可用。旧两卷共补59题参考答案；2025年第10题和原两卷后60题仍无确认答案，不判分。
 
 0.6.3 新增 Ctrl+D：在刷题编辑器中隐藏／显示顶部两行试卷信息和完整底部操作栏；隐藏时只保留正文并收缩区域，当前页、题目和作答保持不变。设置自动保存，右键菜单仍可翻页、提交或恢复辅助区。macOS 同样使用 Control+D；Ctrl+G 仍控制整个面板。
 
 0.6.2 支持调节刷题显示行数：右键“摸鱼合集 → 行测刷题 → 调节显示行数”，可设 1–20 行，默认 6 行正文（题号和按钮另计）。立即生效、重启保留，超出内容继续分页查看，保留题目和作答。
 
-行测刷题：右键“摸鱼合集 → 行测刷题 → 选择试卷”，按年份或名称选择。发行包内含 2026、2025 广东行测网友回忆版各 90 题；支持判断、单选、多选、材料图片和每卷独立进度，也可导入 JSON 题库。原 PDF 未附答案解析，这两份卷仅记录作答，暂不判分。字号可调，Ctrl+G 显隐。完整说明：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/practice.md
+行测刷题：右键“摸鱼合集 → 行测刷题 → 选择试卷”，按年份或名称选择。发行包内含 2026、2025 广东行测网友回忆版各 90 题；支持判断、单选、多选、材料图片和每卷独立进度，也可导入 JSON 题库。另含225题言语专项及配套解析。原两卷部分题已补参考答案，未确认题暂不判分。字号可调，Ctrl+G 显隐。完整说明：https://github.com/ZhuGeTian/inlay-games/blob/main/docs/practice.md
 
 0.5.1集成missNovel小说阅读：本地TXT导入、本地书架、章节选择、手动／自动翻页、正文行数、间隔和各书阅读进度，并保留主动搜索下载。游戏功能与协议保持0.4.0行为。
 

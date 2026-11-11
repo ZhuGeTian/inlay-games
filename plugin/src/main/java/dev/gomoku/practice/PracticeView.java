@@ -33,7 +33,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private String layoutKey = "";
     private boolean disposed;
 
-    PracticeView(Editor editor, PracticeSession session) { this.editor = editor; this.session = session; layout(); }
+    PracticeView(Editor editor, PracticeSession session) { this.editor = editor; this.session = session; page = session.progress().page; layout(); }
     // 绑定鼠标与局部快捷键，随刷题视图一起释放。
     void attach(int offset) {
         inlay = editor.getInlayModel().addBlockElement(offset, true, false, 0, this);
@@ -72,6 +72,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         layout();
         if (inlay != null && inlay.isValid()) inlay.update();
     }
+    void restorePage() { page = session.progress().page; refresh(); }
     void firstPage() { page = 0; refresh(); }
     void answerPage() {
         refresh();
@@ -135,8 +136,9 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             var q = session.question();
             if (session.isSectionMode() && progress.answerVisible) {
                 String result = progress.result(q);
-                text(rows, result.isEmpty() ? (q.answer().isEmpty() ? "未提供答案，暂不判分" : "正确答案：" + q.answer()) : result, null);
+                text(rows, result.isEmpty() ? (q.answer().isEmpty() ? "未提供答案，暂不判分" : q.answerLabel() + "：" + q.answer()) : result, null);
                 text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
+                if (!q.answerSource().isEmpty()) text(rows, "来源：" + q.answerSource(), null);
             } else {
                 if (!q.material().isEmpty()) text(rows, "材料：" + q.material(), null);
                 for (var image : q.materialImages()) picture(rows, image, null);
@@ -145,14 +147,14 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
                 for (int i = 0; i < q.options().size(); i++) {
                     String letter = String.valueOf((char) ('A' + i));
                     var option = q.options().get(i);
-                    boolean selected = progress.choices.getOrDefault(q.id(), "").contains(letter);
-                    text(rows, (selected ? "[" + letter + "] " : letter + ". ") + option.text(), letter);
+                    text(rows, letter + ". " + option.text(), letter);
                     if (option.image() != null) picture(rows, option.image(), letter);
                 }
                 answerRow = rows.size();
                 if (!session.isSectionMode() && progress.submitted.containsKey(q.id())) {
                     text(rows, progress.result(q), null);
                     text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
+                    if (!q.answerSource().isEmpty()) text(rows, "来源：" + q.answerSource(), null);
                 }
             }
         }
@@ -166,6 +168,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         }
         if (!current.isEmpty() || pages.isEmpty()) pages.add(current);
         page = Math.max(0, Math.min(page, pages.size() - 1));
+        progress.page = page;
         bodyTop = (session.isDetailsVisible() ? 2 * lineHeight : 0) + 4;
         footerTop = bodyTop + bodyHeight + 4;
         buttons.clear();
@@ -198,7 +201,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             if (value[1].startsWith("segment") && (!session.isSectionMode() || pages.size() <= 1)) continue;
             if (!session.empty() && value[1].matches("[A-D]") && !session.question().validChoice(value[1])) continue;
             String label = "[" + value[0] + "]";
-            int w = metrics.stringWidth(label) + 10;
+            int w = editor.getContentComponent().getFontMetrics(font.deriveFont(Font.BOLD)).stringWidth(label) + 10;
             if (x + w > width - 8 && x > 8) { x = 8; y += lineHeight + 3; }
             buttons.add(new Button(label, value[1], Boolean.parseBoolean(value[2]), new Rectangle(x, y, w, lineHeight + 3)));
             x += w;
@@ -206,14 +209,15 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         height = y + lineHeight + 10;
     }
     private void text(List<Row> rows, String text, String action) {
-        int max = Math.max(20, width - 18 - metrics.stringWidth("// "));
+        var textMetrics = editor.getContentComponent().getFontMetrics(optionFont(action));
+        int max = Math.max(20, width - 18 - textMetrics.stringWidth("// "));
         for (String paragraph : text.replace("\t", "    ").split("\\R", -1)) {
             StringBuilder line = new StringBuilder();
             int pixels = 0;
             for (int offset = 0; offset < paragraph.length();) {
                 int cp = paragraph.codePointAt(offset);
                 String part = new String(Character.toChars(cp));
-                int advance = metrics.stringWidth(part);
+                int advance = textMetrics.stringWidth(part);
                 if (pixels + advance > max && !line.isEmpty()) {
                     rows.add(new Row("// " + line, null, action, lineHeight, 0));
                     line.setLength(0); pixels = 0;
@@ -222,6 +226,11 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             }
             rows.add(new Row("// " + line, null, action, lineHeight, 0));
         }
+    }
+    // 选中只改变字重，颜色及选项文字保持不变。
+    Font optionFont(String action) {
+        boolean selected = action != null && !session.empty() && session.progress().choices.getOrDefault(session.question().id(), "").contains(action);
+        return selected ? font.deriveFont(Font.BOLD) : font;
     }
     private void picture(List<Row> rows, BufferedImage image, String action) {
         double scale = Math.min(1.0, Math.min((width - 24.0) / image.getWidth(), (bodyHeight - 8.0) / image.getHeight()));
@@ -254,15 +263,16 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
                         + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
             }
             int y = bodyTop;
-            String selected = session.empty() ? "" : progress.choices.getOrDefault(session.question().id(), "");
             for (var row : pages.get(page)) {
-                g.setColor(row.action != null && selected.contains(row.action) ? new Color(0xD99545) : normal);
+                g.setColor(normal);
+                g.setFont(optionFont(row.action));
                 if (row.image != null) g.drawImage(row.image, 10, y + 4, row.imageWidth, row.height - 8, null);
                 else g.drawString(row.text, 8, y + metrics.getAscent());
                 y += row.height;
             }
             for (var button : buttons) {
-                g.setColor(!button.enabled ? normal : (button.action.matches("[A-D]") && selected.contains(button.action)) ? new Color(0xD99545) : scheme.getDefaultForeground());
+                g.setColor(!button.enabled ? normal : scheme.getDefaultForeground());
+                g.setFont(optionFont(button.action.matches("[A-D]") ? button.action : null));
                 g.drawString(button.label, button.bounds.x, button.bounds.y + metrics.getAscent());
             }
         } finally { g.dispose(); }

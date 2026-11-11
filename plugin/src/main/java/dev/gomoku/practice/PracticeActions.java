@@ -58,6 +58,9 @@ public final class PracticeActions {
             else session.show(editor);
         }
     }
+    public static final class Mistakes extends LoadAction {
+        @Override public void actionPerformed(AnActionEvent e) { PracticeMistakes.show(e.getProject(), editor(e)); }
+    }
     public static final class Sections extends LoadAction {
         // 先选择试卷，板块列表只展示该卷实际拥有的题目。
         @Override public void update(AnActionEvent e) {

@@ -47,6 +47,7 @@
             </group>
             <group id="Moyu.Practice.Menu" text="行测刷题" popup="true">
                 <action id="Moyu.Practice.Papers" class="dev.gomoku.practice.PracticeActions$Papers" text="选择试卷…"/>
+                <action id="Moyu.Practice.Mistakes" class="dev.gomoku.practice.PracticeActions$Mistakes" text="错题库（全部试卷）…"/>
                 <action id="Moyu.Practice.Sections" class="dev.gomoku.practice.PracticeActions$Sections" text="板块练习…"/>
                 <action id="Moyu.Practice.Import" class="dev.gomoku.practice.PracticeActions$Import" text="导入 JSON 题库…"/>
                 <action id="Moyu.Practice.Sample" class="dev.gomoku.practice.PracticeActions$Sample" text="打开示例试卷"/>

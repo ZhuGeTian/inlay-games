@@ -99,7 +99,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         if (paper == null || (!section.isEmpty() && (!PracticeSections.NAMES.contains(section) || PracticeSections.count(paper, section) == 0))) return;
         state.section = section;
         progress().normalize(paper);
-        if (view != null) view.firstPage();
+        if (view != null) view.restorePage();
     }
     public boolean isLoading() { return loading; }
     public boolean hasPaper() { return paper != null; }
@@ -142,7 +142,17 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     private void load(Path file, boolean cache, boolean reveal, Project project, Editor editor) {
         load(file, cache, reveal, project, editor, null);
     }
+    // 从汇总错题库返回原试卷及原作答板块，保持已有选择与错题历史。
+    void openMistake(PracticeMistakes.Entry entry, Project project, Editor editor) {
+        if (!validId(entry.paperId())) return;
+        Path file = directory().resolve(entry.paperId() + ".json");
+        boolean cached = Files.isRegularFile(file);
+        load(cached ? file : null, !cached, true, project, editor, cached ? null : entry.paperId(), entry);
+    }
     private void load(Path file, boolean cache, boolean reveal, Project project, Editor editor, String bundledId) {
+        load(file, cache, reveal, project, editor, bundledId, null);
+    }
+    private void load(Path file, boolean cache, boolean reveal, Project project, Editor editor, String bundledId, PracticeMistakes.Entry focus) {
         if (loading || disposed) return;
         loading = true;
         long requested = ++revision;
@@ -176,7 +186,15 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
             }
             @Override public void onSuccess() {
                 if (disposed || requested != revision || project != null && project.isDisposed()) return;
+                if (focus != null) state.section = focus.section();
                 accept(parsed);
+                if (focus != null) {
+                    for (int i = 0; i < paper.questions().size(); i++) if (paper.questions().get(i).id().equals(focus.questionId())) {
+                        progress().index = i; progress().answerVisible = false; progress().page = 0;
+                        progress().onlyWrong = true;
+                        break;
+                    }
+                }
                 if (reveal) {
                     if (editor != null && !editor.isDisposed()) show(editor);
                     else Messages.showInfoMessage(project, "题库已导入。打开代码文件后选择“行测刷题 → 在此显示”。", "行测刷题");

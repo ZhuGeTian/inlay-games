@@ -5,6 +5,7 @@ import java.util.*;
 /** Plain serializable state; choices remain hidden from scoring until submitted. */
 public final class PracticeProgress {
     public int index;
+    public int page;
     public boolean onlyWrong;
     public String section = "";
     public boolean answerVisible;
@@ -16,6 +17,7 @@ public final class PracticeProgress {
     public PracticeProgress copy() {
         var copy = new PracticeProgress();
         copy.index = index;
+        copy.page = page;
         copy.onlyWrong = onlyWrong;
         copy.section = section;
         copy.answerVisible = answerVisible;
@@ -34,8 +36,14 @@ public final class PracticeProgress {
         mistakes.removeIf(id -> !valid.containsKey(id));
         index = Math.max(0, Math.min(index, paper.questions().size() - 1));
         if (section == null) section = "";
+        page = Math.max(0, page);
+        // 新增参考答案后，已提交记录也纳入历史错题，未提交选择不判分。
+        for (var q : paper.questions()) {
+            String choice = submitted.get(q.id());
+            if (choice != null && !q.answer().isEmpty() && !choice.equals(q.answer()) && !mistakes.contains(q.id())) mistakes.add(q.id());
+        }
         var available = indices(paper);
-        if (!available.contains(index)) { if (!available.isEmpty()) index = available.get(0); answerVisible = false; }
+        if (!available.contains(index)) { if (!available.isEmpty()) index = available.get(0); answerVisible = false; page = 0; }
     }
 
     // 板块筛选与错题筛选取交集，保留原试卷顺序。
@@ -55,11 +63,13 @@ public final class PracticeProgress {
         int position = Math.max(0, indices.indexOf(index));
         index = indices.get(Math.max(0, Math.min(indices.size() - 1, position + delta)));
         answerVisible = false;
+        page = 0;
     }
 
     // 下一页依次展示答案与下一题，上一页按相反顺序返回。
     public void advance(PracticePaper paper, int delta) {
         if (!canAdvance(paper, delta)) return;
+        page = 0;
         if (delta > 0) {
             if (!answerVisible) { submit(paper.questions().get(index)); answerVisible = true; }
             else move(paper, 1);
@@ -96,12 +106,13 @@ public final class PracticeProgress {
         choices.remove(q.id());
         submitted.remove(q.id());
         answerVisible = false;
+        page = 0;
     }
 
     public String result(PracticePaper.Question q) {
         String answer = submitted.get(q.id());
         if (answer == null) return "";
         if (q.answer().isEmpty()) return "已记录 " + answer + " · 未提供答案，暂不判分";
-        return (answer.equals(q.answer()) ? "正确" : "错误") + " · 你的选择 " + answer + " · 正确答案 " + q.answer();
+        return (answer.equals(q.answer()) ? "正确" : "错误") + " · 你的选择 " + answer + " · " + q.answerLabel() + " " + q.answer();
     }
 }
