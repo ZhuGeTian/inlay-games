@@ -15,7 +15,7 @@ public record PracticePaper(String id, String title, List<Question> questions) {
     public static final int MAX_BYTES = 16 * 1024 * 1024;
     public record Option(String text, BufferedImage image) {}
     public record Question(String id, String type, String material, List<BufferedImage> materialImages, String stem,
-                           List<BufferedImage> images, List<Option> options, String answer, String explanation) {
+                           List<BufferedImage> images, List<Option> options, String answer, String explanation, String section) {
         public boolean validChoice(String value) {
             if (value == null || value.isEmpty() || !value.matches("[A-D]+")) return false;
             if (!type.equals("multiple") && value.length() != 1) return false;
@@ -38,6 +38,7 @@ public record PracticePaper(String id, String title, List<Question> questions) {
         return bytes;
     }
 
+    // 校验题目、可选板块与图片，保留原始字节作为题库身份。
     public static PracticePaper parse(byte[] bytes) throws IOException {
         if (bytes.length > MAX_BYTES) throw new IOException("题库不能超过 16 MB。");
         try {
@@ -60,6 +61,9 @@ public record PracticePaper(String id, String title, List<Question> questions) {
                 String type = text(q, "type", false, 16);
                 if (type.isEmpty()) type = "single";
                 if (!Set.of("single", "multiple", "boolean").contains(type)) fail("未知题型：" + type);
+                String section = text(q, "section", false, 40);
+                if (section.equals("言语理解与表达")) section = "言语理解";
+                if (section.equals("常识判断")) section = "常识";
                 JsonArray rawOptions = array(q, "options", true, 4);
                 int optionCount = type.equals("boolean") ? 2 : 4;
                 if (rawOptions.size() != optionCount) fail("题目 " + id + " 的选项数量必须为 " + optionCount + "。");
@@ -79,7 +83,7 @@ public record PracticePaper(String id, String title, List<Question> questions) {
                 }
                 questions.add(new Question(id, type, text(q, "material", false, 40000), decoder.list(q, "materialImages"),
                         text(q, "stem", true, 16000), decoder.list(q, "images"), List.copyOf(options), answer,
-                        text(q, "explanation", false, 40000)));
+                        text(q, "explanation", false, 40000), section));
             }
             String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
             return new PracticePaper(hash, title, List.copyOf(questions));

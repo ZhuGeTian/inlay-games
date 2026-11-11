@@ -6,7 +6,7 @@ plugins {
 }
 allprojects {
     group = "dev.gomoku"
-    version = "0.6.3"
+    version = "0.6.4"
     repositories { mavenCentral() }
 }
 subprojects {

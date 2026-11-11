@@ -351,6 +351,53 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         action.update(event); assertFalse(event.getPresentation().isEnabled());
         assertFalse(com.intellij.openapi.actionSystem.ex.ActionUtil.getActions(editor.getContentComponent()).contains(action));
     }
+    // 板块模式可直接翻答案，长题段落完整可读，答案阶段不夹带题目。
+    public void testSectionCardsAndLongContentKeepNextPageMeaning() throws Exception {
+        var json = PracticePaperTest.json(); var qs = json.getAsJsonArray("questions");
+        String material = "板块长材料。".repeat(70);
+        qs.get(0).getAsJsonObject().addProperty("section", "言语理解");
+        qs.get(0).getAsJsonObject().addProperty("material", material);
+        qs.get(3).getAsJsonObject().addProperty("section", "言语理解");
+        session.accept(PracticePaperTest.parse(json)); session.selectSection("言语理解");
+        session.setVisibleLines(2); session.show(myFixture.getEditor());
+        assertFalse(view().visibleText().contains("正确答案")); assertTrue(view().pageCount() > 2);
+        StringBuilder read = new StringBuilder();
+        for (int i = 0, n = view().pageCount(); i < n; i++) {
+            read.append(view().visibleText().replace("\n", "").replace("// ", ""));
+            if (i + 1 < n) click("segment+");
+        }
+        assertTrue(read.toString().contains(material)); assertFalse(session.progress().answerVisible);
+        click("page+"); assertTrue(session.progress().answerVisible); assertEquals(0, session.progress().index);
+        assertTrue(view().visibleText().contains("正确答案：B")); assertFalse(view().visibleText().contains("板块长材料"));
+        assertTrue(session.progress().submitted.isEmpty()); assertTrue(session.progress().mistakes.isEmpty());
+        click("page+"); assertEquals(3, session.progress().index); assertFalse(session.progress().answerVisible);
+        click("page+"); assertTrue(view().visibleText().contains("未提供答案")); assertFalse(session.canMovePage(1));
+        assertTrue(session.progress().mistakes.isEmpty());
+        session.toggleDetails(); assertTrue(view().buttons().isEmpty());
+        ActionManager.getInstance().getAction("Moyu.Practice.PreviousPage").actionPerformed(practiceEvent("Moyu.Practice.PreviousPage", myFixture.getEditor()));
+        assertFalse(session.progress().answerVisible); assertEquals(3, session.progress().index);
+    }
+    // 各板块与整卷分别保存作答和答案阶段，切换/重启不会覆盖整卷进度。
+    public void testSectionProgressIsolatedAndRestored() throws Exception {
+        var json = PracticePaperTest.json(); var qs = json.getAsJsonArray("questions");
+        qs.get(0).getAsJsonObject().addProperty("section", "政治理论");
+        qs.get(1).getAsJsonObject().addProperty("section", "常识");
+        session.accept(PracticePaperTest.parse(json)); session.show(myFixture.getEditor());
+        session.move(2); session.choose("A");
+        session.selectSection("政治理论"); assertEquals(0, session.progress().index);
+        click("A"); click("page+"); assertTrue(session.progress().result(session.question()).startsWith("错误"));
+        session.selectSection("常识"); assertEquals(1, session.progress().index); assertFalse(session.progress().answerVisible);
+        assertTrue(session.progress().submitted.isEmpty());
+        session.selectSection("政治理论"); assertTrue(session.progress().answerVisible);
+        assertEquals("A", session.progress().submitted.get(session.question().id()));
+        var serialized = XmlSerializer.deserialize(XmlSerializer.serialize(session.getState()), PracticeSession.SavedState.class);
+        session.selectSection(""); assertEquals(2, session.progress().index); assertEquals("A", session.progress().choices.get(session.question().id()));
+        session.loadState(serialized); session.show(myFixture.getEditor());
+        assertEquals("政治理论", session.getSection()); assertTrue(session.progress().answerVisible);
+        assertTrue(view().visibleText().contains("正确答案"));
+        session.selectSection("言语理解"); assertEquals("政治理论", session.getSection());
+        assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.Sections"));
+    }
     private void awaitLoad() {
         long deadline = System.nanoTime() + 15_000_000_000L;
         while (session.isLoading() && System.nanoTime() < deadline) {

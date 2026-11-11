@@ -58,6 +58,32 @@ public final class PracticeActions {
             else session.show(editor);
         }
     }
+    public static final class Sections extends LoadAction {
+        // 先选择试卷，板块列表只展示该卷实际拥有的题目。
+        @Override public void update(AnActionEvent e) {
+            super.update(e);
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && PracticeSession.getInstance().hasPaper());
+        }
+        // 在当前试卷切换板块，整卷与各板块分别恢复进度。
+        @Override public void actionPerformed(AnActionEvent e) {
+            var session = PracticeSession.getInstance();
+            if (!session.hasPaper()) return;
+            var paper = session.paper();
+            var choices = new LinkedHashMap<String, String>();
+            choices.put("整卷练习 · " + paper.questions().size() + " 题", "");
+            for (String name : PracticeSections.NAMES) {
+                int count = PracticeSections.count(paper, name);
+                if (count > 0) choices.put(name + " · " + count + " 题", name);
+            }
+            Editor target = editor(e);
+            JBPopupFactory.getInstance().createPopupChooserBuilder(new ArrayList<>(choices.keySet()))
+                    .setTitle("板块练习 · " + paper.title()).setItemChosenCallback(label -> {
+                        if (session.paper() != paper || e.getProject() != null && e.getProject().isDisposed()) return;
+                        session.selectSection(choices.get(label));
+                        if (target != null && !target.isDisposed()) session.show(target);
+                    }).createPopup().showInFocusCenter();
+        }
+    }
     public abstract static class QuestionAction extends DumbAwareAction {
         @Override public ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
         @Override public void update(AnActionEvent e) {
@@ -97,6 +123,22 @@ public final class PracticeActions {
         }
         // 翻阅当前题的下一页。
         @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().movePage(1); }
+    }
+    public static final class PreviousSegment extends QuestionAction {
+        // 仅板块模式显示段落翻页，与答案翻页区分。
+        @Override public void update(AnActionEvent e) {
+            super.update(e); var session = PracticeSession.getInstance();
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.isSectionMode() && session.canMoveSegment(-1));
+        }
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().moveSegment(-1); }
+    }
+    public static final class NextSegment extends QuestionAction {
+        // 当前题目或解析的剩余内容可逐段读完。
+        @Override public void update(AnActionEvent e) {
+            super.update(e); var session = PracticeSession.getInstance();
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.isSectionMode() && session.canMoveSegment(1));
+        }
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().moveSegment(1); }
     }
     public static final class Next extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().move(1); } }
     public static final class Submit extends QuestionAction { @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().submit(); } }

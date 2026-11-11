@@ -101,8 +101,10 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     // 分派正文和底部按钮动作，翻页复用同一边界逻辑。
     private void act(String action) {
         switch (action) {
-            case "page-" -> movePage(-1);
-            case "page+" -> movePage(1);
+            case "page-" -> session.movePage(-1);
+            case "page+" -> session.movePage(1);
+            case "segment-" -> movePage(-1);
+            case "segment+" -> movePage(1);
             case "previous" -> session.move(-1);
             case "next" -> session.move(1);
             case "submit" -> session.submit();
@@ -131,21 +133,27 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         if (empty) text(rows, "还没有错题。点击“全部题”返回试卷。", null);
         else {
             var q = session.question();
-            if (!q.material().isEmpty()) text(rows, "材料：" + q.material(), null);
-            for (var image : q.materialImages()) picture(rows, image, null);
-            text(rows, q.stem(), null);
-            for (var image : q.images()) picture(rows, image, null);
-            for (int i = 0; i < q.options().size(); i++) {
-                String letter = String.valueOf((char) ('A' + i));
-                var option = q.options().get(i);
-                boolean selected = progress.choices.getOrDefault(q.id(), "").contains(letter);
-                text(rows, (selected ? "[" + letter + "] " : letter + ". ") + option.text(), letter);
-                if (option.image() != null) picture(rows, option.image(), letter);
-            }
-            answerRow = rows.size();
-            if (progress.submitted.containsKey(q.id())) {
-                text(rows, progress.result(q), null);
+            if (session.isSectionMode() && progress.answerVisible) {
+                String result = progress.result(q);
+                text(rows, result.isEmpty() ? (q.answer().isEmpty() ? "未提供答案，暂不判分" : "正确答案：" + q.answer()) : result, null);
                 text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
+            } else {
+                if (!q.material().isEmpty()) text(rows, "材料：" + q.material(), null);
+                for (var image : q.materialImages()) picture(rows, image, null);
+                text(rows, q.stem(), null);
+                for (var image : q.images()) picture(rows, image, null);
+                for (int i = 0; i < q.options().size(); i++) {
+                    String letter = String.valueOf((char) ('A' + i));
+                    var option = q.options().get(i);
+                    boolean selected = progress.choices.getOrDefault(q.id(), "").contains(letter);
+                    text(rows, (selected ? "[" + letter + "] " : letter + ". ") + option.text(), letter);
+                    if (option.image() != null) picture(rows, option.image(), letter);
+                }
+                answerRow = rows.size();
+                if (!session.isSectionMode() && progress.submitted.containsKey(q.id())) {
+                    text(rows, progress.result(q), null);
+                    text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
+                }
             }
         }
         pages.clear();
@@ -163,10 +171,12 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         buttons.clear();
         var available = progress.indices(session.paper());
         int at = available.indexOf(progress.index);
-        boolean submitted = !empty && progress.submitted.containsKey(session.question().id());
+        boolean submitted = !empty && (progress.submitted.containsKey(session.question().id()) || session.isSectionMode() && progress.answerVisible);
         String selected = empty ? "" : progress.choices.getOrDefault(session.question().id(), "");
         if (session.isDetailsVisible()) addButtons(footerTop, new String[][] {
-                {"上一页", "page-", Boolean.toString(page > 0)}, {"下一页", "page+", Boolean.toString(page + 1 < pages.size())},
+                {"上一页", "page-", Boolean.toString(session.isSectionMode() ? progress.canAdvance(session.paper(), -1) : page > 0)},
+                {"下一页", "page+", Boolean.toString(session.isSectionMode() ? progress.canAdvance(session.paper(), 1) : page + 1 < pages.size())},
+                {"上段", "segment-", Boolean.toString(page > 0)}, {"下段", "segment+", Boolean.toString(page + 1 < pages.size())},
                 {"A", "A", Boolean.toString(!empty && !submitted)}, {"B", "B", Boolean.toString(!empty && !submitted)},
                 {"C", "C", Boolean.toString(!empty && !submitted && session.question().options().size() > 2)}, {"D", "D", Boolean.toString(!empty && !submitted && session.question().options().size() > 3)},
                 {"提交", "submit", Boolean.toString(!empty && !submitted && !selected.isEmpty())},
@@ -185,6 +195,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private void addButtons(int top, String[][] values) {
         int x = 8, y = top;
         for (var value : values) {
+            if (value[1].startsWith("segment") && (!session.isSectionMode() || pages.size() <= 1)) continue;
             if (!session.empty() && value[1].matches("[A-D]") && !session.question().validChoice(value[1])) continue;
             String label = "[" + value[0] + "]";
             int w = metrics.stringWidth(label) + 10;
@@ -239,7 +250,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             if (session.isDetailsVisible()) {
                 g.drawString(shorten("// " + session.paper().title()), 8, metrics.getAscent() + 2);
                 String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size() + " · " + session.question().typeLabel();
-                g.drawString(shorten("// " + status + " · 页 " + (page + 1) + "/" + pages.size()
+                g.drawString(shorten("// " + status + (session.isSectionMode() ? " · " + session.getSection() + (progress.answerVisible ? " · 答案 · 段 " : " · 题目 · 段 ") : " · 页 ") + (page + 1) + "/" + pages.size()
                         + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
             }
             int y = bodyTop;

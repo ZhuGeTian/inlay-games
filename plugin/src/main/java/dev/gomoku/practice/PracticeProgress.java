@@ -6,20 +6,26 @@ import java.util.*;
 public final class PracticeProgress {
     public int index;
     public boolean onlyWrong;
+    public String section = "";
+    public boolean answerVisible;
     public Map<String, String> choices = new HashMap<>();
     public Map<String, String> submitted = new HashMap<>();
     public List<String> mistakes = new ArrayList<>();
 
+    // 创建含板块与答案阶段的独立持久化快照。
     public PracticeProgress copy() {
         var copy = new PracticeProgress();
         copy.index = index;
         copy.onlyWrong = onlyWrong;
+        copy.section = section;
+        copy.answerVisible = answerVisible;
         copy.choices = new HashMap<>(choices);
         copy.submitted = new HashMap<>(submitted);
         copy.mistakes = new ArrayList<>(mistakes);
         return copy;
     }
 
+    // 恢复进度时同时限制板块与错题范围。
     public void normalize(PracticePaper paper) {
         var valid = new HashMap<String, PracticePaper.Question>();
         for (var q : paper.questions()) valid.put(q.id(), q);
@@ -27,26 +33,45 @@ public final class PracticeProgress {
         submitted.entrySet().removeIf(e -> !valid.containsKey(e.getKey()) || !valid.get(e.getKey()).validChoice(e.getValue()));
         mistakes.removeIf(id -> !valid.containsKey(id));
         index = Math.max(0, Math.min(index, paper.questions().size() - 1));
-        if (onlyWrong && !mistakes.contains(paper.questions().get(index).id())) {
-            for (int i = 0; i < paper.questions().size(); i++) {
-                if (mistakes.contains(paper.questions().get(i).id())) { index = i; break; }
-            }
-        }
+        if (section == null) section = "";
+        var available = indices(paper);
+        if (!available.contains(index)) { if (!available.isEmpty()) index = available.get(0); answerVisible = false; }
     }
 
+    // 板块筛选与错题筛选取交集，保留原试卷顺序。
     public List<Integer> indices(PracticePaper paper) {
         var result = new ArrayList<Integer>();
         for (int i = 0; i < paper.questions().size(); i++) {
-            if (!onlyWrong || mistakes.contains(paper.questions().get(i).id())) result.add(i);
+            if ((section.isEmpty() || section.equals(PracticeSections.section(paper, i)))
+                    && (!onlyWrong || mistakes.contains(paper.questions().get(i).id()))) result.add(i);
         }
         return result;
     }
 
+    // 切换题目时先展示题目阶段，避免提前透露答案。
     public void move(PracticePaper paper, int delta) {
         var indices = indices(paper);
         if (indices.isEmpty()) return;
         int position = Math.max(0, indices.indexOf(index));
         index = indices.get(Math.max(0, Math.min(indices.size() - 1, position + delta)));
+        answerVisible = false;
+    }
+
+    // 下一页依次展示答案与下一题，上一页按相反顺序返回。
+    public void advance(PracticePaper paper, int delta) {
+        if (!canAdvance(paper, delta)) return;
+        if (delta > 0) {
+            if (!answerVisible) { submit(paper.questions().get(index)); answerVisible = true; }
+            else move(paper, 1);
+        } else if (answerVisible) answerVisible = false;
+        else { move(paper, -1); answerVisible = true; }
+    }
+
+    // 首题题目与末题答案之间才允许跨阶段翻页。
+    public boolean canAdvance(PracticePaper paper, int delta) {
+        var available = indices(paper);
+        int at = available.indexOf(index);
+        return at >= 0 && (delta > 0 ? !answerVisible || at + 1 < available.size() : answerVisible || at > 0);
     }
 
     public void select(PracticePaper.Question q, String choice) {
@@ -66,9 +91,11 @@ public final class PracticeProgress {
         return true;
     }
 
+    // 重做清除本次选择并回到题目阶段，保留历史错题。
     public void retry(PracticePaper.Question q) {
         choices.remove(q.id());
         submitted.remove(q.id());
+        answerVisible = false;
     }
 
     public String result(PracticePaper.Question q) {
