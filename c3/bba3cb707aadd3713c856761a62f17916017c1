@@ -1,0 +1,91 @@
+distribution/install.md
+  s_882bdfd446838a::t_965db82b078ee0 19-23,45,48,53-54,57,63,87,112,128,182-187
+dashboard/public/style.css
+  s_882bdfd446838a::t_5465ba3f034b0e 4-5
+  s_28ede11b99a22d::t_b00e34ebc4e550 2
+  s_28ede11b99a22d::t_652f02bcf87e6a 1
+  s_28ede11b99a22d::t_aa53e34ce3640f 3
+dashboard/public/app.js
+  s_28ede11b99a22d::t_b00e34ebc4e550 1-7,9-37
+  s_28ede11b99a22d::t_f3db106ae6e315 8,38-39
+distribution/updatePlugins.xml
+  s_882bdfd446838a::t_965db82b078ee0 3
+dashboard/store.mjs
+  s_28ede11b99a22d::t_a8898194dc36e4 1-24,26-50,52-84,86-88
+  s_28ede11b99a22d::t_da8f24cbe3db12 25,51,85
+README.md
+  s_882bdfd446838a::t_965db82b078ee0 21-24,57,77,134,154
+docs/verification.md
+  s_28ede11b99a22d::t_25121e8cb47d31 163-174
+plugin/src/main/java/dev/gomoku/practice/PracticeActions.java
+  s_882bdfd446838a::t_2b20ad1da6f5b0 122-139
+docs/practice.md
+  s_882bdfd446838a::t_965db82b078ee0 152-155
+plugin/src/main/resources/META-INF/plugin.xml
+  s_882bdfd446838a::t_2b20ad1da6f5b0 12,56-59
+plugin/src/main/java/dev/gomoku/practice/PracticeSession.java
+  s_882bdfd446838a::t_2b20ad1da6f5b0 89,135,282,286-296
+  s_882bdfd446838a::t_3ce92367d8fa06 297
+plugin/src/test/java/dev/gomoku/practice/PracticeIntegrationTest.java
+  s_882bdfd446838a::t_5465ba3f034b0e 88-103
+plugin/src/main/java/dev/gomoku/practice/PracticeSync.java
+  s_882bdfd446838a::t_2b20ad1da6f5b0 1-32,34-95
+  s_28ede11b99a22d::t_6a6360de2a0393 33
+docs/study-dashboard.md
+  s_882bdfd446838a::t_965db82b078ee0 1-73
+.gitignore
+  s_28ede11b99a22d::t_96458cf186fd68 21-24
+docs/installation.md
+  s_882bdfd446838a::t_965db82b078ee0 5,7,10,13,19,40,50,53-56
+dashboard/package.json
+  s_28ede11b99a22d::t_a8898194dc36e4 1
+dashboard/server.mjs
+  s_28ede11b99a22d::t_9ed5c97c85c6bd 3,34,130
+  s_882bdfd446838a::t_c60d1078c224db 1-2,4-33,35-129,131-133
+docs/superpowers/plans/2026-11-11-study-dashboard.md
+  s_882bdfd446838a::t_4c6c0259192d11 1-14
+docs/superpowers/specs/2026-11-11-study-dashboard-design.md
+  s_882bdfd446838a::t_4c6c0259192d11 1-13
+dashboard/backup.mjs
+  s_882bdfd446838a::t_c60d1078c224db 1-3
+build.gradle.kts
+  s_882bdfd446838a::t_2b20ad1da6f5b0 9
+plugin/src/main/java/dev/gomoku/practice/PracticeActivity.java
+  s_882bdfd446838a::t_2b20ad1da6f5b0 1-77
+dashboard/deploy/moyu-study.conf
+  s_28ede11b99a22d::t_96458cf186fd68 1-11
+dashboard/public/index.html
+  s_28ede11b99a22d::t_652f02bcf87e6a 2-3,5-8,11-14
+  s_882bdfd446838a::t_5465ba3f034b0e 4
+  s_28ede11b99a22d::t_1c8aa926fc233f 1,9-10
+dashboard/deploy/moyu-study.service
+  s_28ede11b99a22d::t_96458cf186fd68 1-24
+dashboard/test/server.test.mjs
+  s_28ede11b99a22d::t_8a85749bb656c0 1-58
+plugin/src/test/java/dev/gomoku/practice/PracticeActivityTest.java
+  s_882bdfd446838a::t_c2c5002d5cf823 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c3bba3cb707aadd3713c856761a62f17916017c1",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
