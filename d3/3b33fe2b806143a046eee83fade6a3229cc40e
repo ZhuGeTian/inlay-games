@@ -1,0 +1,88 @@
+plugin/src/main/java/dev/gomoku/practice/PracticePaper.java
+  s_882bdfd446838a::t_7edd91b169fcb7 18-19,87,90
+distribution/install.md
+  s_28ede11b99a22d::t_126c1ebb7fea09 19-20,23,45,48,53-54,57,63,87,112,128,134
+  s_28ede11b99a22d::t_e4b01a81b392b4 21-22
+plugin/src/main/resources/practice/answers/f56c9fa049b76d20ae4dd8b5873d0c0790bdc6eb9cb011f2487eab2bdfa9db81.json
+  s_28ede11b99a22d::t_c7a2095c16cc9a 83
+  s_882bdfd446838a::t_cd596134831a78 1-78,81-82,86-88,91-93,96-98,101-103,106-108,111-113,116-118,121-123,126-128,131-133,136-138,141-143,146-148,151-152
+  s_882bdfd446838a::t_03fd33d5655af0 79-80,84-85,89-90,94-95,99-100,104-105,109-110,114-115,119-120,124-125,129-130,134-135,139-140,144-145,149-150
+docs/practice.md
+  s_28ede11b99a22d::t_126c1ebb7fea09 1,5,7-13,33,45-47,49-53,104,133-143
+plugin/src/test/java/dev/gomoku/practice/PracticeIntegrationTest.java
+  s_882bdfd446838a::t_89971c936ea795 193-198
+  s_882bdfd446838a::t_fee2356e58f1b3 404-466
+scripts/convert_guangdong_verbal.py
+  s_882bdfd446838a::t_8631bfa138d72c 1-21,30-35,37-102,105-142
+  s_882bdfd446838a::t_2f83e87dc6df5e 22-29,36,104
+  s_882bdfd446838a::t_a44694998bbdad 103
+plugin/src/test/java/dev/gomoku/practice/PracticeSectionsTest.java
+  s_882bdfd446838a::t_89971c936ea795 14
+docs/installation.md
+  s_28ede11b99a22d::t_126c1ebb7fea09 5,13,19,40,50
+  s_28ede11b99a22d::t_e4b01a81b392b4 7,10
+plugin/src/main/resources/META-INF/plugin.xml
+  s_882bdfd446838a::t_40a2477090f0bc 50
+build.gradle.kts
+  s_882bdfd446838a::t_7edd91b169fcb7 9
+docs/superpowers/plans/2026-11-11-practice-review.md
+  s_882bdfd446838a::t_7edd91b169fcb7 1-8
+  s_28ede11b99a22d::t_126c1ebb7fea09 9-16
+distribution/updatePlugins.xml
+  s_28ede11b99a22d::t_126c1ebb7fea09 3
+docs/verification.md
+  s_28ede11b99a22d::t_e4b01a81b392b4 137-144
+README.md
+  s_28ede11b99a22d::t_126c1ebb7fea09 21-24,27,39,45,65,122,142
+docs/superpowers/specs/2026-11-11-practice-review-design.md
+  s_882bdfd446838a::t_7edd91b169fcb7 1-9
+  s_28ede11b99a22d::t_126c1ebb7fea09 10-11
+plugin/src/main/resources/practice/answers/f73ecd4463b55f3573434a105fb68a24f6a16b1db1fe96a7b7841c45c27762bd.json
+  s_882bdfd446838a::t_cd596134831a78 1-78,81-83,86-88,91-93,96-98,101-103,106-108,111-113,116-118,121-123,126-128,131-133,136-138,141-143,146-148,151-152
+  s_882bdfd446838a::t_7ee41ed9ce66d7 79-80,84-85,89-90,94-95,99-100,104-105,109-110,114-115,119-120,124-125,129-130,134-135,139-140,144-145,149-150
+plugin/src/main/java/dev/gomoku/practice/PracticeActions.java
+  s_882bdfd446838a::t_40a2477090f0bc 61-63
+plugin/src/main/java/dev/gomoku/practice/PracticeAnswers.java
+  s_882bdfd446838a::t_40a2477090f0bc 1-36
+plugin/src/test/java/dev/gomoku/practice/PracticeCatalogTest.java
+  s_882bdfd446838a::t_89971c936ea795 26,31-37,46-64
+  s_882bdfd446838a::t_9d8caf4e3055fb 65
+plugin/src/main/java/dev/gomoku/practice/PracticeMistakes.java
+  s_882bdfd446838a::t_40a2477090f0bc 1-71
+plugin/src/main/java/dev/gomoku/practice/PracticeView.java
+  s_882bdfd446838a::t_7edd91b169fcb7 36,75,139,141,150,157,171,204,212-213,220,230-234,267-268,274-275
+docs/practice-answer-sources.md
+  s_882bdfd446838a::t_cd596134831a78 1-2,4-56,58-70,81
+  s_882bdfd446838a::t_c538e60134617f 3,57,71-80,82-111
+plugin/src/main/java/dev/gomoku/practice/PracticeProgress.java
+  s_882bdfd446838a::t_7edd91b169fcb7 8,20,39-44,46,66,72,109,116
+plugin/src/main/java/dev/gomoku/practice/PracticeSession.java
+  s_882bdfd446838a::t_7edd91b169fcb7 102
+  s_882bdfd446838a::t_40a2477090f0bc 145-151,153-155,189,191-197
+plugin/src/test/java/dev/gomoku/practice/PracticeReviewTest.java
+  s_882bdfd446838a::t_dab1ddf75010df 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d33b33fe2b806143a046eee83fade6a3229cc40e",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
