@@ -12,6 +12,9 @@
         <postStartupActivity implementation="dev.gomoku.novel.ReaderStartup"/>
     </extensions>
     <actions>
+        <action id="Moyu.Practice.Here" class="dev.gomoku.practice.PracticeActions$Here" text="在此处显示" description="把当前题目移到光标所在行，保留作答和进度">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
         <group id="Moyu.Practice.ContextMenu" class="dev.gomoku.practice.PracticeActions$ContextMenu" popup="true"/>
         <group id="Gomoku.Menu" text="摸鱼合集" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
@@ -52,7 +55,7 @@
                 <action id="Moyu.Practice.Sections" class="dev.gomoku.practice.PracticeActions$Sections" text="板块练习…"/>
                 <action id="Moyu.Practice.Import" class="dev.gomoku.practice.PracticeActions$Import" text="导入 JSON 题库…"/>
                 <action id="Moyu.Practice.Sample" class="dev.gomoku.practice.PracticeActions$Sample" text="打开示例试卷"/>
-                <action id="Moyu.Practice.Show" class="dev.gomoku.practice.PracticeActions$Show" text="在此显示"/>
+                <action id="Moyu.Practice.Show" class="dev.gomoku.practice.PracticeActions$Show" text="在此处显示"/>
                 <action id="Moyu.Practice.Details" class="dev.gomoku.practice.PracticeActions$Details" text="隐藏／显示试卷信息和操作栏">
                     <keyboard-shortcut keymap="$default" first-keystroke="control D"/>
                     <keyboard-shortcut keymap="Mac OS X" first-keystroke="control D" replace-all="true"/>

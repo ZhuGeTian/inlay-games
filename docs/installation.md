@@ -2,21 +2,21 @@
 
 ## 下载正确的安装包
 
-打开 [GitHub Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest)，在Assets下载`inlay-gomoku-0.6.6.zip`及同名`.sha256`文件。**不要下载Source code ZIP来安装插件，也不要解压后只安装一个JAR。** 同一个插件ZIP适用于Android Studio与IntelliJ IDEA。
+打开 [GitHub Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest)，在Assets下载`inlay-gomoku-0.6.7.zip`及同名`.sha256`文件。**不要下载Source code ZIP来安装插件，也不要解压后只安装一个JAR。** 同一个插件ZIP适用于Android Studio与IntelliJ IDEA。
 
-0.6.6发行包大小1890482字节，SHA-256：
+0.6.7发行包大小1891422字节，SHA-256：
 
 ```text
-aced7b71196f6ee255288af2f3318f91857705054d1434ea4b50007d18aee48c
+5992f976270e92ace1a70d4b47b1bd8138e55addfc50e05e3e3377944b9f39f2
 ```
 
-macOS运行`shasum -a 256 inlay-gomoku-0.6.6.zip`；Linux运行`sha256sum inlay-gomoku-0.6.6.zip`；Windows PowerShell运行`Get-FileHash inlay-gomoku-0.6.6.zip -Algorithm SHA256`。与发行页校验值不同就不要安装。
+macOS运行`shasum -a 256 inlay-gomoku-0.6.7.zip`；Linux运行`sha256sum inlay-gomoku-0.6.7.zip`；Windows PowerShell运行`Get-FileHash inlay-gomoku-0.6.7.zip -Algorithm SHA256`。与发行页校验值不同就不要安装。
 
 ## 在IDE安装
 
 1. 在About查看Build号，去掉AI-/IC-/IU-前缀后，应在232.10072.27到262.*范围内。声明范围不代表每个版本均实测；不要修改ZIP里的范围来绕过兼容检查。
 2. 打开Settings（设置）→ Plugins（插件）→ 齿轮 → Install Plugin from Disk（从磁盘安装），选择完整ZIP。
-3. 保存工作，按IDE提示重启；在插件列表确认Moyu Collection（摸鱼合集）0.6.6已启用。旧版Inlay Gomoku使用相同插件ID `dev.gomoku.inlay`，可覆盖升级。
+3. 保存工作，按IDE提示重启；在插件列表确认Moyu Collection（摸鱼合集）0.6.7已启用。旧版Inlay Gomoku使用相同插件ID `dev.gomoku.inlay`，可覆盖升级。
 4. 打开文本代码文件，在光标处右键“摸鱼合集”。创建或加入指定游戏房间；房间码从公共菜单复制。
 
 如果快捷键被其他插件占用，可在IDE Keymap中查找“显示／隐藏内容”并调整绑定。macOS默认Control+G。游戏字号从“调节字号”设置，范围8～32；小说字号跟随编辑器。
@@ -37,7 +37,7 @@ macOS运行`shasum -a 256 inlay-gomoku-0.6.6.zip`；Linux运行`sha256sum inlay-
 
 Ctrl+D 同时隐藏／显示顶部两行试卷信息和完整底部操作栏，正文与当前页、作答保留；隐藏时高度收缩，设置自动保存。右键菜单仍可翻页和提交，也能恢复辅助区。macOS 同样是 Control+D；Ctrl+G 仍切换整个刷题区。Ctrl+D 只在当前显示刷题的编辑器启用。
 
-右键“摸鱼合集 → 行测刷题 → 选择试卷”，搜索年份或名称。0.6.6 发行包包含 2026、2025 广东行测网友回忆版各 90 题，另增言语专项225题，共405个条目，各卷进度独立保存。专项有完整参考答案解析；原两卷补充59题参考答案，其余未知答案不判分。提供跨卷错题库，选项同色加粗，继续做题恢复题内段号。支持判断、单选、多选、材料图片、原图查看、JSON 导入和可调字号；Ctrl+G 显隐。题目完整显示，短选项并排；“调节显示行数”设置解析每段1–20行，默认6行，题目不截断。信息栏默认隐藏，Ctrl+D恢复；题目内右键精简，设置在Tools或题目外右键菜单。详见[刷题说明](practice.md)。
+右键“摸鱼合集 → 行测刷题 → 选择试卷”，搜索年份或名称。0.6.7 发行包包含 2026、2025 广东行测网友回忆版各 90 题，另增言语专项225题，共405个条目，各卷进度独立保存。专项有完整参考答案解析；原两卷补充59题参考答案，其余未知答案不判分。提供跨卷错题库，选项同色加粗，继续做题恢复题内段号。支持判断、单选、多选、材料图片、原图查看、JSON 导入和可调字号；Ctrl+G 显隐。题目完整显示，短选项并排；“调节显示行数”设置解析每段1–20行，默认6行，题目不截断。信息栏默认隐藏，Ctrl+D恢复；题目内右键精简，设置在Tools或题目外右键菜单。做题时可右键“在此处显示”将题目移到当前光标行，保留进度。详见[刷题说明](practice.md)。
 
 ## 联机服务
 
@@ -47,6 +47,6 @@ Ctrl+D 同时隐藏／显示顶部两行试卷信息和完整底部操作栏，�
 
 ## 交给有本机操作权限的AI
 
-把 [AI安装说明](../distribution/install.md) 交给AI读取。在线固定地址为 [install.md](https://zhugetian.com/gomoku/install.md)。只有网页访问能力的AI不能安装本机插件；重启前应保存工作。GitHub发行包与该说明中的0.6.6包使用相同校验值。
+把 [AI安装说明](../distribution/install.md) 交给AI读取。在线固定地址为 [install.md](https://zhugetian.com/gomoku/install.md)。只有网页访问能力的AI不能安装本机插件；重启前应保存工作。GitHub发行包与该说明中的0.6.7包使用相同校验值。
 
 安装后查阅：[详细规则](../README.md#支持的游戏) · [数组说明](array-guide.md) · [英文词典](glossary.md)。

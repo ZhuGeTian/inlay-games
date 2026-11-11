@@ -18,6 +18,10 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 <img width="1552" height="964" alt="image" src="https://github.com/user-attachments/assets/9d2a9484-cbb4-43a0-b208-42dbe206d5eb" />
 
+## 0.6.7：右键在此处显示
+
+刷题模式下，在编辑器或题目右键选择 **在此处显示**，将当前题目移到光标所在行，同一文件和跨文件都支持。题号、作答、答案阶段和解析段号保持不变；Ctrl+G仍在固定位置显隐。
+
 ## 0.6.6：完整题目与紧凑展示
 
 题目与全部选项一次完整显示，行数不足时自动撑开；长解析仍按设置行数翻段。短选项根据宽度并排，选中仅同色加粗。默认隐藏顶部试卷信息及底部操作栏，Ctrl+D可恢复；题目内右键只保留翻页、作答、提交、重做等基础操作。完整设置留在Tools或题目外右键菜单。 修复原两卷10道填词题的横线，题库身份、作答与错题不变。
@@ -46,7 +50,7 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 安装后首次打开项目，插件会自动添加网站更新源，无需点击或复制地址，不弹确认通知。后续由 IDE 检查兼容的新版本并提供“更新”按钮。保留已有仓库与全局更新设置；用户日后删除更新源不会被强行恢复。详见[安装与更新](docs/installation.md#自动配置更新源053-起)。
 
-[网站直接下载 0.6.6](https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.6.zip) · [GitHub 0.6.6 发行页](https://github.com/ZhuGeTian/inlay-games/releases/tag/v0.6.6)
+[网站直接下载 0.6.7](https://zhugetian.com/gomoku/downloads/inlay-gomoku-0.6.7.zip) · [GitHub 0.6.7 发行页](https://github.com/ZhuGeTian/inlay-games/releases/tag/v0.6.7)
 
 ## 支持的游戏
 
@@ -66,7 +70,7 @@ AI 需要有本机终端或桌面操作权限；只有网页聊天能力时无�
 
 ## 安装与开局
 
-1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.6.6.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
+1. 从 [Releases](https://github.com/ZhuGeTian/inlay-games/releases/latest) 下载 `inlay-gomoku-0.6.7.zip`。不要用 GitHub 自动提供的 Source code ZIP 安装插件。
 2. IDE 内打开 **Settings → Plugins → 齿轮 → Install Plugin from Disk**，选择完整 ZIP，按提示重启。Android Studio 与 IDEA 使用同一安装包。
 3. 打开文本代码文件，右键 **摸鱼合集 → 对应游戏 → 创建房间**。
 4. 房主通过 **复制房间码** 邀请朋友；朋友在相同游戏中 **加入房间**。
@@ -123,7 +127,7 @@ val auto = intArrayOf(0, 0, 1)
 
 Linux无图形桌面时，插件编辑器测试使用`xvfb-run -a ./gradlew ...`。默认下载最低SDK IDEA Community 2023.2.3，也可添加 `-PlocalIdePath="/absolute/path/to/IntelliJ IDEA CE.app"` 使用已安装的同版本SDK。
 
-- 插件：`plugin/build/distributions/inlay-gomoku-0.6.6.zip`
+- 插件：`plugin/build/distributions/inlay-gomoku-0.6.7.zip`
 - 服务端：`server/build/install/server/`
 - 开发沙箱：`./gradlew :plugin:runIde`
 - 本地服务：`./gradlew :server:run`
@@ -143,7 +147,7 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 ```bash
 ./gradlew :plugin:verifyPlugin \
   -PverificationIdePath=/absolute/path/to/target-ide \
-  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.6.6.zip
+  -PverificationPluginZip=/absolute/path/to/inlay-gomoku-0.6.7.zip
 ```
 
 仓库保留 [Android Studio正式版目标清单](docs/compatibility-targets.json) 和下载工具；清单是固定快照，不自动跟踪未来版本。未启用GitHub自动构建或全矩阵任务，以上命令可手动执行。

@@ -36,7 +36,7 @@ public final class PracticeActions {
                 var q = session.question();
                 if (!q.images().isEmpty() || !q.materialImages().isEmpty() || q.options().stream().anyMatch(o -> o.image() != null)) names.add("Images");
             }
-            names.add("Hide");
+            names.add("Here"); names.add("Hide");
             return names.stream().map(name -> ActionManager.getInstance().getAction("Moyu.Practice." + name)).toArray(AnAction[]::new);
         }
     }
@@ -72,13 +72,22 @@ public final class PracticeActions {
                     }).createPopup().showInFocusCenter();
         }
     }
-    public static final class Show extends DumbAwareAction {
+    public static class Show extends DumbAwareAction {
         @Override public void actionPerformed(AnActionEvent e) {
             var session = PracticeSession.getInstance();
             Editor editor = editor(e);
             if (editor == null) Messages.showInfoMessage(e.getProject(), "请先打开一个代码或文本文件。", "行测刷题");
             else if (!session.hasPaper()) Messages.showInfoMessage(e.getProject(), "请先通过“选择试卷”打开试卷，也可以导入题库或打开示例。", "行测刷题");
-            else session.show(editor);
+            else session.showHere(editor);
+        }
+    }
+    public static final class Here extends Show {
+        @Override public ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        // 仅刷题模式在编辑器右键中提供直接入口，不占用其他模式的菜单。
+        @Override public void update(AnActionEvent e) {
+            var session = PracticeSession.getInstance();
+            e.getPresentation().setEnabledAndVisible(session.hasPaper() && session.isSelected()
+                    && e.getData(CommonDataKeys.EDITOR) != null);
         }
     }
     public static final class Mistakes extends LoadAction {

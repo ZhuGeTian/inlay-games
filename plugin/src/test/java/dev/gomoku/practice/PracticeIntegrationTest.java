@@ -476,7 +476,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         var group = (ActionGroup) ActionManager.getInstance().getAction("Moyu.Practice.ContextMenu");
         var names = java.util.Arrays.stream(group.getChildren(null)).map(a -> ActionManager.getInstance().getId(a)).toList();
         assertEquals(List.of("Moyu.Practice.PreviousPage", "Moyu.Practice.NextPage", "Moyu.Practice.A", "Moyu.Practice.B",
-                "Moyu.Practice.C", "Moyu.Practice.D", "Moyu.Practice.Submit", "Moyu.Practice.Hide"), names);
+                "Moyu.Practice.C", "Moyu.Practice.D", "Moyu.Practice.Submit", "Moyu.Practice.Here", "Moyu.Practice.Hide"), names);
         session.choose("B"); session.submit();
         names = java.util.Arrays.stream(group.getChildren(null)).map(a -> ActionManager.getInstance().getId(a)).toList();
         assertTrue(names.contains("Moyu.Practice.Retry")); assertFalse(names.contains("Moyu.Practice.A"));
@@ -519,6 +519,38 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         try { view().paint(inlay, (Graphics) g, new Rectangle(image.getWidth(), image.getHeight()), null); } finally { g.dispose(); }
         var file = java.nio.file.Path.of("build/reports/practice-compact-preview.png"); java.nio.file.Files.createDirectories(file.getParent());
         javax.imageio.ImageIO.write(image, "png", file.toFile());
+    }
+
+    // 主动重定位可跨行/文件，保留答案阶段及段号，Ctrl+G不跟随光标移动。
+    public void testShowHereMovesAnchorAndPreservesReviewState() throws Exception {
+        var json = PracticePaperTest.json(); json.getAsJsonArray("questions").get(0).getAsJsonObject()
+                .addProperty("explanation", "保留解析进度。".repeat(60));
+        session.accept(PracticePaperTest.parse(json)); Editor editor = myFixture.getEditor();
+        String original = editor.getDocument().getText(); long stamp = editor.getDocument().getModificationStamp();
+        session.show(editor); session.choose("A"); session.submit(); session.setVisibleLines(1); session.moveSegment(2);
+        String body = view().visibleText(); int page = view().pageIndex();
+        var action = ActionManager.getInstance().getAction("Moyu.Practice.Here");
+        var event = practiceEvent("Moyu.Practice.Here", editor); action.update(event);
+        assertTrue(event.getPresentation().isEnabledAndVisible());
+        editor.getCaretModel().moveToOffset(editor.getDocument().getLineStartOffset(1)); action.actionPerformed(event);
+        assertEquals(1, blocks().size()); assertEquals(editor.getDocument().getLineEndOffset(1), blocks().get(0).getOffset());
+        assertEquals(page, view().pageIndex()); assertEquals(body, view().visibleText()); assertTrue(session.progress().answerVisible);
+        assertEquals("A", session.progress().submitted.get(session.question().id())); assertEquals(1, session.progress().mistakes.size());
+        editor.getCaretModel().moveToOffset(0); toggle(); toggle();
+        assertEquals(editor.getDocument().getLineEndOffset(1), blocks().get(0).getOffset());
+        ActionManager.getInstance().getAction("Moyu.Practice.Show").actionPerformed(practiceEvent("Moyu.Practice.Show", editor));
+        assertEquals(editor.getDocument().getLineEndOffset(0), blocks().get(0).getOffset());
+        assertEquals(original, editor.getDocument().getText()); assertEquals(stamp, editor.getDocument().getModificationStamp());
+        var file = myFixture.addFileToProject("another.txt", "first\nsecond\n");
+        var other = com.intellij.openapi.fileEditor.FileEditorManager.getInstance(getProject()).openTextEditor(
+                new com.intellij.openapi.fileEditor.OpenFileDescriptor(getProject(), file.getVirtualFile()), false);
+        assertNotNull(other); other.getCaretModel().moveToOffset(6);
+        action.actionPerformed(practiceEvent("Moyu.Practice.Here", other)); assertTrue(blocks().isEmpty());
+        var relocated = other.getInlayModel().getBlockElementsInRange(0, other.getDocument().getTextLength());
+        assertEquals(1, relocated.size()); assertEquals(other.getDocument().getLineEndOffset(1), relocated.get(0).getOffset());
+        assertEquals(page, session.progress().page); assertTrue(session.progress().answerVisible);
+        var noEditor = practiceEvent("Moyu.Practice.Here", null); action.update(noEditor); assertFalse(noEditor.getPresentation().isVisible());
+        session.deactivate(); action.update(event); assertFalse(event.getPresentation().isVisible());
     }
 
 }

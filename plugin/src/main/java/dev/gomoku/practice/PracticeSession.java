@@ -221,6 +221,11 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         state.counts.put(value.id(), value.questions().size());
         progress().normalize(value);
     }
+    // 用户主动选择“在此处显示”才重设锚点，显隐快捷键继续保留固定位置。
+    public synchronized void showHere(Editor editor) {
+        if (disposed || paper == null || editor.isDisposed()) return;
+        hide(); clearAnchor(); show(editor);
+    }
     public synchronized void show(Editor editor) {
         if (disposed || paper == null || editor.isDisposed()) return;
         revision++;
