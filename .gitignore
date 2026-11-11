@@ -18,3 +18,7 @@ __pycache__/
 *.zip
 # User-provided study papers and locally converted question banks.
 private/
+# Personal dashboard databases and local credentials.
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

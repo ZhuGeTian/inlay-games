@@ -86,6 +86,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     // 整卷与板块均按完整题目、答案、下一题切换。
     public synchronized void movePage(int delta) {
         if (view == null) return;
+        if (delta > 0 && !progress().answerVisible && !empty() && !submitRecorded()) return;
         progress().advance(paper, delta); view.firstPage();
     }
     // 禁用已经到达边界的翻页操作。
@@ -131,6 +132,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     public void start(Project project) {
         if (started || disposed) return;
         started = true;
+        PracticeSync.getInstance().start();
         if (validId(state.paperId)) load(directory().resolve(state.paperId + ".json"), false, false, project, null);
     }
     public void importFile(Path file, Project project, Editor editor) { load(file, true, true, project, editor); }
@@ -277,9 +279,21 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     // 提交后进入独立答案页，题目不因行数设置被截断。
     public synchronized void submit() {
         if (paper == null || empty()) return;
-        if (progress().submit(question()) && view != null) {
+        if (submitRecorded() && progress().submitted.containsKey(question().id()) && view != null) {
             progress().answerVisible = true; view.firstPage();
         }
+    }
+    // 两种提交入口共用：先持久化事件，翻阅已提交题目不再重复记录。
+    private boolean submitRecorded() {
+        var q = question(); var p = progress();
+        String selected = p.choices.get(q.id());
+        if (p.submitted.containsKey(q.id()) || !q.validChoice(selected)) return true;
+        try { PracticeSync.getInstance().record(paper, p.index, selected); }
+        catch (IOException e) {
+            Messages.showErrorDialog("本次作答尚未提交：无法保存本地记录，请检查磁盘空间后重试。", "行测刷题");
+            return false;
+        }
+        p.submit(q); return true;
     }
     public synchronized void retry() {
         if (paper == null || empty()) return;

@@ -119,6 +119,24 @@ public final class PracticeActions {
                     }).createPopup().showInFocusCenter();
         }
     }
+    public static final class Dashboard extends DumbAwareAction {
+        @Override public void actionPerformed(AnActionEvent e) { com.intellij.ide.BrowserUtil.browse(PracticeSync.URL); }
+    }
+    public static final class ConnectDashboard extends DumbAwareAction {
+        @Override public void actionPerformed(AnActionEvent e) {
+            String code = Messages.showInputDialog(e.getProject(), "先在个人看板登录并生成一次性配对码。连接后会上传本机新版作答记录、题目和答案；不上传代码或小说。\n看板：" + PracticeSync.URL, "连接个人看板", null);
+            if (code == null) return;
+            String clean = code.trim().toUpperCase(java.util.Locale.ROOT);
+            if (!clean.matches("[A-F0-9]{12}")) { Messages.showErrorDialog(e.getProject(), "请输入12位配对码。", "连接个人看板"); return; }
+            PracticeSync.getInstance().connect(clean, text -> { if(e.getProject()==null || !e.getProject().isDisposed()) Messages.showInfoMessage(e.getProject(), text, "个人看板"); });
+        }
+    }
+    public static final class SyncDashboard extends DumbAwareAction {
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSync.getInstance().syncNow(text -> { if(e.getProject()==null || !e.getProject().isDisposed()) Messages.showInfoMessage(e.getProject(), text, "同步状态"); }); }
+    }
+    public static final class DisconnectDashboard extends DumbAwareAction {
+        @Override public void actionPerformed(AnActionEvent e) { PracticeSync.getInstance().disconnect(text -> { if(e.getProject()==null || !e.getProject().isDisposed()) Messages.showInfoMessage(e.getProject(), text, "个人看板"); }); }
+    }
     public abstract static class QuestionAction extends DumbAwareAction {
         @Override public ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
         @Override public void update(AnActionEvent e) {

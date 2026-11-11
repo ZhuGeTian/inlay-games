@@ -85,6 +85,22 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         }
         assertTrue(resultPages.toString().contains("未提供解析"));
     }
+    // 点击提交和下一页均记录一次；回看不增加，重做保留新尝试。
+    public void testActivityRecordingAcrossBothSubmitEntrances() throws Exception {
+        var dir = com.intellij.openapi.application.PathManager.getConfigDir().resolve("moyu-practice/activity");
+        var activity = new PracticeActivity(dir);
+        long before = activity.count();
+        session.show(myFixture.getEditor()); session.choose("A"); session.movePage(1);
+        assertEquals(before + 1, activity.count());
+        session.movePage(-1); session.movePage(1); session.submit();
+        assertEquals(before + 1, activity.count());
+        session.retry(); session.choose("B"); session.submit();
+        assertEquals(before + 2, activity.count());
+        session.move(1); session.movePage(1);
+        assertEquals(before + 2, activity.count()); // 未选择就看答案不计一次作答。
+        String original = myFixture.getEditor().getDocument().getText();
+        assertEquals("val source = 1\nval second = 2\n", original);
+    }
     public void testFixedAnchorCtrlGAndGameSwitchKeepsRoom() throws Exception {
         Editor editor = myFixture.getEditor();
         var game = getProject().getService(GomokuSession.class);
