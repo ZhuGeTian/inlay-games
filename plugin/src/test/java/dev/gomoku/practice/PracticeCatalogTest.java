@@ -29,6 +29,7 @@ public final class PracticeCatalogTest {
             assertEquals(2, paper.questions().stream().filter(q -> q.type().equals("multiple")).count());
             assertEquals(84, paper.questions().stream().filter(q -> q.type().equals("single")).count());
             assertEquals(paper.title().startsWith("2026") ? 30 : 29, paper.questions().stream().filter(q -> !q.answer().isEmpty()).count());
+            for (int i = 15; i < 20; i++) assertTrue(paper.questions().get(i).stem().contains("____"));
             for (int i = 0; i < 30; i++) {
                 var q = paper.questions().get(i);
                 assertFalse(q.explanation().isEmpty()); assertFalse(q.answerSource().isBlank());

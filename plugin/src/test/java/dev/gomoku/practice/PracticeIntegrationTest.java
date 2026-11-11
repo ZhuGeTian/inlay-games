@@ -28,6 +28,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         novelSaved = NovelReader.getInstance().getState();
         session.deactivate();
         session.loadState(new PracticeSession.SavedState());
+        session.toggleDetails(); // Legacy button tests explicitly show the optional controls.
         session.accept(PracticePaper.parse(PracticePaperTest.sample()));
         getProject().getService(GomokuSession.class);
     }
@@ -80,7 +81,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         assertTrue(view().visibleText().contains("未提供答案")); assertTrue(session.progress().mistakes.isEmpty());
         StringBuilder resultPages = new StringBuilder(view().visibleText());
         while (view().pageIndex() + 1 < view().pageCount()) {
-            click("page+"); resultPages.append(view().visibleText());
+            click("segment+"); resultPages.append(view().visibleText());
         }
         assertTrue(resultPages.toString().contains("未提供解析"));
     }
@@ -109,7 +110,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         var json = PracticePaperTest.json();
         json.getAsJsonArray("questions").get(0).getAsJsonObject().addProperty("material", "分行测试🌌。".repeat(350));
         session.accept(PracticePaperTest.parse(json));
-        session.show(myFixture.getEditor()); assertTrue(view().pageCount() > 2);
+        session.show(myFixture.getEditor()); assertEquals(1, view().pageCount());
         StringBuilder read = new StringBuilder();
         int count = view().pageCount();
         for (int i = 0; i < count; i++) {
@@ -119,7 +120,8 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         assertTrue(read.toString().contains("分行测试🌌。".repeat(350)));
         assertFalse(read.toString().contains("正确答案"));
         assertEquals(count - 1, view().pageIndex());
-        session.setFontSize(24); assertTrue(view().pageCount() >= count);
+        int previousHeight = blocks().get(0).getHeightInPixels();
+        session.setFontSize(24); assertEquals(1, view().pageCount()); assertTrue(blocks().get(0).getHeightInPixels() > previousHeight);
         click("B"); click("submit"); assertTrue(view().visibleText().contains("正确答案"));
         session.move(2);
         var inlay = blocks().get(0);
@@ -205,40 +207,32 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         } finally { for (var cache : created) java.nio.file.Files.deleteIfExists(cache); }
     }
     // 缩小正文后仍能读完长材料、作答，且不会改动源文件。
-    public void testVisibleLinesShrinkWithoutLosingContentOrAnswers() throws Exception {
-        var json = PracticePaperTest.json();
-        String material = "逐行阅读测试🌌。".repeat(80);
-        json.getAsJsonArray("questions").get(0).getAsJsonObject().addProperty("material", material);
-        session.accept(PracticePaperTest.parse(json));
-        Editor editor = myFixture.getEditor();
-        String source = editor.getDocument().getText();
-        long stamp = editor.getDocument().getModificationStamp();
-        session.show(editor);
-        int height = blocks().get(0).getHeightInPixels(), count = view().pageCount();
-        click("B"); click("page+");
+    public void testVisibleLinesNeverTruncateQuestionButStillPaginateAnswers() throws Exception {
+        var json = PracticePaperTest.json(); var q = json.getAsJsonArray("questions").get(0).getAsJsonObject();
+        String material = "完整材料测试🌌。".repeat(80), explanation = "长解析仍分页。".repeat(40);
+        q.addProperty("material", material); q.addProperty("explanation", explanation);
+        session.accept(PracticePaperTest.parse(json)); Editor editor = myFixture.getEditor();
+        String source = editor.getDocument().getText(); long stamp = editor.getDocument().getModificationStamp();
+        session.show(editor); int height = blocks().get(0).getHeightInPixels();
         session.setVisibleLines(1);
-        assertTrue(blocks().get(0).getHeightInPixels() < height);
-        assertTrue(view().pageCount() > count);
-        assertEquals(0, view().pageIndex());
-        assertEquals("B", session.progress().choices.get(session.question().id()));
+        assertEquals(height, blocks().get(0).getHeightInPixels()); assertEquals(1, view().pageCount());
+        assertTrue(view().visibleText().replace("\n", "").replace("// ", "").contains(material));
+        assertEquals(4, view().optionHits().stream().map(PracticeView.Button::action).distinct().count());
+        click("B"); click("submit"); assertTrue(session.progress().answerVisible); assertTrue(view().pageCount() > 1);
         StringBuilder text = new StringBuilder();
         for (int i = 0, pages = view().pageCount(); i < pages; i++) {
             assertEquals(1, view().visibleText().lines().filter(line -> !line.isEmpty()).count());
             text.append(view().visibleText().replace("\n", "").replace("// ", ""));
-            if (i + 1 < pages) click("page+");
+            if (i + 1 < pages) click("segment+");
         }
-        assertTrue(text.toString().contains(material));
-        click("submit");
+        assertTrue(text.toString().contains(explanation));
+        session.setVisibleLines(3); assertEquals(0, session.progress().index);
+        session.movePage(-1); assertFalse(session.progress().answerVisible); assertEquals(1, view().pageCount());
+        assertTrue(view().visibleText().replace("\n", "").replace("// ", "").contains(material));
         assertEquals("B", session.progress().submitted.get(session.question().id()));
-        assertTrue(session.progress().result(session.question()).startsWith("正确"));
-        session.setVisibleLines(3);
-        assertEquals(0, session.progress().index);
-        assertEquals("B", session.progress().submitted.get(session.question().id()));
-        assertEquals(source, editor.getDocument().getText());
-        assertEquals(stamp, editor.getDocument().getModificationStamp());
-        assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.VisibleLines"));
+        assertEquals(source, editor.getDocument().getText()); assertEquals(stamp, editor.getDocument().getModificationStamp());
     }
-    // 行数设置可序列化恢复，旧配置和损坏配置使用紧凑默认值。
+    // 行数设置可序列化恢复，非法值保持原来的边界检查。
     public void testVisibleLinesPersistenceAndInvalidValues() {
         assertEquals(6, session.getVisibleLines());
         session.setVisibleLines(3);
@@ -320,12 +314,12 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         var next = ActionManager.getInstance().getAction("Moyu.Practice.NextPage");
         var nextEvent = practiceEvent("Moyu.Practice.NextPage", editor);
         next.update(nextEvent); assertTrue(nextEvent.getPresentation().isEnabled()); next.actionPerformed(nextEvent);
-        assertEquals(1, view().pageIndex()); previous.actionPerformed(prevEvent); assertEquals(0, view().pageIndex());
+        assertTrue(session.progress().answerVisible); previous.actionPerformed(prevEvent); assertFalse(session.progress().answerVisible);
         while (session.canMovePage(1)) next.actionPerformed(nextEvent);
         next.update(nextEvent); assertFalse(nextEvent.getPresentation().isEnabled());
         assertTrue(view().buttons().isEmpty());
         session.loadState(XmlSerializer.deserialize(new org.jdom.Element("state"), PracticeSession.SavedState.class));
-        assertTrue(session.isDetailsVisible());
+        assertFalse(session.isDetailsVisible());
     }
     // 局部 Ctrl+D 优先级仅在刷题视图存活时生效，其他编辑器不会触发。
     public void testDetailsShortcutScopeAndDisposal() {
@@ -363,7 +357,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         qs.get(3).getAsJsonObject().addProperty("section", "言语理解");
         session.accept(PracticePaperTest.parse(json)); session.selectSection("言语理解");
         session.setVisibleLines(2); session.show(myFixture.getEditor());
-        assertFalse(view().visibleText().contains("正确答案")); assertTrue(view().pageCount() > 2);
+        assertFalse(view().visibleText().contains("正确答案")); assertEquals(1, view().pageCount());
         StringBuilder read = new StringBuilder();
         for (int i = 0, n = view().pageCount(); i < n; i++) {
             read.append(view().visibleText().replace("\n", "").replace("// ", ""));
@@ -407,7 +401,7 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         q.addProperty("section", "言语理解"); q.addProperty("material", "续做材料。".repeat(80));
         q.addProperty("explanation", "续做解析。".repeat(80));
         var paper = PracticePaperTest.parse(json); session.accept(paper); session.setVisibleLines(2); session.show(myFixture.getEditor());
-        session.movePage(2); String text = view().visibleText(); assertEquals(2, view().pageIndex());
+        session.movePage(1); session.moveSegment(2); String text = view().visibleText(); assertEquals(2, view().pageIndex());
         session.hide(); session.show(myFixture.getEditor()); assertEquals(2, view().pageIndex()); assertEquals(text, view().visibleText());
         session.selectSection("言语理解"); assertEquals(0, view().pageIndex());
         session.movePage(1); assertTrue(session.progress().answerVisible); session.moveSegment(2);
@@ -473,4 +467,58 @@ public final class PracticeIntegrationTest extends BasePlatformTestCase {
         assertFalse("Import did not finish", session.isLoading());
     }
     private List<Inlay<?>> blocks() { return myFixture.getEditor().getInlayModel().getBlockElementsInRange(0, myFixture.getEditor().getDocument().getTextLength()); }
+    // 新旧配置首次均隐藏辅助区，手动恢复后的偏好不被下次加载覆盖。
+    public void testCompactDefaultMigrationAndMinimalContextMenu() throws Exception {
+        var old = new PracticeSession.SavedState(); old.detailsVisible = true;
+        session.loadState(old); assertFalse(session.isDetailsVisible());
+        session.show(myFixture.getEditor()); assertTrue(view().buttons().isEmpty());
+        assertEquals("Moyu.Practice.ContextMenu", view().getContextMenuGroupId(blocks().get(0)));
+        var group = (ActionGroup) ActionManager.getInstance().getAction("Moyu.Practice.ContextMenu");
+        var names = java.util.Arrays.stream(group.getChildren(null)).map(a -> ActionManager.getInstance().getId(a)).toList();
+        assertEquals(List.of("Moyu.Practice.PreviousPage", "Moyu.Practice.NextPage", "Moyu.Practice.A", "Moyu.Practice.B",
+                "Moyu.Practice.C", "Moyu.Practice.D", "Moyu.Practice.Submit", "Moyu.Practice.Hide"), names);
+        session.choose("B"); session.submit();
+        names = java.util.Arrays.stream(group.getChildren(null)).map(a -> ActionManager.getInstance().getId(a)).toList();
+        assertTrue(names.contains("Moyu.Practice.Retry")); assertFalse(names.contains("Moyu.Practice.A"));
+        session.toggleDetails();
+        var state = XmlSerializer.deserialize(XmlSerializer.serialize(session.getState()), PracticeSession.SavedState.class);
+        session.loadState(state); assertTrue(session.isDetailsVisible());
+        assertNotNull(ActionManager.getInstance().getAction("Moyu.Practice.VisibleLines"));
+    }
+    // 同行选项的点击互不串位，缩窄或加大字体后自动换行且不裁剪题目。
+    public void testCompactOptionsIndependentHitsAndNarrowWrapping() {
+        session.setFontSize(12); session.show(myFixture.getEditor());
+        var hits = view().optionHits(); assertEquals(4, hits.size());
+        assertEquals(1, hits.stream().map(h -> h.bounds().y).distinct().count());
+        for (String letter : List.of("A", "B", "C", "D")) {
+            var box = view().optionHits().stream().filter(h -> h.action().equals(letter)).findFirst().orElseThrow().bounds();
+            view().activateAt(box.x + 1, box.y + 1); assertEquals(letter, session.progress().choices.get(session.question().id()));
+            assertEquals(1, view().pageCount());
+        }
+        int before = blocks().get(0).getHeightInPixels();
+        EditorTestUtil.setEditorVisibleSize(myFixture.getEditor(), 18, 35); session.setFontSize(32); session.refresh();
+        assertTrue(blocks().get(0).getHeightInPixels() > before); assertEquals(1, view().pageCount());
+        assertEquals(4, view().optionHits().stream().map(PracticeView.Button::action).distinct().count());
+        for (var hit : view().optionHits()) {
+            assertTrue(hit.bounds().x >= 0); assertTrue(hit.bounds().x + hit.bounds().width <= blocks().get(0).getWidthInPixels());
+            assertTrue(hit.bounds().y + hit.bounds().height <= blocks().get(0).getHeightInPixels());
+        }
+    }
+    // 实际截图对应题保留身份并显示横线，绘制结果供人工检查。
+    public void testRealFillBlankQuestionIsCompleteAndRenderPreview() throws Exception {
+        var entry = PracticeCatalog.bundled().stream().filter(e -> e.title().startsWith("2026")).findFirst();
+        if (entry.isEmpty()) return;
+        try (var input = PracticeCatalog.open(entry.get().id())) { session.accept(PracticePaper.parse(PracticePaper.readBytes(input))); }
+        session.toggleDetails(); session.setFontSize(14); session.setVisibleLines(1); session.move(15); session.show(myFixture.getEditor());
+        assertEquals(entry.get().id(), session.paper().id()); assertTrue(view().visibleText().contains("既不____"));
+        assertEquals(1, view().pageCount()); assertTrue(view().buttons().isEmpty());
+        assertEquals(4, view().optionHits().size()); assertEquals(1, view().optionHits().stream().map(h -> h.bounds().y).distinct().count());
+        session.choose("C"); assertTrue(view().optionFont("C").isBold());
+        var inlay = blocks().get(0); var image = new java.awt.image.BufferedImage(inlay.getWidthInPixels(), inlay.getHeightInPixels(), java.awt.image.BufferedImage.TYPE_INT_RGB);
+        var g = image.createGraphics();
+        try { view().paint(inlay, (Graphics) g, new Rectangle(image.getWidth(), image.getHeight()), null); } finally { g.dispose(); }
+        var file = java.nio.file.Path.of("build/reports/practice-compact-preview.png"); java.nio.file.Files.createDirectories(file.getParent());
+        javax.imageio.ImageIO.write(image, "png", file.toFile());
+    }
+
 }

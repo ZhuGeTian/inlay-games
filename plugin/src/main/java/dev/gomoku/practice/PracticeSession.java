@@ -22,7 +22,8 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         public boolean selected;
         public int fontSize;
         public int visibleLines = 6;
-        public boolean detailsVisible = true;
+        public boolean detailsVisible;
+        public boolean compactDefaultsApplied;
         public String section = "";
         public Map<String, String> titles = new HashMap<>();
         public Map<String, Integer> counts = new HashMap<>();
@@ -37,6 +38,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     private long revision;
 
     public PracticeSession() {
+        state.compactDefaultsApplied = true;
         EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
             @Override public void editorReleased(EditorFactoryEvent e) {
                 if (e.getEditor() == anchorEditor) { hide(); clearAnchor(); }
@@ -54,6 +56,7 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         copy.fontSize = state.fontSize;
         copy.visibleLines = state.visibleLines;
         copy.detailsVisible = state.detailsVisible;
+        copy.compactDefaultsApplied = state.compactDefaultsApplied;
         copy.section = state.section;
         copy.titles = new HashMap<>(state.titles);
         copy.counts = new HashMap<>(state.counts);
@@ -63,6 +66,8 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     // 恢复设置，旧版本缺失字段与非法显示行数使用默认值。
     @Override public synchronized void loadState(SavedState value) {
         state = value;
+        // 首次升级应用隐藏默认值，此后保留用户通过Ctrl+D做出的选择。
+        if (!value.compactDefaultsApplied) { value.detailsVisible = false; value.compactDefaultsApplied = true; }
         if (value.section == null || !PracticeSections.NAMES.contains(value.section)) value.section = "";
         if (value.fontSize != 0 && (value.fontSize < 8 || value.fontSize > 32)) value.fontSize = 0;
         if (value.visibleLines < 1 || value.visibleLines > 20) value.visibleLines = 6;
@@ -78,15 +83,14 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
         state.detailsVisible = !state.detailsVisible;
         refresh();
     }
-    // 板块模式按题目/答案切换，整卷模式保持原来的内容分页。
+    // 整卷与板块均按完整题目、答案、下一题切换。
     public synchronized void movePage(int delta) {
         if (view == null) return;
-        if (isSectionMode()) { progress().advance(paper, delta); view.firstPage(); }
-        else view.movePage(delta);
+        progress().advance(paper, delta); view.firstPage();
     }
     // 禁用已经到达边界的翻页操作。
     public boolean canMovePage(int delta) {
-        return view != null && (isSectionMode() ? progress().canAdvance(paper, delta) : canMoveSegment(delta));
+        return view != null && progress().canAdvance(paper, delta);
     }
     // 长题与长解析的段落翻页独立于题目/答案阶段。
     public void moveSegment(int delta) { if (view != null) view.movePage(delta); }
@@ -261,16 +265,15 @@ public final class PracticeSession implements PersistentStateComponent<PracticeS
     PracticePaper.Question question() { return paper.questions().get(progress().index); }
     boolean empty() { return progress().indices(paper).isEmpty(); }
     public synchronized void choose(String choice) {
-        if (paper == null || empty() || isSectionMode() && progress().answerVisible) return;
+        if (paper == null || empty() || progress().answerVisible) return;
         progress().select(question(), choice);
         refresh();
     }
-    // 板块提交后进入独立答案页，整卷沿用原答案定位。
+    // 提交后进入独立答案页，题目不因行数设置被截断。
     public synchronized void submit() {
         if (paper == null || empty()) return;
         if (progress().submit(question()) && view != null) {
-            if (isSectionMode()) { progress().answerVisible = true; view.firstPage(); }
-            else view.answerPage();
+            progress().answerVisible = true; view.firstPage();
         }
     }
     public synchronized void retry() {

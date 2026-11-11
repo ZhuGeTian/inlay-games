@@ -12,6 +12,7 @@
         <postStartupActivity implementation="dev.gomoku.novel.ReaderStartup"/>
     </extensions>
     <actions>
+        <group id="Moyu.Practice.ContextMenu" class="dev.gomoku.practice.PracticeActions$ContextMenu" popup="true"/>
         <group id="Gomoku.Menu" text="摸鱼合集" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>

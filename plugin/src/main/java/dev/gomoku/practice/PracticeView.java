@@ -17,7 +17,12 @@ import javax.swing.Timer;
 
 /** A painted inlay, never a document edit. Optional details surround the question body. */
 final class PracticeView implements EditorCustomElementRenderer, Disposable {
-    record Row(String text, BufferedImage image, String action, int height, int imageWidth) {}
+    record Part(String text, String action, int x, int width) {}
+    record Row(String text, BufferedImage image, String action, int height, int imageWidth, List<Part> parts) {
+        Row(String text, BufferedImage image, String action, int height, int imageWidth) {
+            this(text, image, action, height, imageWidth, List.of());
+        }
+    }
     record Button(String label, String action, boolean enabled, Rectangle bounds) {}
     private final Editor editor;
     private final PracticeSession session;
@@ -25,7 +30,6 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     private Font font;
     private FontMetrics metrics;
     private int width, height, lineHeight, bodyHeight, bodyTop, page, footerTop;
-    private int answerRow;
     private final List<List<Row>> pages = new ArrayList<>();
     private final List<Button> buttons = new ArrayList<>();
     private final List<Button> optionHits = new ArrayList<>();
@@ -74,15 +78,6 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
     }
     void restorePage() { page = session.progress().page; refresh(); }
     void firstPage() { page = 0; refresh(); }
-    void answerPage() {
-        refresh();
-        int rows = 0;
-        for (int i = 0; i < pages.size(); i++) {
-            rows += pages.get(i).size();
-            if (answerRow < rows) { page = i; break; }
-        }
-        refresh();
-    }
     int pageCount() { return pages.size(); }
     int pageIndex() { return page; }
     // 按边界翻页，供菜单与可见按钮共用。
@@ -115,7 +110,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             default -> session.choose(action);
         }
     }
-    // 按正文行数分页；隐藏辅助区时同时移除占位和按钮命中区域。
+    // 题目完整显示，答案按行数分页；辅助区隐藏时不保留空白或按钮命中区。
     private void layout() {
         layoutKey = key();
         Font preferred = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
@@ -134,7 +129,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         if (empty) text(rows, "还没有错题。点击“全部题”返回试卷。", null);
         else {
             var q = session.question();
-            if (session.isSectionMode() && progress.answerVisible) {
+            if (progress.answerVisible) {
                 String result = progress.result(q);
                 text(rows, result.isEmpty() ? (q.answer().isEmpty() ? "未提供答案，暂不判分" : q.answerLabel() + "：" + q.answer()) : result, null);
                 text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
@@ -144,25 +139,14 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
                 for (var image : q.materialImages()) picture(rows, image, null);
                 text(rows, q.stem(), null);
                 for (var image : q.images()) picture(rows, image, null);
-                for (int i = 0; i < q.options().size(); i++) {
-                    String letter = String.valueOf((char) ('A' + i));
-                    var option = q.options().get(i);
-                    text(rows, letter + ". " + option.text(), letter);
-                    if (option.image() != null) picture(rows, option.image(), letter);
-                }
-                answerRow = rows.size();
-                if (!session.isSectionMode() && progress.submitted.containsKey(q.id())) {
-                    text(rows, progress.result(q), null);
-                    text(rows, "解析：" + (q.explanation().isEmpty() ? "未提供解析" : q.explanation()), null);
-                    if (!q.answerSource().isEmpty()) text(rows, "来源：" + q.answerSource(), null);
-                }
+                options(rows, q);
             }
         }
         pages.clear();
         var current = new ArrayList<Row>();
         int used = 0;
         for (var row : rows) {
-            if (used + row.height > bodyHeight && !current.isEmpty()) { pages.add(current); current = new ArrayList<>(); used = 0; }
+            if (progress.answerVisible && used + row.height > bodyHeight && !current.isEmpty()) { pages.add(current); current = new ArrayList<>(); used = 0; }
             current.add(row);
             used += row.height;
         }
@@ -170,15 +154,15 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         page = Math.max(0, Math.min(page, pages.size() - 1));
         progress.page = page;
         bodyTop = (session.isDetailsVisible() ? 2 * lineHeight : 0) + 4;
-        footerTop = bodyTop + bodyHeight + 4;
+        footerTop = bodyTop + pages.get(page).stream().mapToInt(Row::height).sum() + 4;
         buttons.clear();
         var available = progress.indices(session.paper());
         int at = available.indexOf(progress.index);
-        boolean submitted = !empty && (progress.submitted.containsKey(session.question().id()) || session.isSectionMode() && progress.answerVisible);
+        boolean submitted = !empty && (progress.submitted.containsKey(session.question().id()) || progress.answerVisible);
         String selected = empty ? "" : progress.choices.getOrDefault(session.question().id(), "");
         if (session.isDetailsVisible()) addButtons(footerTop, new String[][] {
-                {"上一页", "page-", Boolean.toString(session.isSectionMode() ? progress.canAdvance(session.paper(), -1) : page > 0)},
-                {"下一页", "page+", Boolean.toString(session.isSectionMode() ? progress.canAdvance(session.paper(), 1) : page + 1 < pages.size())},
+                {"上一页", "page-", Boolean.toString(progress.canAdvance(session.paper(), -1))},
+                {"下一页", "page+", Boolean.toString(progress.canAdvance(session.paper(), 1))},
                 {"上段", "segment-", Boolean.toString(page > 0)}, {"下段", "segment+", Boolean.toString(page + 1 < pages.size())},
                 {"A", "A", Boolean.toString(!empty && !submitted)}, {"B", "B", Boolean.toString(!empty && !submitted)},
                 {"C", "C", Boolean.toString(!empty && !submitted && session.question().options().size() > 2)}, {"D", "D", Boolean.toString(!empty && !submitted && session.question().options().size() > 3)},
@@ -191,14 +175,44 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         optionHits.clear();
         int y = bodyTop;
         for (var row : pages.get(page)) {
+            for (var part : row.parts) optionHits.add(new Button(part.action, part.action, !submitted, new Rectangle(part.x, y, part.width, row.height)));
             if (row.action != null) optionHits.add(new Button(row.action, row.action, !submitted, new Rectangle(6, y, width - 12, row.height)));
             y += row.height;
         }
     }
+    // 短选项按粗体最大宽度并排，保证选中后不跳行，各选项独立点击。
+    private void options(List<Row> rows, PracticePaper.Question question) {
+        var bold = editor.getContentComponent().getFontMetrics(font.deriveFont(Font.BOLD));
+        int start = 8 + metrics.stringWidth("// "), available = width - 10 - start;
+        boolean compact = question.options().stream().allMatch(o -> o.image() == null && !o.text().contains("\n")
+                && bold.stringWidth("A. " + o.text()) <= available);
+        if (!compact) {
+            for (int i = 0; i < question.options().size(); i++) {
+                var option = question.options().get(i); String letter = String.valueOf((char) ('A' + i));
+                text(rows, letter + ". " + option.text(), letter);
+                if (option.image() != null) picture(rows, option.image(), letter);
+            }
+            return;
+        }
+        var parts = new ArrayList<Part>();
+        int x = start;
+        for (int i = 0; i < question.options().size(); i++) {
+            String letter = String.valueOf((char) ('A' + i)), label = letter + ". " + question.options().get(i).text();
+            int w = bold.stringWidth(label);
+            if (!parts.isEmpty() && x + w > width - 10) { optionRow(rows, parts); parts.clear(); x = start; }
+            parts.add(new Part(label, letter, x, w)); x += w + metrics.stringWidth("  ");
+        }
+        if (!parts.isEmpty()) optionRow(rows, parts);
+    }
+    // 同行选项共享行高和注释前缀，保存片段用于绘制和命中测试。
+    private void optionRow(List<Row> rows, List<Part> parts) {
+        String label = "// " + String.join("  ", parts.stream().map(Part::text).toList());
+        rows.add(new Row(label, null, null, lineHeight, 0, List.copyOf(parts)));
+    }
     private void addButtons(int top, String[][] values) {
         int x = 8, y = top;
         for (var value : values) {
-            if (value[1].startsWith("segment") && (!session.isSectionMode() || pages.size() <= 1)) continue;
+            if (value[1].startsWith("segment") && (pages.size() <= 1)) continue;
             if (!session.empty() && value[1].matches("[A-D]") && !session.question().validChoice(value[1])) continue;
             String label = "[" + value[0] + "]";
             int w = editor.getContentComponent().getFontMetrics(font.deriveFont(Font.BOLD)).stringWidth(label) + 10;
@@ -233,13 +247,13 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
         return selected ? font.deriveFont(Font.BOLD) : font;
     }
     private void picture(List<Row> rows, BufferedImage image, String action) {
-        double scale = Math.min(1.0, Math.min((width - 24.0) / image.getWidth(), (bodyHeight - 8.0) / image.getHeight()));
+        double scale = Math.min(1.0, (width - 24.0) / image.getWidth());
         rows.add(new Row(null, image, action, Math.max(1, (int) (image.getHeight() * scale)) + 8,
                 Math.max(1, (int) (image.getWidth() * scale))));
     }
     @Override public int calcWidthInPixels(Inlay inlay) { return width; }
     @Override public int calcHeightInPixels(Inlay inlay) { return height; }
-    @Override public String getContextMenuGroupId(Inlay inlay) { return "Moyu.Practice.Menu"; }
+    @Override public String getContextMenuGroupId(Inlay inlay) { return "Moyu.Practice.ContextMenu"; }
     // 辅助信息按设置绘制，正文与选项使用统一的布局起点。
     @Override public void paint(Inlay inlay, Graphics graphics, Rectangle region, TextAttributes attributes) {
         Graphics2D g = (Graphics2D) graphics.create();
@@ -259,7 +273,7 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
             if (session.isDetailsVisible()) {
                 g.drawString(shorten("// " + session.paper().title()), 8, metrics.getAscent() + 2);
                 String status = session.empty() ? "0 题" : "题 " + (progress.index + 1) + "/" + session.paper().questions().size() + " · " + session.question().typeLabel();
-                g.drawString(shorten("// " + status + (session.isSectionMode() ? " · " + session.getSection() + (progress.answerVisible ? " · 答案 · 段 " : " · 题目 · 段 ") : " · 页 ") + (page + 1) + "/" + pages.size()
+                g.drawString(shorten("// " + status + ((session.isSectionMode() ? " · " + session.getSection() : "") + (progress.answerVisible ? " · 答案 · 段 " : " · 题目 · 段 ")) + (page + 1) + "/" + pages.size()
                         + (progress.onlyWrong ? " · 错题" : "")), 8, lineHeight + metrics.getAscent() + 2);
             }
             int y = bodyTop;
@@ -267,7 +281,10 @@ final class PracticeView implements EditorCustomElementRenderer, Disposable {
                 g.setColor(normal);
                 g.setFont(optionFont(row.action));
                 if (row.image != null) g.drawImage(row.image, 10, y + 4, row.imageWidth, row.height - 8, null);
-                else g.drawString(row.text, 8, y + metrics.getAscent());
+                else if (!row.parts.isEmpty()) {
+                    g.setFont(font); g.drawString("// ", 8, y + metrics.getAscent());
+                    for (var part : row.parts) { g.setFont(optionFont(part.action)); g.drawString(part.text, part.x, y + metrics.getAscent()); }
+                } else g.drawString(row.text, 8, y + metrics.getAscent());
                 y += row.height;
             }
             for (var button : buttons) {

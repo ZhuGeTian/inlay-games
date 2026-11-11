@@ -17,6 +17,29 @@ public final class PracticeActions {
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         return editor != null ? editor : e.getProject() == null ? null : FileEditorManager.getInstance(e.getProject()).getSelectedTextEditor();
     }
+    public static final class ContextMenu extends DefaultActionGroup {
+        @Override public ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        // 题目内只显示当前阶段需要的基础操作，设置和题库管理留在完整菜单。
+        @Override public AnAction[] getChildren(AnActionEvent event) {
+            var session = PracticeSession.getInstance();
+            var names = new ArrayList<String>();
+            if (session.hasPaper() && !session.empty()) {
+                names.add("PreviousPage"); names.add("NextPage");
+                if (session.canMoveSegment(-1) || session.canMoveSegment(1)) {
+                    names.add("PreviousSegment"); names.add("NextSegment");
+                }
+                if (!session.progress().answerVisible && !session.progress().submitted.containsKey(session.question().id())) {
+                    for (int i = 0; i < session.question().options().size(); i++) names.add(String.valueOf((char) ('A' + i)));
+                    names.add("Submit");
+                }
+                if (session.progress().submitted.containsKey(session.question().id())) names.add("Retry");
+                var q = session.question();
+                if (!q.images().isEmpty() || !q.materialImages().isEmpty() || q.options().stream().anyMatch(o -> o.image() != null)) names.add("Images");
+            }
+            names.add("Hide");
+            return names.stream().map(name -> ActionManager.getInstance().getAction("Moyu.Practice." + name)).toArray(AnAction[]::new);
+        }
+    }
     public abstract static class LoadAction extends DumbAwareAction {
         @Override public ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
         @Override public void update(AnActionEvent e) { e.getPresentation().setEnabled(!PracticeSession.getInstance().isLoading()); }
@@ -128,10 +151,10 @@ public final class PracticeActions {
         @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().movePage(1); }
     }
     public static final class PreviousSegment extends QuestionAction {
-        // 仅板块模式显示段落翻页，与答案翻页区分。
+        // 解析的段落翻页与题目/答案切换分开。
         @Override public void update(AnActionEvent e) {
             super.update(e); var session = PracticeSession.getInstance();
-            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.isSectionMode() && session.canMoveSegment(-1));
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.canMoveSegment(-1));
         }
         @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().moveSegment(-1); }
     }
@@ -139,7 +162,7 @@ public final class PracticeActions {
         // 当前题目或解析的剩余内容可逐段读完。
         @Override public void update(AnActionEvent e) {
             super.update(e); var session = PracticeSession.getInstance();
-            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.isSectionMode() && session.canMoveSegment(1));
+            e.getPresentation().setEnabled(e.getPresentation().isEnabled() && session.canMoveSegment(1));
         }
         @Override public void actionPerformed(AnActionEvent e) { PracticeSession.getInstance().moveSegment(1); }
     }
@@ -192,7 +215,7 @@ public final class PracticeActions {
         @Override public void actionPerformed(AnActionEvent e) {
             var session = PracticeSession.getInstance();
             String value = Messages.showInputDialog(e.getProject(),
-                    "输入正文显示行数 1–20（默认 6）；不含题号和按钮，超出内容可翻页查看。",
+                    "输入解析每段行数 1–20（默认 6）；题目始终完整显示，行数不足会自动撑开。",
                     "刷题显示行数", null, Integer.toString(session.getVisibleLines()), new InputValidator() {
                         // 仅接受范围内的整数，避免无效设置进入布局。
                         @Override public boolean checkInput(String text) {

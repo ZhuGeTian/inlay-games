@@ -15,6 +15,11 @@ public final class PracticeReviewTest {
         assertSame(paper.questions().get(0), result.questions().get(0));
         var q = result.questions().get(3); assertEquals("B", q.answer()); assertEquals("参考答案", q.answerLabel());
         assertEquals(paper.questions().get(3).stem(), q.stem()); assertSame(paper.questions().get(3).options(), q.options());
+        entries.getAsJsonObject("sample-4").addProperty("stem", "补正后的____题干");
+        assertEquals("补正后的____题干", PracticeAnswers.apply(paper, entries).questions().get(3).stem());
+        entries.getAsJsonObject("sample-4").addProperty("stem", " ");
+        assertThrows(IOException.class, () -> PracticeAnswers.apply(paper, entries));
+        entries.getAsJsonObject("sample-4").remove("stem");
         entries.getAsJsonObject("sample-4").addProperty("answer", "Z");
         assertThrows(IOException.class, () -> PracticeAnswers.apply(paper, entries));
         entries.getAsJsonObject("sample-4").addProperty("answer", "");

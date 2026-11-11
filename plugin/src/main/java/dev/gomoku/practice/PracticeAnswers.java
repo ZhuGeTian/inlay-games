@@ -24,10 +24,12 @@ final class PracticeAnswers {
             if (!entries.has(q.id())) { questions.add(q); continue; }
             var value = entries.getAsJsonObject(q.id());
             String answer = value.get("answer").getAsString(), explanation = value.get("explanation").getAsString(), source = value.get("source").getAsString();
+            String stem = value.has("stem") ? value.get("stem").getAsString().strip() : q.stem();
+            if (stem.isBlank() || stem.length() > 16000) throw new IOException("补正题干无效：" + q.id());
             if (!q.answer().isEmpty() || !answer.isEmpty() && (!q.validChoice(answer) || q.type().equals("multiple") && answer.length() < 2)
                     || source.isBlank() || source.length() > 4000 || explanation.isBlank() || explanation.length() > 40000)
                 throw new IOException("参考答案字段无效：" + q.id());
-            questions.add(new PracticePaper.Question(q.id(), q.type(), q.material(), q.materialImages(), q.stem(), q.images(), q.options(), answer,
+            questions.add(new PracticePaper.Question(q.id(), q.type(), q.material(), q.materialImages(), stem, q.images(), q.options(), answer,
                     explanation, q.section(), source));
         }
         if (!ids.containsAll(entries.keySet())) throw new IOException("参考答案题号与原题库不匹配。");
