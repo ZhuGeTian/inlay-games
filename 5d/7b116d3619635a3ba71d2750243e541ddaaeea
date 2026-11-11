@@ -1,0 +1,42 @@
+distribution/install.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 19-23,45,48,53-54,57,63,87,112,128
+  s_28ede11b99a22d::t_4277afb0cfa5fd 129
+docs/installation.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 5,7,10,13,19,40,50
+docs/verification.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 155-161
+distribution/updatePlugins.xml
+  s_28ede11b99a22d::t_fba3f75d974ea0 3
+docs/superpowers/specs/2026-11-11-practice-compact-design.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 10-11
+docs/practice.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 1,5,7,24,29,33-37
+README.md
+  s_28ede11b99a22d::t_fba3f75d974ea0 21-24,53,73,130,150
+build.gradle.kts
+  s_28ede11b99a22d::t_31c1ef951b9cab 9
+plugin/src/main/java/dev/gomoku/practice/PracticeActions.java
+  s_28ede11b99a22d::t_a010f95abd70f5 39,75,81-90
+plugin/src/main/java/dev/gomoku/practice/PracticeSession.java
+  s_28ede11b99a22d::t_22f49ac0296d8b 224-228
+plugin/src/main/resources/META-INF/plugin.xml
+  s_28ede11b99a22d::t_754a4f90c92bbb 15-17,58
+plugin/src/test/java/dev/gomoku/practice/PracticeIntegrationTest.java
+  s_28ede11b99a22d::t_ab50f2075b9991 479,524-555
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5d7b116d3619635a3ba71d2750243e541ddaaeea",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
