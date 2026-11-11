@@ -162,7 +162,8 @@ node scripts/texas-bots-smoke.mjs ws://127.0.0.1:8091/gomoku/texas/v2/ws
 | --- | --- |
 | `core` | 五子棋/斗地主/德州规则、私有视图、协议、斗地主与德州机器人 |
 | `server` | 权威房间、身份恢复、轮次/版本校验、机器人调度、WebSocket传输 |
-| `plugin` | 游戏与小说Inlay、菜单、键盘鼠标、WebSocket会话、本地书架 |
+| `plugin` | 游戏、小说与刷题Inlay、交互、WebSocket会话、书架、作答记录与同步 |
+| `dashboard` | 个人刷题统计网站、登录配对、SQLite记录、AI复盘 |
 | `scripts` | 真实网络冒烟、IDE下载辅助 |
 | `docs` | 规则、字段、术语、安装、验证 |
 | `deploy` | 通用自建示例；不含公共服务器的私有运维配置 |
