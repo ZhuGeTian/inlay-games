@@ -3,3 +3,9 @@
 .metric-label,.metric-value,.metric-note,.paper-label,.corrected{display:block}.trend{display:block}.trend .bar-column svg{height:100%;min-height:0;max-height:none}.segmented .active{background:white;color:#345743;box-shadow:0 1px 3px #203f3410}.segmented .selected:not(.active){background:transparent;box-shadow:none;color:#737e74}
 
 @media(max-width:700px){aside{flex-wrap:wrap}.sidebar-bottom{display:block;margin:0;width:100%;text-align:right;font-size:10px}.sidebar-bottom .private-label,.sidebar-bottom br{display:none}.sidebar-bottom button{padding:2px 0}.bars{gap:2px}}
+
+/* 单日柱子不拉伸成整块，窄屏网格允许按容器宽度收缩。 */
+.middle-grid>*,.metrics>*{min-width:0}.bars{justify-content:space-around}.bar-column{flex:1 1 0;min-width:0;max-width:32px}.bar-column svg{display:block}
+/* 固定底页阻止移动端滚动穿透，长题仍在弹层内滚动。 */
+body.modal-open{position:fixed;top:var(--modal-top);left:0;width:100%;overflow:hidden;padding-right:var(--modal-gutter)}
+dialog{max-height:85dvh;overscroll-behavior:contain;overflow-wrap:anywhere}
