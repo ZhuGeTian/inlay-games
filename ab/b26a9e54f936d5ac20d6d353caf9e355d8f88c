@@ -1,0 +1,26 @@
+dashboard/test/mobile.browser.js
+  s_882bdfd446838a::t_6b6174e9779342 1-39
+dashboard/public/app.js
+  s_882bdfd446838a::t_40387eea17cbb3 18-39,44
+docs/verification.md
+  s_882bdfd446838a::t_d941cd192497ad 176-183
+  s_882bdfd446838a::t_f1ac92ffd8142f 184
+dashboard/public/style.css
+  s_882bdfd446838a::t_40387eea17cbb3 6-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "abb26a9e54f936d5ac20d6d353caf9e355d8f88c",
+  "prompts": {},
+  "sessions": {
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
