@@ -1,0 +1,52 @@
+dashboard/test/retry.browser.js
+  s_882bdfd446838a::t_4ef138e73128d2 1-8,11-34
+  s_882bdfd446838a::t_c61034c52bde40 9-10
+dashboard/public/index.html
+  s_28ede11b99a22d::t_137466062a580e 12
+dashboard/public/app.js
+  s_882bdfd446838a::t_c61034c52bde40 18,86
+  s_28ede11b99a22d::t_828d220c7f456d 17
+  s_28ede11b99a22d::t_137466062a580e 40-85,87,108
+dashboard/test/mobile.browser.js
+  s_882bdfd446838a::t_4ef138e73128d2 28
+docs/verification.md
+  s_28ede11b99a22d::t_828d220c7f456d 185-193
+  s_28ede11b99a22d::t_f1087a89f72d13 194
+dashboard/public/style.css
+  s_28ede11b99a22d::t_137466062a580e 12-23
+  s_882bdfd446838a::t_c61034c52bde40 24
+dashboard/store.mjs
+  s_882bdfd446838a::t_49956a824432a1 64-80,104
+dashboard/test/retry-preview.mjs
+  s_28ede11b99a22d::t_828d220c7f456d 1-7
+dashboard/server.mjs
+  s_882bdfd446838a::t_49956a824432a1 112-114,118
+docs/study-dashboard.md
+  s_882bdfd446838a::t_c61034c52bde40 26-33
+dashboard/test/server.test.mjs
+  s_28ede11b99a22d::t_91b1b84b2ce8da 26,59-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0f5b86d8b43d9fb31bd0117af9b72d1b64394ef9",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
