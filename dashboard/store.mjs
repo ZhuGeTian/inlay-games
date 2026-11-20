@@ -61,6 +61,23 @@ export function openStore(path) {
     if (!valid(from) || !valid(to) || from > to || Date.parse(to) - Date.parse(from) > 366 * 86400000) fail('日期范围需在一年内');
     return { from, to };
   }
+  // 重做只采用服务端原题；请求重试返回同一记录，客户端不能篡改答案或日期。
+  function retry(originalId, input) {
+    if (!input || typeof input.eventId !== 'string' || !/^[a-zA-Z0-9_-]{16,80}$/.test(input.eventId)) fail('无效作答编号');
+    const original = db.prepare('SELECT snapshot FROM attempts WHERE event_id=?').get(originalId);
+    if (!original) throw Object.assign(new Error('记录不存在'), {status:404});
+    const eventId = 'retry_' + hash(originalId + ':' + input.eventId);
+    const old = db.prepare('SELECT snapshot FROM attempts WHERE event_id=?').get(eventId);
+    if (old) {
+      const saved = JSON.parse(old.snapshot);
+      if (saved.selected !== input.selected) throw Object.assign(new Error('这次作答已保存，请重新开始做题'), {status:409});
+      return saved;
+    }
+    const a = validateAttempt({...JSON.parse(original.snapshot), eventId, occurredAt:Date.now(), selected:input.selected});
+    db.prepare('INSERT OR IGNORE INTO devices(id,name,token_hash,created_at) VALUES(?,?,?,?)').run('dashboard-retry','看板重做',hash(secret()),Date.now());
+    ingest('dashboard-retry',[a]);
+    return a;
+  }
   function summary(query) {
     const { from, to } = range(query);
     const totals = db.prepare(`SELECT count(*) attempts, count(DISTINCT paper_id||':'||question_id) questions,
@@ -84,5 +101,5 @@ export function openStore(path) {
       FROM attempts a WHERE ${where} ORDER BY a.occurred_at DESC,a.event_id DESC LIMIT ? OFFSET ?`).all(...args,limit,(page-1)*limit);
     return {rows,total:count,page,pages:Math.ceil(count/limit)};
   }
-  return {db,ingest,range,summary,list,close:()=>db.close()};
+  return {db,ingest,retry,range,summary,list,close:()=>db.close()};
 }

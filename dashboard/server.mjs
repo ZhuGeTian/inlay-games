@@ -109,10 +109,13 @@ export function createApp(options = {}) {
       if(req.method==='POST' && path==='/study/api/logout') {db.prepare('DELETE FROM sessions WHERE token_hash=?').run(logged.token_hash);return json(200,{ok:true},{'Set-Cookie':`moyu_study=; HttpOnly; SameSite=Strict; Path=/study/; Max-Age=0${secure?'; Secure':''}`});}
       if(req.method==='GET' && path==='/study/api/summary')return json(200,store.summary(query));
       if(req.method==='GET' && path==='/study/api/attempts')return json(200,store.list(query));
+      if(req.method==='POST' && /^\/study\/api\/attempts\/[^/]+\/retry$/.test(path)) {
+        limit(req,'retry',60);return json(200,store.retry(path.split('/')[4],await body(req)));
+      }
       if(req.method==='GET' && path.startsWith('/study/api/attempts/')) {
         const found=db.prepare('SELECT snapshot FROM attempts WHERE event_id=?').get(path.split('/').pop());if(!found)throw error(404,'记录不存在');return json(200,JSON.parse(found.snapshot));
       }
-      if(req.method==='GET' && path==='/study/api/devices')return json(200,db.prepare('SELECT id,name,created_at,last_seen,revoked FROM devices ORDER BY created_at DESC').all());
+      if(req.method==='GET' && path==='/study/api/devices')return json(200,db.prepare("SELECT id,name,created_at,last_seen,revoked FROM devices WHERE id<>'dashboard-retry' ORDER BY created_at DESC").all());
       if(req.method==='POST' && path==='/study/api/pairing') {limit(req,'pairing',6);const code=randomBytes(6).toString('hex').toUpperCase();db.prepare('DELETE FROM pairing').run();db.prepare('INSERT INTO pairing VALUES(?,?)').run(hash(code),Date.now()+600000);return json(200,{code,expiresIn:600});}
       if(req.method==='POST' && path==='/study/api/revoke') {const input=await body(req);if(typeof input.id!=='string')throw error(400,'设备编号无效');db.prepare('UPDATE devices SET revoked=1 WHERE id=?').run(input.id);return json(200,{ok:true});}
       if(req.method==='GET' && path==='/study/api/analyses')return json(200,db.prepare('SELECT * FROM analyses ORDER BY id DESC LIMIT 10').all());

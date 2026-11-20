@@ -25,7 +25,7 @@ async (page) => {
   const start=await page.evaluate(()=>({top:document.querySelector('#records-panel').getBoundingClientRect().top,saved:-parseFloat(document.body.style.getPropertyValue('--modal-top'))}));
   await page.mouse.move(3,420);await page.mouse.wheel(0,600);await page.waitForTimeout(200);
   check(Math.abs(await page.locator('#records-panel').evaluate(n=>n.getBoundingClientRect().top)-start.top)<1,'蒙层背后滚动 '+width);
-  const dialog=page.locator('#detail'),box=await dialog.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,500);await page.waitForTimeout(200);
+  const dialog=page.locator('#detail-content'),box=await dialog.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,500);await page.waitForTimeout(200);
   check(await dialog.evaluate(n=>n.scrollTop)>0,'长题不可滚动');
   await dialog.evaluate(n=>{n.scrollTop=n.scrollHeight;});await page.mouse.wheel(0,800);await page.waitForTimeout(200);
   check(Math.abs(await page.locator('#records-panel').evaluate(n=>n.getBoundingClientRect().top)-start.top)<1,'弹层底部滚动穿透');

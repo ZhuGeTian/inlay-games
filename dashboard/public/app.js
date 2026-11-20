@@ -14,7 +14,8 @@ function metrics(s){const t=s.totals;$('metrics').replaceChildren();for(const [l
 // 图表用真实日期补零；点击一天即可查看当天作答。
 function trend(s){const host=$('trend');host.replaceChildren();const days=[];const map=new Map(s.daily.map(d=>[d.day,d]));for(let ms=Date.parse(s.from);ms<=Date.parse(s.to);ms+=86400000){const key=new Date(ms).toISOString().slice(0,10);days.push(map.get(key)||{day:key,attempts:0,correct:0,wrong:0,unknown:0});}const max=Math.max(1,...days.map(d=>d.attempts));const chart=el('div',undefined,'bars');for(const d of days){const button=el('button',undefined,'bar-column');button.title=d.day+' · '+d.attempts+'次 · 正确率 '+pct(d.correct,d.wrong);button.setAttribute('aria-label',button.title);const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 140');svg.setAttribute('preserveAspectRatio','none');let y=140;for(const [key,color] of [['correct','#38644d'],['wrong','#ce8a61'],['unknown','#cbd2c9']]){const h=130*d[key]/max;y-=h;const r=document.createElementNS(svg.namespaceURI,'rect');for(const [k,v] of Object.entries({x:2,y,width:16,height:h,fill:color,rx:1}))r.setAttribute(k,v);svg.append(r);}button.append(svg);button.onclick=run(async()=>{$('from').value=d.day;$('to').value=d.day;state.page=1;await refresh();$('records-panel').scrollIntoView({behavior:'smooth'});});chart.append(button);}const labels=el('div',undefined,'chart-labels');labels.append(el('span',s.from),el('span','峰值 '+max+' 次'),el('span',s.to));host.append(chart,labels);}
 function sections(s){$('sections').replaceChildren();for(const row of s.sections){const n=el('div',undefined,'section-row'),meta=el('div',undefined,'section-meta');meta.append(el('strong',row.section),el('span',pct(row.correct,row.wrong)+' · '+row.attempts+'次'));const bar=el('progress');bar.max=100;bar.value=row.correct+row.wrong?100*row.correct/(row.correct+row.wrong):0;bar.setAttribute('aria-label',row.section+'正确率');n.append(meta,bar);$('sections').append(n);}if(!s.sections.length)$('sections').append(el('p','还没有板块数据。开始练习后，这里会逐渐清晰。','muted'));const old=$('section-filter').value;$('section-filter').replaceChildren(el('option','全部板块'));$('section-filter').firstChild.value='';for(const row of s.sections){const o=el('option',row.section);o.value=row.section;$('section-filter').append(o);}if(old&&!s.sections.some(r=>r.section===old)){const o=el('option',old);o.value=old;$('section-filter').append(o);}$('section-filter').value=old;}
-function records(data){$('records').replaceChildren();$('records-empty').hidden=data.total>0;$('record-count').textContent=data.total+' 次作答';$('page-label').textContent='第 '+state.page+' / '+Math.max(1,data.pages)+' 页';$('previous').disabled=state.page<=1;$('next').disabled=state.page>=data.pages;for(const r of data.rows){const tr=el('tr');tr.append(el('td',date(r.occurred_at)));const question=el('td'),button=el('button',r.stem,'question-link');button.onclick=run(()=>detail(r.event_id));question.append(button,el('span',r.paper_title+' · '+r.question_id,'paper-label'));tr.append(question,el('td',r.section),el('td',r.selected));const result=el('td');result.append(el('span',r.correct===null?'未判分':r.correct?'正确':'错误','result '+(r.correct===null?'unknown':r.correct?'correct':'wrong')));if(r.correct===0&&r.latest_correct===1)result.append(el('small','后来已答对','corrected'));tr.append(result);$('records').append(tr);}}
+// 错误记录提供直接重做入口，避免进入详情时先看到参考答案。
+function records(data){$('records').replaceChildren();$('records-empty').hidden=data.total>0;$('record-count').textContent=data.total+' 次作答';$('page-label').textContent='第 '+state.page+' / '+Math.max(1,data.pages)+' 页';$('previous').disabled=state.page<=1;$('next').disabled=state.page>=data.pages;for(const r of data.rows){const tr=el('tr');tr.append(el('td',date(r.occurred_at)));const question=el('td'),button=el('button',r.stem,'question-link');button.onclick=run(()=>detail(r.event_id));question.append(button,el('span',r.paper_title+' · '+r.question_id,'paper-label'));if(r.correct===0){const retry=el('button','重做','retry-link');retry.setAttribute('aria-label','重做：'+r.stem);retry.onclick=run(()=>detail(r.event_id,true));question.append(retry);}tr.append(question,el('td',r.section),el('td',r.selected));const result=el('td');result.append(el('span',r.correct===null?'未判分':r.correct?'正确':'错误','result '+(r.correct===null?'unknown':r.correct?'correct':'wrong')));if(r.correct===0&&r.latest_correct===1)result.append(el('small','后来已答对','corrected'));tr.append(result);$('records').append(tr);}}
 // 固定底页以兼容手机弹层滚动，关闭最后一个弹层时恢复原位置。
 let modalScroll=null;
 function openDialog(dialog){
@@ -36,7 +37,54 @@ function releaseModalScroll(){
  window.scrollTo({left:x,top:y,behavior:'instant'});
 }
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',releaseModalScroll));
-async function detail(id){const r=await api('attempts/'+encodeURIComponent(id)),host=$('detail-content');host.replaceChildren(el('span',r.paperTitle+' · '+r.questionId,'eyebrow'),el('h2','作答详情'),el('p',date(r.occurredAt)+' · '+r.section,'muted'));if(r.material)host.append(el('p',r.material,'question-stem'));host.append(el('p',r.stem,'question-stem'));r.options.forEach((text,i)=>host.append(el('div',String.fromCharCode(65+i)+'. '+(text||'图片选项，请在插件查看原图'),'option'+(r.selected.includes(String.fromCharCode(65+i))?' chosen':''))));host.append(el('p','你的选择：'+r.selected+'　参考答案：'+(r.answer||'暂无'),'detail-answer'));if(r.explanation)host.append(el('p',r.explanation,'detail-explanation'));if(r.source)host.append(el('p','答案来源：'+r.source,'detail-source'));if(r.hasImages)host.append(el('p','本题包含图片，请在 IDE 中查看原图。','hint'));openDialog($('detail'));}
+// 详情与重做共用题干；进入重做时清空旧选择，并隐藏答案解析。
+function renderDetail(r, retry=false){
+ const host=$('detail-content'),actions=$('detail-actions');
+ host.replaceChildren(el('span',r.paperTitle+' · '+r.questionId,'eyebrow'),el('h2',retry?'重新做题':'作答详情'));
+ actions.replaceChildren();
+ if(!retry)host.append(el('p',date(r.occurredAt)+' · '+r.section,'muted'));
+ if(r.material)host.append(el('p',r.material,'question-stem'));
+ host.append(el('p',r.stem,'question-stem'));
+ if(r.hasImages)host.append(el('p','本题包含图片，请结合 IDE 中的原图作答。','hint'));
+ if(retry){
+  const form=el('form');form.id='retry-form';
+  const group=el('fieldset'),legend=el('legend',r.type==='multiple'?'请选择答案（多选）':'请选择答案（单选）');group.append(legend);
+  r.options.forEach((text,i)=>{const letter=String.fromCharCode(65+i),label=el('label',undefined,'option retry-option'),input=el('input');input.type=r.type==='multiple'?'checkbox':'radio';input.name='answer';input.value=letter;label.append(input,el('span',letter+'. '+(text||'图片选项，请在插件查看原图')));group.append(label);});
+  form.append(group);host.append(form);
+  const status=el('p','','hint');status.setAttribute('role','status');
+  const submit=el('button','提交答案','primary');submit.type='submit';submit.setAttribute('form','retry-form');
+  actions.append(status,submit);
+  const eventId=crypto.randomUUID();let pending=false,saved=false;
+  // 同一次提交使用固定编号；网络失败后仅重发原选择，避免重复计数。
+  form.onsubmit=async event=>{
+   event.preventDefault();if(pending||saved)return;
+   const selected=[...group.querySelectorAll('input:checked')].map(n=>n.value).join('');
+   if(!selected){status.textContent='请先选择答案。';return;}
+   pending=true;submit.disabled=true;group.disabled=true;status.textContent='正在保存…';
+   let result;
+   try{result=await api('attempts/'+encodeURIComponent(r.eventId)+'/retry',{eventId,selected});saved=true;}
+   catch(e){status.textContent=e.message+'；可点击重试提交。';submit.textContent='重试提交';}
+   finally{pending=false;submit.disabled=saved;}
+   if(!saved)return;
+   // 即使用户在等待时关闭了弹层，也不重新打开或覆盖另一道题。
+   if(host.contains(form)){
+    renderDetail(result);
+    $('detail-actions').prepend(el('p',result.correct===null?'已记录，暂无参考答案，未判分。':result.correct?'回答正确，已记录本次作答。':'回答错误，已记录本次作答。','hint'));
+   }
+   try{await refresh();}catch(e){notice('作答已保存，但统计刷新失败：'+e.message);}
+  };
+ }else{
+  r.options.forEach((text,i)=>host.append(el('div',String.fromCharCode(65+i)+'. '+(text||'图片选项，请在插件查看原图'),'option'+(r.selected.includes(String.fromCharCode(65+i))?' chosen':''))));
+  host.append(el('p','你的选择：'+r.selected+'　参考答案：'+(r.answer||'暂无'),'detail-answer'));
+  if(r.explanation)host.append(el('p',r.explanation,'detail-explanation'));
+  if(r.source)host.append(el('p','答案来源：'+r.source,'detail-source'));
+  const button=el('button','重新做题','primary');button.onclick=()=>renderDetail(r,true);actions.append(button);
+ }
+ host.scrollTop=0;
+}
+// 拉取原始快照后展示，重做提交由服务器保存为新的作答。
+async function detail(id,retry=false){const r=await api('attempts/'+encodeURIComponent(id));renderDetail(r,retry);openDialog($('detail'));}
+
 function report(r){$('analysis').replaceChildren(el('div',r.from_day||r.from?'日期 '+(r.from_day||r.from)+' — '+(r.to_day||r.to)+' · '+r.model:'','analysis-meta'),el('p',r.report));}
 async function history(){const items=await api('analyses');$('analysis-history').replaceChildren();if(items.length){report(items[0]);for(const item of items){const b=el('button',date(item.created_at)+' 的复盘','history-button');b.onclick=()=>report(item);$('analysis-history').append(b);}}}
 async function refresh(){const seq=++state.request;const [s,r]=await Promise.all([api('summary?'+query()),api('attempts?'+query())]);if(seq!==state.request)return;metrics(s);trend(s);sections(s);records(r);$('records-title').textContent=$('result-filter').value==='wrong'?'错题记录':'练习记录';}
@@ -57,4 +105,4 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.c
 $('analyze').onclick=run(async()=>{const b=$('analyze');b.disabled=true;b.textContent='正在分析…';try{report(await api('analyze',{from:$('from').value,to:$('to').value}));await history();}finally{b.disabled=false;b.textContent='生成本期分析 ↗';}});
 period(30);start().catch(e=>{if(e.message!=='请先登录')notice(e.message);});
 
-for(const id of ['record-height','analysis-height']){try{const value=localStorage.getItem('study-'+id);if(['200','320','400','520','700','800'].includes(value))$(id).value=value;}catch{}const apply=()=>{document.documentElement.style.setProperty('--'+id,$(id).value+'px');try{localStorage.setItem('study-'+id,$(id).value);}catch{}};$(id).onchange=apply;apply();}
+for(const id of ['record-height','analysis-height','detail-height']){try{const value=localStorage.getItem('study-'+id);if(['200','320','400','520','700','800'].includes(value))$(id).value=value;}catch{}const apply=()=>{document.documentElement.style.setProperty('--'+id,$(id).value+'px');try{localStorage.setItem('study-'+id,$(id).value);}catch{}};$(id).onchange=apply;apply();}
