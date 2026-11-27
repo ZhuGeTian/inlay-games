@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>双人PK · 知行</title><link rel="stylesheet" href="/study/style.css"><link rel="stylesheet" href="/study/pk.css"><script src="/study/pk.js" defer></script></head><body>
 <main class="pk-shell">
-<header><div><p class="eyebrow">PRACTICE TOGETHER</p><h1>错题双人 PK</h1><p class="muted">同一组5道错题 · 限时2分钟 · 答对多者获胜，同分平局</p></div><a class="secondary" href="/study/" id="owner-back">返回看板</a></header>
+<header><div><p class="eyebrow">PRACTICE TOGETHER</p><h1>错题双人 PK</h1><p class="muted">同一组5道错题 · 每题限时2分钟 · 共5题最多10分钟 · 答对多者获胜，同分平局</p></div><a class="secondary" href="/study/" id="owner-back">返回看板</a></header>
 <p id="pk-notice" role="status" aria-live="polite"></p>
 <section class="panel" id="pk-login" hidden><h2>登录参加 PK</h2><p class="hint">邀请只开放PK，不开放主人的私人看板。</p><form id="pk-login-form"><label>你的昵称<input id="guest-name" required maxlength="20" autocomplete="nickname"></label><button class="primary">进入 PK</button></form><p id="no-invite" hidden>请让看板主人生成邀请链接，或<a href="/study/">登录自己的看板</a>。</p></section>
 <div id="pk-app" hidden>
@@ -8,12 +8,12 @@
 <form id="match-form"><label>参赛昵称<input id="player-name" required maxlength="20" autocomplete="nickname"></label><button id="match" class="primary">开始匹配</button><button id="cancel-match" class="secondary" type="button" hidden>取消匹配</button></form>
 <p id="match-status" role="status" class="hint">等待开始匹配。</p>
 <div id="invite-area" hidden><button id="invite" class="secondary">生成对手邀请链接</button><div id="invite-result" hidden><label>邀请链接（10分钟内可登录一次）<input id="invite-url" readonly></label><button id="copy-invite" class="secondary">复制链接</button></div><p class="hint">对手用链接和昵称登录后，也点“开始匹配”。无需分享看板密码。</p></div>
-<p class="hint">从主人的历史错题随机抽5道不同题，有参考答案且不含图片。PK成绩单独记录，不计入个人刷题统计。断线不暂停计时，到时按服务器已保存的选择交卷。</p></section>
+<p class="hint">从主人的历史错题随机抽5道不同题，有参考答案且不含图片。PK成绩单独记录，不计入个人刷题统计。断线不暂停计时，每题到时按服务器已保存的选择提交并进入下一题。</p></section>
 <section class="panel pk-game" id="pk-game" hidden>
 <div class="section-head"><h2 id="game-title">本局对战</h2><strong id="pk-timer" role="timer" aria-label="剩余时间"></strong></div>
 <div id="pk-players"></div><p id="pk-result" role="status"></p>
 <div class="pk-controls"><label class="hint">题目区高度 <select id="pk-height"><option value="320">紧凑</option><option value="520">标准</option><option value="800">宽展</option></select></label><div id="pk-pages" aria-label="题目导航"></div></div>
 <div id="pk-question" tabindex="-1"></div>
-<div class="pk-actions"><button id="pk-prev" class="secondary">上一题</button><button id="pk-next" class="secondary">下一题</button><button id="pk-submit" class="primary">交卷</button></div>
+<div class="pk-actions"><button id="pk-prev" class="secondary">上一题</button><button id="pk-next" class="secondary">下一题</button><button id="pk-submit" class="primary">提交本题</button></div>
 <p id="pk-save" role="status" class="hint"></p>
 </section></div></main></body></html>

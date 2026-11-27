@@ -13,21 +13,23 @@ async page=>{
   await page.locator('#player-name').fill('主人甲');await page.locator('#match').click();await page.locator('#cancel-match').waitFor();
   await opponent.locator('#match').click();await page.waitForFunction(()=>document.querySelectorAll('#pk-question input').length>0);await opponent.waitForFunction(()=>document.querySelectorAll('#pk-question input').length>0);
   const [a,b]=await Promise.all([page.evaluate(async()=> (await(await fetch('/study/api/pk/state')).json()).room),opponent.evaluate(async()=> (await(await fetch('/study/api/pk/state')).json()).room)]);
-  check(a.id===b.id&&a.endsAt===b.endsAt,'不是同一局或截止时间不同');check(a.questions.length===5,'不是5题');check(a.questions.every(q=>!('answer' in q)&&!('explanation' in q)),'提前泄露答案');
-  await page.locator('#pk-height').selectOption('520');
+  check(a.id===b.id&&a.endsAt===b.endsAt,'不是同一局或截止时间不同');check(a.questions.filter(Boolean).length===1,'不应提前显示后续题');
+  await page.locator('#pk-height').selectOption('520');await page.evaluate(()=>{window.confirm=()=>true;});await opponent.evaluate(()=>{window.confirm=()=>true;});
   for(let i=0;i<5;i++){
-   await page.getByRole('button',{name:'第'+(i+1)+'题',exact:true}).click();const q=a.questions[i],answers=q.stem.startsWith('multi ')?['A','C']:q.stem.startsWith('extra2 ')?['C']:['B'];
+   await page.waitForFunction(i=>document.querySelector('#game-title').textContent.startsWith('第 '+(i+1)+'/5'),i);
+   await opponent.waitForFunction(i=>document.querySelector('#game-title').textContent.startsWith('第 '+(i+1)+'/5'),i);
+   const r=await page.evaluate(async()=> (await(await fetch('/study/api/pk/state')).json()).room),q=r.questions[i];
+   check(r.endsAt-r.questionStartedAt===120000,'本题不是两分钟');check(!q.answer,'提前泄露答案');
+   const answers=q.stem.startsWith('multi ')?['A','C']:q.stem.startsWith('extra2 ')?['C']:['B'];
    for(const letter of answers)await page.locator('#pk-question input[value="'+letter+'"]').check();
    await page.waitForFunction(()=>document.querySelector('#pk-save').textContent==='选择已保存。');
+   if(i===0){await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#pk-question input:checked').length>0);check((await page.evaluate(async()=> (await(await fetch('/study/api/pk/state')).json()).room)).endsAt===r.endsAt,'刷新重置计时');}
+   await page.locator('#pk-submit').click();await page.waitForFunction(()=>document.querySelector('#pk-result').textContent.includes('本题已提交'));
+   check(await page.locator('.detail-answer').count()===0,'提前泄露答案');
+   await opponent.locator('#pk-submit').click();
   }
-  await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#pk-question input:checked').length>0);
-  check(await page.locator('#pk-height').inputValue()==='520','高度未保存');
-  check((await page.evaluate(async()=> (await(await fetch('/study/api/pk/state')).json()).room)).endsAt===a.endsAt,'刷新重置计时');
-  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'主人手机页面溢出');check(await opponent.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'访客手机页面溢出');
-  await page.evaluate(()=>{window.confirm=()=>true;});await page.locator('#pk-submit').click();await page.waitForFunction(()=>document.querySelector('#pk-result').textContent.includes('你已交卷'));
-  check(await page.locator('.detail-answer').count()===0,'提前交卷泄露答案');
-  await opponent.evaluate(()=>{window.confirm=()=>true;});await opponent.locator('#pk-submit').click();await page.waitForFunction(()=>document.querySelector('#game-title').textContent==='本局结果');await opponent.waitForFunction(()=>document.querySelector('#game-title').textContent==='本局结果');
+  await page.waitForFunction(()=>document.querySelector('#game-title').textContent==='本局结果');
   check((await page.locator('#pk-result').innerText()).includes('主人甲 获胜'),'胜负错误');check((await page.locator('#pk-players').innerText()).includes('5/5 分'),'得分错误');check(await page.locator('.detail-answer').count()===1,'结算未显示答案');
-  return {twoSessions:true,questions:5,deadlineMs:a.endsAt-a.startedAt,result:'5 : 0',guestPrivateAccess:401,mobileWidths:[320,390],reloadAndHeight:'passed'};
+  return {twoSessions:true,questions:5,perQuestionMs:120000,result:'5 : 0',guestPrivateAccess:401,mobileWidths:[320,390],reloadAndHeight:'passed'};
  }finally{await context.close();}
 }

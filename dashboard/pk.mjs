@@ -17,11 +17,18 @@ export function openPk(db,now=Date.now){
  AND NOT EXISTS(SELECT 1 FROM json_each(json_extract(snapshot,'$.options')) WHERE trim(value)='') ORDER BY random() LIMIT 5`).all().map(r=>JSON.parse(r.snapshot));}
  // 每次状态变更保存整局快照，避免计分或交卷只写入一半。
  function save(room){room.version=(room.version||0)+1;db.prepare('INSERT OR REPLACE INTO pk_rooms VALUES(?,?,?,?)').run(room.id,room.phase,now(),JSON.stringify(room));}
- // 到时按最后成功保存的答案结算；未作答不计分，同分为平局。
+ // 每题独立120秒，双方提交可提前换题；断线跨过多题时按原截止时间推进。
  function settle(room){
   if(room.phase==='waiting'&&now()-room.players[0].seenAt>=30000){room.phase='cancelled';save(room);}
-  if(room.phase==='playing'&&(now()>=room.endsAt||room.players.every(p=>p.submittedAt!==null))){
-   room.phase='finished';room.players.forEach(p=>{p.score=room.questions.reduce((n,q,i)=>n+Number(p.answers[i]===q.answer),0);p.submittedAt??=room.endsAt;});
+  while(room.phase==='playing'&&(now()>=room.endsAt||room.players.every(p=>p.submittedAt!==null))){
+   const timedOut=now()>=room.endsAt;
+   // 已存在的旧规则对局仍按旧截止时间完成，不改写旧作答。
+   if(room.questionIndex===undefined||room.questionIndex===4){
+    room.phase='finished';room.players.forEach(p=>{p.score=room.questions.reduce((n,q,i)=>n+Number(p.answers[i]===q.answer),0);p.submittedAt??=room.endsAt;});
+   }else{
+    room.questionIndex++;room.questionStartedAt=timedOut?room.endsAt:now();room.endsAt=room.questionStartedAt+120000;
+    room.players.forEach(p=>{p.submittedAt=null;});
+   }
    save(room);
   }
   return room;
@@ -32,10 +39,10 @@ export function openPk(db,now=Date.now){
  function view(room,actor){
   if(!room||room.phase==='cancelled')return null;
   const self=room.players.find(p=>p.id===actor.id),finished=room.phase==='finished';
-  return {id:room.id,version:room.version,phase:room.phase==='playing'&&now()<room.startedAt?'starting':room.phase,startedAt:room.startedAt,endsAt:room.endsAt,
+  return {id:room.id,version:room.version,phase:room.phase==='playing'&&now()<room.startedAt?'starting':room.phase,startedAt:room.startedAt,endsAt:room.endsAt,questionIndex:room.questionIndex??0,questionStartedAt:room.questionStartedAt??room.startedAt,
    revision:self.revision,answers:self.answers,submitted:self.submittedAt!==null,
    players:room.players.map(p=>({name:p.name,self:p.id===actor.id,submitted:p.submittedAt!==null,answered:p.answers.filter(Boolean).length,...(finished?{score:p.score,answers:p.answers}:{})})),
-   questions:room.phase==='waiting'||now()<room.startedAt?[]:room.questions.map(q=>({type:q.type,section:q.section,material:q.material,stem:q.stem,options:q.options,...(finished?{answer:q.answer,explanation:q.explanation,source:q.source}:{})}))};
+   questions:room.phase==='waiting'||now()<room.startedAt?[]:room.questions.map((q,i)=>!finished&&i!==(room.questionIndex??0)?null:({type:q.type,section:q.section,material:q.material,stem:q.stem,options:q.options,...(finished?{answer:q.answer,explanation:q.explanation,source:q.source}:{})}))};
  }
  // 轮询保持排队在线；比赛断线仍沿用共同截止时间。
  function state(actor){const room=current(actor);if(room?.phase==='waiting'){room.players[0].seenAt=now();save(room);}return {now:now(),room:view(room,actor)};}
@@ -47,18 +54,20 @@ export function openPk(db,now=Date.now){
   const player={id:actor.id,name,answers:Array(5).fill(''),revision:0,submittedAt:null,seenAt:now()};
   for(const row of db.prepare("SELECT data FROM pk_rooms WHERE phase='waiting' ORDER BY updated,rowid").all()){
    const candidate=settle(JSON.parse(row.data));
-   if(candidate.phase==='waiting'&&candidate.players[0].id!==actor.id){room=candidate;room.players.push(player);room.phase='playing';room.questions=pool;room.startedAt=now()+3000;room.endsAt=room.startedAt+120000;save(room);return state(actor);}
+   if(candidate.phase==='waiting'&&candidate.players[0].id!==actor.id){room=candidate;room.players.push(player);room.phase='playing';room.questions=pool;room.startedAt=now()+3000;room.questionIndex=0;room.questionStartedAt=room.startedAt;room.endsAt=room.startedAt+120000;save(room);return state(actor);}
   }
   room={id:randomUUID(),phase:'waiting',players:[player],questions:[],startedAt:null,endsAt:null};save(room);return state(actor);
  }
  // 取消只允许尚未开局的排队，开局退出不延长时间。
  function cancel(actor){const room=current(actor);if(room?.phase==='waiting'){room.phase='cancelled';save(room);}return state(actor);}
- // 单调版本号防止慢请求覆盖新选择；截止后或已交卷不能改答案。
+ // 请求绑定题号，过期请求不能提交下一题；版本号防止慢请求覆盖新选择。
  function answer(actor,input,submit=false){
   if(!input||typeof input.roomId!=='string')fail(400,'无效对局');
   const room=current(actor);if(!room||room.id!==input.roomId)fail(404,'对局不存在');
   if(room.phase==='finished')return state(actor);
   if(room.phase!=='playing'||now()<room.startedAt)fail(409,'对局尚未开始');
+  if(!Number.isInteger(input.questionIndex))fail(400,'缺少题号，请刷新页面');
+  if(input.questionIndex!==(room.questionIndex??0))return state(actor);
   const player=room.players.find(p=>p.id===actor.id);
   if(player.submittedAt!==null)return state(actor);
   if(!Number.isSafeInteger(input.revision)||input.revision<1||!Array.isArray(input.answers)||input.answers.length!==5)fail(400,'作答格式无效');
@@ -68,7 +77,9 @@ export function openPk(db,now=Date.now){
   }
   if(input.revision<player.revision)return state(actor);
   if(input.revision===player.revision&&JSON.stringify(player.answers)!==JSON.stringify(input.answers))fail(409,'另一页面已修改答案，请刷新后继续');
-  player.answers=input.answers;player.revision=input.revision;
+  const index=room.questionIndex??0;
+  if(input.answers.some((v,i)=>i!==index&&v!==player.answers[i]))fail(400,'只能修改当前题的答案');
+  player.answers[index]=input.answers[index];player.revision=input.revision;
   if(submit)player.submittedAt=now();save(room);return state(actor);
  }
  // 邀请凭证仅授予PK权限，10分钟有效且只能兑换一次。
