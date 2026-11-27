@@ -4,6 +4,7 @@ import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { randomBytes, scryptSync, timingSafeEqual, randomUUID } from 'node:crypto';
 import { openStore, hash, secret } from './store.mjs';
+import { openPk } from './pk.mjs';
 
 export function passwordHash(password, salt = randomBytes(16).toString('hex')) {
   return salt + ':' + scryptSync(password, salt, 64).toString('hex');
@@ -52,6 +53,8 @@ export function createApp(options = {}) {
   if (!/^[a-f0-9]{32}:[a-f0-9]{128}$/.test(password || '')) { store.close(); throw new Error('STUDY_PASSWORD_HASH is required'); }
   const ai = options.ai || {base:process.env.AI_BASE_URL,model:process.env.AI_MODEL,key:process.env.AI_API_KEY};
   const secure = new URL(origin).protocol === 'https:';
+  const pk = openPk(db,options.pkNow);
+  const pkCookie = token => `moyu_pk=${token}; HttpOnly; SameSite=Strict; Path=/study/; Max-Age=${token?604800:0}${secure?'; Secure':''}`;
   const rates = new Map(); let analyzing = false, lastAnalysis = 0;
   function limit(req, key, max, window = 60000) {
     const ip = options.trustProxy ? req.headers['x-real-ip'] || req.socket.remoteAddress : req.socket.remoteAddress;
@@ -75,8 +78,8 @@ export function createApp(options = {}) {
     try {
       const url = new URL(req.url,origin), path=url.pathname, query=Object.fromEntries(url.searchParams);
       if (req.method==='GET' && path==='/study/api/health') return json(200,{ok:true,version:'0.7.0'});
-      if (req.method==='GET' && ['/study/','/study/app.js','/study/style.css'].includes(path)) {
-        const name = path.endsWith('/') ? 'index.html' : path.split('/').pop();
+      if (req.method==='GET' && ['/study/','/study/app.js','/study/style.css','/study/pk/','/study/pk.js','/study/pk.css'].includes(path)) {
+        const name = path==='/study/pk/' ? 'pk.html' : path.endsWith('/') ? 'index.html' : path.split('/').pop();
         const content = await readFile(new URL('public/'+name,import.meta.url));
         res.writeHead(200,{'Content-Type':name.endsWith('.js')?'text/javascript; charset=utf-8':name.endsWith('.css')?'text/css; charset=utf-8':'text/html; charset=utf-8','Cache-Control':'no-cache'});return res.end(content);
       }
@@ -103,6 +106,26 @@ export function createApp(options = {}) {
       if (req.method==='POST' && path==='/study/api/attempts') {
         limit(req,'sync',120);const current=device(req);if(!current) throw error(401,'设备未连接或已被撤销');
         const input=await body(req);return json(200,{acknowledged:store.ingest(current.id,input.attempts)});
+      }
+      // PK访客只进入独立路由，个人记录与管理接口仍要求原看板登录。
+      if(path.startsWith('/study/api/pk/')) {
+        const action=path.slice('/study/api/pk/'.length),owner=session(req);
+        if(req.method==='POST'&&action==='login'){limit(req,'pk-login',10,600000);const login=pk.login(await body(req));return json(200,{ok:true},{'Set-Cookie':pkCookie(login.token)});}
+        const token=/(?:^|;\s*)moyu_pk=([\w-]+)/.exec(req.headers.cookie||'')?.[1];
+        const guest=token&&db.prepare('SELECT token_hash,name FROM pk_sessions WHERE token_hash=? AND expires>?').get(hash(token),Date.now());
+        const actor=owner?{id:'owner:'+owner.token_hash,name:''}:guest?{id:'guest:'+guest.token_hash,name:guest.name}:null;
+        if(!actor)throw error(401,'请登录看板或使用PK邀请链接');
+        if(req.method==='GET'&&action==='session')return json(200,{owner:Boolean(owner),name:actor.name});
+        if(req.method==='GET'&&action==='state')return json(200,pk.state(actor));
+        if(req.method==='POST'){
+          limit(req,'pk-actions',180);
+          if(action==='invite'){if(!owner)throw error(403,'仅看板主人可生成邀请');limit(req,'pk-invite',10,600000);return json(200,pk.invite());}
+          if(action==='join')return json(200,pk.join(actor,(await body(req))?.name));
+          if(action==='cancel')return json(200,pk.cancel(actor));
+          if(action==='answer'||action==='submit')return json(200,pk.answer(actor,await body(req),action==='submit'));
+          if(action==='logout'){if(guest)db.prepare('DELETE FROM pk_sessions WHERE token_hash=?').run(guest.token_hash);pk.cancel(actor);return json(200,{ok:true},{'Set-Cookie':pkCookie('')});}
+        }
+        throw error(404,'未找到接口');
       }
       const logged=session(req); if(!logged) throw error(401,'请先登录');
       if(req.method==='GET' && path==='/study/api/session')return json(200,{authenticated:true,aiConfigured:Boolean(ai.base&&ai.key&&ai.model),aiModel:ai.model||null});

@@ -1,5 +1,6 @@
 // 在 Playwright 的 browser_run_code_unsafe 中运行；静态站点设为 localhost:18707，接口全部拦截为测试数据。
 async (page) => {
+ page.setDefaultTimeout(5000);
  const check=(value,message)=>{if(!value)throw Error(message);};
  const base='http://127.0.0.1:18707/study/';
  const row={event_id:'fixture',occurred_at:Date.now(),stem:'手机布局测试题',paper_title:'测试卷',question_id:'q1',section:'言语理解',selected:'A',correct:0,latest_correct:0};
@@ -25,7 +26,7 @@ async (page) => {
   const start=await page.evaluate(()=>({top:document.querySelector('#records-panel').getBoundingClientRect().top,saved:-parseFloat(document.body.style.getPropertyValue('--modal-top'))}));
   await page.mouse.move(3,420);await page.mouse.wheel(0,600);await page.waitForTimeout(200);
   check(Math.abs(await page.locator('#records-panel').evaluate(n=>n.getBoundingClientRect().top)-start.top)<1,'蒙层背后滚动 '+width);
-  const dialog=page.locator('#detail-content'),box=await dialog.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,500);await page.waitForTimeout(200);
+  const dialog=page.locator('#detail-content'),box=await dialog.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.wheel(0,500);await page.waitForFunction(()=>document.querySelector('#detail-content').scrollTop>0);
   check(await dialog.evaluate(n=>n.scrollTop)>0,'长题不可滚动');
   await dialog.evaluate(n=>{n.scrollTop=n.scrollHeight;});await page.mouse.wheel(0,800);await page.waitForTimeout(200);
   check(Math.abs(await page.locator('#records-panel').evaluate(n=>n.getBoundingClientRect().top)-start.top)<1,'弹层底部滚动穿透');
