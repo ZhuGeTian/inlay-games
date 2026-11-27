@@ -1,0 +1,41 @@
+README.md
+  s_882bdfd446838a::t_e72e54340973c7 25
+dashboard/test/pk.browser.js
+  s_882bdfd446838a::t_a3527c3167b3bf 16-17,19-23,26-29,31,33
+dashboard/pk.mjs
+  s_28ede11b99a22d::t_547e66b7d240e6 20,23-31,42,45,57,63,69-70,80-82
+dashboard/public/pk.html
+  s_28ede11b99a22d::t_547e66b7d240e6 3,11,17
+dashboard/test/pk.test.mjs
+  s_882bdfd446838a::t_e72e54340973c7 18-20,22-32,35-36,38-45,63-65
+docs/study-dashboard.md
+  s_882bdfd446838a::t_e72e54340973c7 40,42,45
+dashboard/public/pk.js
+  s_28ede11b99a22d::t_547e66b7d240e6 17-18,21,35-36,43-45,47,55,74
+docs/verification.md
+  s_882bdfd446838a::t_86fbee7393906a 205-210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0a28ff249d2e09736869920669e54d9a461f733d",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
