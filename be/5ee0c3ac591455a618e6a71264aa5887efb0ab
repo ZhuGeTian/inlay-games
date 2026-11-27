@@ -1,0 +1,61 @@
+dashboard/test/pk.browser.js
+  s_882bdfd446838a::t_0d76eaa43a512f 10
+  s_28ede11b99a22d::t_cbc2ce06453c31 1-9,11-26,28,30-33
+  s_28ede11b99a22d::t_26a89cb6c3bea8 27,29
+docs/study-dashboard.md
+  s_882bdfd446838a::t_2b1e2e132bee19 34-49
+dashboard/public/pk.html
+  s_882bdfd446838a::t_ebc0f37ccb79ae 1-19
+dashboard/test/mobile.browser.js
+  s_882bdfd446838a::t_11140a6e14b6df 29
+  s_28ede11b99a22d::t_195c69c85ea8c1 3
+dashboard/pk.mjs
+  s_882bdfd446838a::t_30707f6816a008 19,35
+  s_882bdfd446838a::t_c56fd74bc9f0c4 1-18,20-34,36-85
+dashboard/public/index.html
+  s_882bdfd446838a::t_ebc0f37ccb79ae 4
+dashboard/public/pk.js
+  s_882bdfd446838a::t_ebc0f37ccb79ae 1-11,13-14,16-18,21-53,55-77
+  s_882bdfd446838a::t_30707f6816a008 12,15
+  s_882bdfd446838a::t_dd45f6c93494f3 19
+  s_882bdfd446838a::t_2b1e2e132bee19 20,54
+dashboard/public/pk.css
+  s_882bdfd446838a::t_dd45f6c93494f3 2-4
+  s_882bdfd446838a::t_ebc0f37ccb79ae 1
+dashboard/server.mjs
+  s_882bdfd446838a::t_c56fd74bc9f0c4 7,56-57,81-82,110-128
+  s_28ede11b99a22d::t_d9c0860de17a25 129
+dashboard/test/pk.test.mjs
+  s_882bdfd446838a::t_30707f6816a008 1-73
+docs/verification.md
+  s_882bdfd446838a::t_2b1e2e132bee19 195-202
+  s_28ede11b99a22d::t_009c4a8abd2e68 203-204
+README.md
+  s_28ede11b99a22d::t_c9c0e224cd7053 25-26
+dashboard/test/retry-preview.mjs
+  s_28ede11b99a22d::t_788059f1281caa 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "be5ee0c3ac591455a618e6a71264aa5887efb0ab",
+  "prompts": {},
+  "sessions": {
+    "s_28ede11b99a22d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "unknown"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    },
+    "s_882bdfd446838a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1393c-b8a2-78e1-98f9-5c7f5fc9839e",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "ZhuGeTian <65574903+ZhuGeTian@users.noreply.github.com>"
+    }
+  }
+}
